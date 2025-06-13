@@ -9,12 +9,21 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  freezed_annotation: ^3.0.0
+  json_annotation: ^4.9.0
+  uuid: ^4.4.2
+  flutter_svg: ^2.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  coca_lints: ^1.0.0
+  coca_lints: ^1.0.1
+  build_runner: ^2.4.15
+  freezed: ^3.0.6
+  json_serializable: ^6.9.5
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/icons/
