@@ -51,14 +51,12 @@ final class MockTransactionRepository implements TransactionRepository {
     final account = await _accountsRepo.getById(accountId);
     final categories = await _categoriesRepo.getAll();
     final now = DateTime.now();
-    startDate ??= DateTime.utc(now.year, now.month);
-    endDate ??= DateTime.utc(now.year, now.month + 1, 0);
-    final neededTransactions =
-        _transactions
-            .where((transaction) => transaction.accountId == accountId)
-            .where((transaction) => transaction.updatedAt >= startDate!)
-            .where((transaction) => transaction.updatedAt <= endDate!)
-            .toList();
+    startDate ??= DateTime(now.year, now.month);
+    endDate ??= DateTime(now.year, now.month + 1, 0);
+    final neededTransactions = _transactions
+        .where((transaction) => transaction.accountId == accountId)
+        .where((transaction) => transaction.transactionDate >= startDate!)
+        .where((transaction) => transaction.transactionDate <= endDate!);
 
     for (final transaction in neededTransactions) {
       transactionsList.add(
