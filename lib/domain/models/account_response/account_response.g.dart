@@ -12,14 +12,12 @@ _AccountResponse _$AccountResponseFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       balance: json['balance'] as String,
       currency: json['currency'] as String,
-      incomeStats:
-          (json['incomeStats'] as List<dynamic>)
-              .map((e) => StatItem.fromJson(e as Map<String, dynamic>))
-              .toList(),
-      expenseStats:
-          (json['expenseStats'] as List<dynamic>)
-              .map((e) => StatItem.fromJson(e as Map<String, dynamic>))
-              .toList(),
+      incomeStats: (json['incomeStats'] as List<dynamic>)
+          .map((e) => StatItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      expenseStats: (json['expenseStats'] as List<dynamic>)
+          .map((e) => StatItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );

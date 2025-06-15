@@ -17,12 +17,11 @@ _AccountHistory _$AccountHistoryFromJson(Map<String, dynamic> json) =>
       newState: AccountState.fromJson(json['newState'] as Map<String, dynamic>),
       changeTimeStamp: DateTime.parse(json['changeTimeStamp'] as String),
       createdAt: DateTime.parse(json['createdAt'] as String),
-      previousState:
-          json['previousState'] == null
-              ? null
-              : AccountState.fromJson(
-                json['previousState'] as Map<String, dynamic>,
-              ),
+      previousState: json['previousState'] == null
+          ? null
+          : AccountState.fromJson(
+              json['previousState'] as Map<String, dynamic>,
+            ),
     );
 
 Map<String, dynamic> _$AccountHistoryToJson(_AccountHistory instance) =>

@@ -34,7 +34,8 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
       surface: surface ?? this.surface,
       textPrimary: textPrimary ?? this.textPrimary,
       textSecondary: textSecondary ?? this.textSecondary,
-      navigationBarBackground: navigationBarBackground ?? this.navigationBarBackground,
+      navigationBarBackground:
+          navigationBarBackground ?? this.navigationBarBackground,
       highlight: highlight ?? this.highlight,
     );
   }
@@ -48,10 +49,15 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
       surface: Color.lerp(surface, other.surface, t)!,
       textPrimary: Color.lerp(textPrimary, other.textPrimary, t)!,
       textSecondary: Color.lerp(textSecondary, other.textSecondary, t)!,
-      navigationBarBackground: Color.lerp(navigationBarBackground, other.navigationBarBackground, t)!,
+      navigationBarBackground: Color.lerp(
+        navigationBarBackground,
+        other.navigationBarBackground,
+        t,
+      )!,
       highlight: Color.lerp(highlight, other.highlight, t)!,
     );
   }
 
-  static AppThemeColors of(BuildContext context) => Theme.of(context).extension<AppThemeColors>()!;
+  static AppThemeColors of(BuildContext context) =>
+      Theme.of(context).extension<AppThemeColors>()!;
 }

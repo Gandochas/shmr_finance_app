@@ -16,5 +16,6 @@ abstract class Transaction with _$Transaction {
     String? comment,
   }) = _Transaction;
 
-  factory Transaction.fromJson(Map<String, Object?> json) => _$TransactionFromJson(json);
+  factory Transaction.fromJson(Map<String, Object?> json) =>
+      _$TransactionFromJson(json);
 }

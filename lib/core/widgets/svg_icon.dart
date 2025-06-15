@@ -11,7 +11,10 @@ class SvgIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return SvgPicture.asset(
       asset,
-      colorFilter: ColorFilter.mode(IconTheme.of(context).color ?? Colors.black, BlendMode.srcIn),
+      colorFilter: ColorFilter.mode(
+        IconTheme.of(context).color ?? Colors.black,
+        BlendMode.srcIn,
+      ),
       height: 24,
       width: 24,
     );

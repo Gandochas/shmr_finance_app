@@ -12,5 +12,6 @@ abstract class AccountState with _$AccountState {
     required String currency,
   }) = _AccountState;
 
-  factory AccountState.fromJson(Map<String, Object?> json) => _$AccountStateFromJson(json);
+  factory AccountState.fromJson(Map<String, Object?> json) =>
+      _$AccountStateFromJson(json);
 }

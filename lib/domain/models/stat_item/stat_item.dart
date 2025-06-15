@@ -13,5 +13,6 @@ abstract class StatItem with _$StatItem {
     required String amount,
   }) = _StatItem;
 
-  factory StatItem.fromJson(Map<String, Object?> json) => _$StatItemFromJson(json);
+  factory StatItem.fromJson(Map<String, Object?> json) =>
+      _$StatItemFromJson(json);
 }

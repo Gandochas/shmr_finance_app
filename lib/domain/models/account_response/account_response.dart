@@ -17,5 +17,6 @@ abstract class AccountResponse with _$AccountResponse {
     required DateTime updatedAt,
   }) = _AccountResponse;
 
-  factory AccountResponse.fromJson(Map<String, Object?> json) => _$AccountResponseFromJson(json);
+  factory AccountResponse.fromJson(Map<String, Object?> json) =>
+      _$AccountResponseFromJson(json);
 }

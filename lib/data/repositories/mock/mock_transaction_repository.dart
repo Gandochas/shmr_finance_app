@@ -9,9 +9,11 @@ import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart
 import 'package:uuid/uuid.dart';
 
 final class MockTransactionRepository implements TransactionRepository {
-  MockTransactionRepository({required CategoryRepository categoriesRepo, required BankAccountRepository accountsRepo})
-    : _categoriesRepo = categoriesRepo,
-      _accountsRepo = accountsRepo;
+  MockTransactionRepository({
+    required CategoryRepository categoriesRepo,
+    required BankAccountRepository accountsRepo,
+  }) : _categoriesRepo = categoriesRepo,
+       _accountsRepo = accountsRepo;
 
   final CategoryRepository _categoriesRepo;
   final BankAccountRepository _accountsRepo;
@@ -70,7 +72,9 @@ final class MockTransactionRepository implements TransactionRepository {
           ),
           category: categories.firstWhere(
             (category) => category.id == transaction.categoryId,
-            orElse: () => throw const CategoryNotExistException('Данной категории не существует'),
+            orElse: () => throw const CategoryNotExistException(
+              'Данной категории не существует',
+            ),
           ),
           amount: transaction.amount,
           transactionDate: transaction.transactionDate,
@@ -88,12 +92,16 @@ final class MockTransactionRepository implements TransactionRepository {
     await Future<void>.delayed(const Duration(seconds: 1));
     final transaction = _transactions.firstWhere(
       (transaction) => transaction.id == transactionId,
-      orElse: () => throw const TransactionNotExistException('Данной транзакции не существует'),
+      orElse: () => throw const TransactionNotExistException(
+        'Данной транзакции не существует',
+      ),
     );
     final categories = await _categoriesRepo.getAll();
     final category = categories.firstWhere(
       (category) => category.id == transaction.categoryId,
-      orElse: () => throw const CategoryNotExistException('Данной категории не существует'),
+      orElse: () => throw const CategoryNotExistException(
+        'Данной категории не существует',
+      ),
     );
     final account = await _accountsRepo.getById(transaction.accountId);
     return TransactionResponse(
@@ -119,16 +127,22 @@ final class MockTransactionRepository implements TransactionRepository {
     required TransactionRequest transactionRequest,
   }) async {
     await Future<void>.delayed(const Duration(seconds: 1));
-    final transactionIndex = _transactions.lastIndexWhere((transaction) => transaction.id == transactionId);
+    final transactionIndex = _transactions.lastIndexWhere(
+      (transaction) => transaction.id == transactionId,
+    );
     if (transactionIndex == -1) {
-      throw const TransactionNotExistException('Данной транзакции не существует');
+      throw const TransactionNotExistException(
+        'Данной транзакции не существует',
+      );
     }
     final transaction = _transactions[transactionIndex];
     final account = await _accountsRepo.getById(transaction.accountId);
     final categories = await _categoriesRepo.getAll();
     final category = categories.firstWhere(
       (category) => category.id == transaction.categoryId,
-      orElse: () => throw const CategoryNotExistException('Данной категории не существует'),
+      orElse: () => throw const CategoryNotExistException(
+        'Данной категории не существует',
+      ),
     );
     final updatedTransaction = Transaction(
       id: transaction.id,
@@ -143,7 +157,12 @@ final class MockTransactionRepository implements TransactionRepository {
     _transactions[transactionIndex] = updatedTransaction;
     return TransactionResponse(
       id: transaction.id,
-      account: AccountBrief(id: account.id, name: account.name, balance: account.balance, currency: account.currency),
+      account: AccountBrief(
+        id: account.id,
+        name: account.name,
+        balance: account.balance,
+        currency: account.currency,
+      ),
       category: category,
       amount: updatedTransaction.amount,
       transactionDate: updatedTransaction.transactionDate,

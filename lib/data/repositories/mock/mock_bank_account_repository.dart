@@ -51,7 +51,9 @@ final class MockBankAccountRepository implements BankAccountRepository {
     await Future<void>.delayed(const Duration(seconds: 1));
     return _accounts.firstWhere(
       (account) => account.id == accountId,
-      orElse: () => throw const BankAccountNotExistsException('Такого аккаунта не существует!'),
+      orElse: () => throw const BankAccountNotExistsException(
+        'Такого аккаунта не существует!',
+      ),
     );
   }
 
@@ -60,7 +62,9 @@ final class MockBankAccountRepository implements BankAccountRepository {
     await Future<void>.delayed(const Duration(seconds: 1));
     final account = _accounts.lastWhere(
       (account) => account.id == accountId,
-      orElse: () => throw const BankAccountNotExistsException('Такого аккаунта не существует!'),
+      orElse: () => throw const BankAccountNotExistsException(
+        'Такого аккаунта не существует!',
+      ),
     );
 
     return AccountHistoryResponse(
@@ -68,19 +72,30 @@ final class MockBankAccountRepository implements BankAccountRepository {
       accountName: account.name,
       currency: account.currency,
       currentBalance: account.balance,
-      history: _accountHistories.where((history) => history.accountId == accountId).toList(),
+      history: _accountHistories
+          .where((history) => history.accountId == accountId)
+          .toList(),
     );
   }
 
   @override
-  Future<Account> update({required int accountId, required AccountUpdateRequest updateRequest}) async {
+  Future<Account> update({
+    required int accountId,
+    required AccountUpdateRequest updateRequest,
+  }) async {
     await Future<void>.delayed(const Duration(seconds: 1));
-    final accountIndex = _accounts.lastIndexWhere((account) => account.id == accountId);
+    final accountIndex = _accounts.lastIndexWhere(
+      (account) => account.id == accountId,
+    );
     if (accountIndex == -1) {
-      throw const BankAccountNotExistsException('Такого аккаунта не существует!');
+      throw const BankAccountNotExistsException(
+        'Такого аккаунта не существует!',
+      );
     }
     final account = _accounts[accountIndex];
-    final accountLastHistory = _accountHistories.lastWhere((account) => account.id == accountId);
+    final accountLastHistory = _accountHistories.lastWhere(
+      (account) => account.id == accountId,
+    );
     final updatedAccount = Account(
       id: account.id,
       userId: account.userId,

@@ -16,7 +16,13 @@ class AppPage extends StatefulWidget {
 class _AppPageState extends State<AppPage> {
   int _currentPageIndex = 0;
 
-  final _pages = const <Widget>[ExpensesPage(), IncomesPage(), BalancePage(), ArticlesPage(), SettingsPage()];
+  final _pages = const <Widget>[
+    ExpensesPage(),
+    IncomesPage(),
+    BalancePage(),
+    ArticlesPage(),
+    SettingsPage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +30,9 @@ class _AppPageState extends State<AppPage> {
       body: IndexedStack(index: _currentPageIndex, children: _pages),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        backgroundColor: Theme.of(context).floatingActionButtonTheme.backgroundColor,
+        backgroundColor: Theme.of(
+          context,
+        ).floatingActionButtonTheme.backgroundColor,
         shape: const CircleBorder(),
         child: const Icon(Icons.add),
       ),
@@ -36,11 +44,26 @@ class _AppPageState extends State<AppPage> {
         },
         selectedIndex: _currentPageIndex,
         destinations: const [
-          NavigationDestination(icon: SvgIcon(asset: 'assets/icons/expenses_icon.svg'), label: 'Расходы'),
-          NavigationDestination(icon: SvgIcon(asset: 'assets/icons/incomes_icon.svg'), label: 'Доходы'),
-          NavigationDestination(icon: SvgIcon(asset: 'assets/icons/account_icon.svg'), label: 'Счет'),
-          NavigationDestination(icon: SvgIcon(asset: 'assets/icons/articles_icon.svg'), label: 'Статьи'),
-          NavigationDestination(icon: SvgIcon(asset: 'assets/icons/settings_icon.svg'), label: 'Настройки'),
+          NavigationDestination(
+            icon: SvgIcon(asset: 'assets/icons/expenses_icon.svg'),
+            label: 'Расходы',
+          ),
+          NavigationDestination(
+            icon: SvgIcon(asset: 'assets/icons/incomes_icon.svg'),
+            label: 'Доходы',
+          ),
+          NavigationDestination(
+            icon: SvgIcon(asset: 'assets/icons/account_icon.svg'),
+            label: 'Счет',
+          ),
+          NavigationDestination(
+            icon: SvgIcon(asset: 'assets/icons/articles_icon.svg'),
+            label: 'Статьи',
+          ),
+          NavigationDestination(
+            icon: SvgIcon(asset: 'assets/icons/settings_icon.svg'),
+            label: 'Настройки',
+          ),
         ],
       ),
     );

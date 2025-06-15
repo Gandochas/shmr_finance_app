@@ -13,6 +13,8 @@ final class MockCategoryRepository implements CategoryRepository {
   @override
   Future<List<Category>> getByType({required bool isIncome}) async {
     await Future<void>.delayed(const Duration(seconds: 1));
-    return _categories.where((category) => category.isIncome == isIncome).toList();
+    return _categories
+        .where((category) => category.isIncome == isIncome)
+        .toList();
   }
 }

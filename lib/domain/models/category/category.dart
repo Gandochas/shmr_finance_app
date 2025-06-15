@@ -5,8 +5,13 @@ part 'category.g.dart';
 
 @freezed
 abstract class Category with _$Category {
-  const factory Category({required int id, required String name, required String emoji, required bool isIncome}) =
-      _Category;
+  const factory Category({
+    required int id,
+    required String name,
+    required String emoji,
+    required bool isIncome,
+  }) = _Category;
 
-  factory Category.fromJson(Map<String, Object?> json) => _$CategoryFromJson(json);
+  factory Category.fromJson(Map<String, Object?> json) =>
+      _$CategoryFromJson(json);
 }

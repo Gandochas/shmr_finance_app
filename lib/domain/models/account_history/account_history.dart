@@ -16,7 +16,8 @@ abstract class AccountHistory with _$AccountHistory {
     AccountState? previousState,
   }) = _AccountHistory;
 
-  factory AccountHistory.fromJson(Map<String, Object?> json) => _$AccountHistoryFromJson(json);
+  factory AccountHistory.fromJson(Map<String, Object?> json) =>
+      _$AccountHistoryFromJson(json);
 }
 
 enum AccountHistoryChangeType {

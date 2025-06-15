@@ -5,8 +5,12 @@ part 'account_update_request.g.dart';
 
 @freezed
 abstract class AccountUpdateRequest with _$AccountUpdateRequest {
-  const factory AccountUpdateRequest({required String name, required String balance, required String currency}) =
-      _AccountUpdateRequest;
+  const factory AccountUpdateRequest({
+    required String name,
+    required String balance,
+    required String currency,
+  }) = _AccountUpdateRequest;
 
-  factory AccountUpdateRequest.fromJson(Map<String, Object?> json) => _$AccountUpdateRequestFromJson(json);
+  factory AccountUpdateRequest.fromJson(Map<String, Object?> json) =>
+      _$AccountUpdateRequestFromJson(json);
 }

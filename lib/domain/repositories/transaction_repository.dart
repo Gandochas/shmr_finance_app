@@ -7,7 +7,10 @@ abstract interface class TransactionRepository {
 
   Future<TransactionResponse> getById(int transactionId);
 
-  Future<TransactionResponse> update({required int transactionId, required TransactionRequest transactionRequest});
+  Future<TransactionResponse> update({
+    required int transactionId,
+    required TransactionRequest transactionRequest,
+  });
 
   Future<void> delete(int transactionId);
 

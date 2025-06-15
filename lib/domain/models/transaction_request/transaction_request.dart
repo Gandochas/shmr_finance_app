@@ -13,5 +13,6 @@ abstract class TransactionRequest with _$TransactionRequest {
     String? comment,
   }) = _TransactionRequest;
 
-  factory TransactionRequest.fromJson(Map<String, Object?> json) => _$TransactionRequestFromJson(json);
+  factory TransactionRequest.fromJson(Map<String, Object?> json) =>
+      _$TransactionRequestFromJson(json);
 }

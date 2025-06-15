@@ -12,5 +12,6 @@ abstract class AccountBrief with _$AccountBrief {
     required String currency,
   }) = _AccountBrief;
 
-  factory AccountBrief.fromJson(Map<String, Object?> json) => _$AccountBriefFromJson(json);
+  factory AccountBrief.fromJson(Map<String, Object?> json) =>
+      _$AccountBriefFromJson(json);
 }

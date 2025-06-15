@@ -15,5 +15,6 @@ abstract class AccountHistoryResponse with _$AccountHistoryResponse {
     required List<AccountHistory> history,
   }) = _AccountHistoryResponse;
 
-  factory AccountHistoryResponse.fromJson(Map<String, Object?> json) => _$AccountHistoryResponseFromJson(json);
+  factory AccountHistoryResponse.fromJson(Map<String, Object?> json) =>
+      _$AccountHistoryResponseFromJson(json);
 }

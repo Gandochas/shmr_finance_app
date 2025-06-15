@@ -20,7 +20,11 @@ ThemeData getLightTheme() {
     appBarTheme: const AppBarTheme(
       color: kPrimaryColor,
       elevation: 0,
-      titleTextStyle: TextStyle(color: kTextPrimaryColor, fontSize: 18, fontWeight: FontWeight.w600),
+      titleTextStyle: TextStyle(
+        color: kTextPrimaryColor,
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+      ),
       iconTheme: IconThemeData(color: kTextPrimaryColor),
     ),
     scaffoldBackgroundColor: kSurfaceColor,
@@ -33,13 +37,21 @@ ThemeData getLightTheme() {
       indicatorColor: kHighlightColor, // подсветка выбранного
       labelTextStyle: WidgetStateProperty.resolveWith((states) {
         return TextStyle(
-          color: states.contains(WidgetState.selected) ? kTextPrimaryColor : kTextSecondaryColor,
+          color: states.contains(WidgetState.selected)
+              ? kTextPrimaryColor
+              : kTextSecondaryColor,
           fontSize: 12,
-          fontWeight: states.contains(WidgetState.selected) ? FontWeight.w600 : FontWeight.w400,
+          fontWeight: states.contains(WidgetState.selected)
+              ? FontWeight.w600
+              : FontWeight.w400,
         );
       }),
       iconTheme: WidgetStateProperty.resolveWith<IconThemeData>((states) {
-        return IconThemeData(color: states.contains(WidgetState.selected) ? kPrimaryColor : kTextSecondaryColor);
+        return IconThemeData(
+          color: states.contains(WidgetState.selected)
+              ? kPrimaryColor
+              : kTextSecondaryColor,
+        );
       }),
     ),
   );

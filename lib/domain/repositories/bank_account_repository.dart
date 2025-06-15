@@ -10,7 +10,10 @@ abstract interface class BankAccountRepository {
 
   Future<Account> getById(int accountId);
 
-  Future<Account> update({required int accountId, required AccountUpdateRequest updateRequest});
+  Future<Account> update({
+    required int accountId,
+    required AccountUpdateRequest updateRequest,
+  });
 
   Future<AccountHistoryResponse> getHistory(int accountId);
 }

@@ -13,10 +13,9 @@ _AccountHistoryResponse _$AccountHistoryResponseFromJson(
   accountName: json['accountName'] as String,
   currency: json['currency'] as String,
   currentBalance: json['currentBalance'] as String,
-  history:
-      (json['history'] as List<dynamic>)
-          .map((e) => AccountHistory.fromJson(e as Map<String, dynamic>))
-          .toList(),
+  history: (json['history'] as List<dynamic>)
+      .map((e) => AccountHistory.fromJson(e as Map<String, dynamic>))
+      .toList(),
 );
 
 Map<String, dynamic> _$AccountHistoryResponseToJson(

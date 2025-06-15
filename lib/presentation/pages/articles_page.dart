@@ -8,7 +8,10 @@ class ArticlesPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-        title: const Text('Мои статьи', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w400)),
+        title: const Text(
+          'Мои статьи',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w400),
+        ),
         centerTitle: true,
       ),
       body: const Center(child: Text('Articles')),
