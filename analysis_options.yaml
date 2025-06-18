@@ -1,1 +1,4 @@
 include: package:coca_lints/analysis_options.yaml
+analyzer:
+  errors:
+    discarded_futures: ignore

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shmr_finance_app/core/widgets/svg_icon.dart';
 import 'package:shmr_finance_app/presentation/pages/articles_page.dart';
 import 'package:shmr_finance_app/presentation/pages/balance_page.dart';
-import 'package:shmr_finance_app/presentation/pages/expenses_page.dart';
-import 'package:shmr_finance_app/presentation/pages/incomes_page.dart';
+import 'package:shmr_finance_app/presentation/pages/expenses_incomes_page.dart';
 import 'package:shmr_finance_app/presentation/pages/settings_page.dart';
 
 class AppPage extends StatefulWidget {
@@ -15,10 +14,9 @@ class AppPage extends StatefulWidget {
 
 class _AppPageState extends State<AppPage> {
   int _currentPageIndex = 0;
-
-  final _pages = const <Widget>[
-    ExpensesPage(),
-    IncomesPage(),
+  static const _pages = <Widget>[
+    ExpensesIncomesPage(isIncomePage: false),
+    ExpensesIncomesPage(isIncomePage: true),
     BalancePage(),
     ArticlesPage(),
     SettingsPage(),

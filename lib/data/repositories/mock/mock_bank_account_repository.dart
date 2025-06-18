@@ -7,7 +7,17 @@ import 'package:shmr_finance_app/domain/models/account_update_request/account_up
 import 'package:shmr_finance_app/domain/repositories/bank_account_repository.dart';
 
 final class MockBankAccountRepository implements BankAccountRepository {
-  final _accounts = <Account>[];
+  final _accounts = <Account>[
+    Account(
+      id: 1,
+      userId: 1,
+      name: 'my bank acc',
+      balance: '1000',
+      currency: '₽',
+      createdAt: DateTime.now().subtract(const Duration(days: 30)),
+      updatedAt: DateTime.now(),
+    ),
+  ];
   final _accountHistories = <AccountHistory>[];
 
   @override
