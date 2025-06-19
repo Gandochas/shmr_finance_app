@@ -15,7 +15,7 @@ class ExpensesIncomesNavigatorTab extends StatelessWidget {
       create: (context) => ExpensesIncomesCubit(
         transactionRepository: context.read<TransactionRepository>(),
         isIncomePage: isIncomePage,
-      )..loadAll(),
+      )..loadTodayTransactions(),
       child: Navigator(
         onGenerateRoute: (settings) {
           return MaterialPageRoute(

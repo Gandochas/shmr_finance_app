@@ -60,11 +60,14 @@ final class ExpensesIncomesCubit extends Cubit<ExpensesIncomesState> {
   final bool isIncomePage;
   final int accountId;
 
-  Future<void> loadAll() async {
+  Future<void> loadTodayTransactions() async {
     emit(const ExpensesIncomesLoadingState());
     try {
+      final now = DateTime.now();
       final transactions = await _transactionRepository.getByAccountIdAndPeriod(
         accountId: 1,
+        startDate: DateTime(now.year, now.month, now.day),
+        endDate: DateTime(now.year, now.month, now.day, 23, 59, 59),
       );
 
       final newState = transactions

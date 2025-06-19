@@ -83,7 +83,7 @@ class ExpensesIncomesPage extends StatelessWidget {
                                 style: Theme.of(context).textTheme.bodyLarge,
                               ),
                               Text(
-                                '$transactionsSum ${state.transactions.first.currency}',
+                                '$transactionsSum ${state.transactions.isNotEmpty ? state.transactions.first.currency : ''}',
                                 style: Theme.of(context).textTheme.bodyLarge,
                               ),
                             ],

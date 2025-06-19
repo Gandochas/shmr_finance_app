@@ -66,6 +66,24 @@ final class MockTransactionRepository implements TransactionRepository {
       createdAt: DateTime(2025, 6, 15),
       updatedAt: DateTime(2025, 6, 15),
     ),
+    Transaction(
+      id: 6,
+      accountId: 1,
+      categoryId: 3,
+      amount: '100000',
+      transactionDate: DateTime(2025, 6, 19),
+      createdAt: DateTime(2025, 6, 19),
+      updatedAt: DateTime(2025, 6, 19),
+    ),
+    Transaction(
+      id: 7,
+      accountId: 1,
+      categoryId: 1,
+      amount: '100000',
+      transactionDate: DateTime(2025, 6, 19),
+      createdAt: DateTime(2025, 6, 19),
+      updatedAt: DateTime(2025, 6, 19),
+    ),
   ];
 
   @override
