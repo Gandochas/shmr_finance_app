@@ -49,11 +49,16 @@ extension TransactionsOnScreenX on TransactionResponse {
 }
 
 final class ExpensesIncomesCubit extends Cubit<ExpensesIncomesState> {
-  ExpensesIncomesCubit({required TransactionRepository transactionRepository})
-    : _transactionRepository = transactionRepository,
-      super(const ExpensesIncomesLoadingState());
+  ExpensesIncomesCubit({
+    required TransactionRepository transactionRepository,
+    required this.isIncomePage,
+    this.accountId = 1,
+  }) : _transactionRepository = transactionRepository,
+       super(const ExpensesIncomesLoadingState());
 
   final TransactionRepository _transactionRepository;
+  final bool isIncomePage;
+  final int accountId;
 
   Future<void> loadAll() async {
     emit(const ExpensesIncomesLoadingState());
@@ -64,6 +69,7 @@ final class ExpensesIncomesCubit extends Cubit<ExpensesIncomesState> {
 
       final newState = transactions
           .map((transaction) => transaction.toTransactionsOnScreen())
+          .where((element) => element.isIncome == isIncomePage)
           .toList();
 
       emit(ExpensesIncomesIdleState(newState));

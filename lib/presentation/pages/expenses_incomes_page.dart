@@ -25,7 +25,6 @@ class ExpensesIncomesPage extends StatelessWidget {
             actions: [
               IconButton(
                 onPressed: () {
-                  // TODO: реализовать переход на экран истории в зависимости от текущего экрана
                   final transactionRepository = context
                       .read<TransactionRepository>();
 
@@ -58,12 +57,7 @@ class ExpensesIncomesPage extends StatelessWidget {
                 case ExpensesIncomesErrorState():
                   return Center(child: Text(state.errorMessage));
                 case ExpensesIncomesIdleState():
-                  final transactions = state.transactions
-                      .where(
-                        (element) =>
-                            isIncomePage ? element.isIncome : !element.isIncome,
-                      )
-                      .toList();
+                  final transactions = state.transactions.toList();
                   final transactionsSum = transactions.fold(
                     0,
                     (previousValue, element) =>

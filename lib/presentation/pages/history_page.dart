@@ -2,26 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shmr_finance_app/domain/bloc/history/history_cubit.dart';
 
-const _monthNames = [
-  'Января',
-  'Февраля',
-  'Марта',
-  'Апреля',
-  'Мая',
-  'Июня',
-  'Июля',
-  'Августа',
-  'Сентября',
-  'Октября',
-  'Ноября',
-  'Декабря',
-];
-
 String _formatDate(DateTime date) {
-  final day = date.day;
-  final month = _monthNames[date.month - 1];
+  final day = date.day < 10 ? '0${date.day}' : '${date.day}';
+  final month = date.month < 10 ? '0${date.month}' : '${date.month}';
   final year = date.year;
-  return '$day $month $year';
+  return '$day.$month.$year';
 }
 
 class HistoryPage extends StatelessWidget {
@@ -101,11 +86,15 @@ class HistoryPage extends StatelessWidget {
                         ),
                       ),
 
-                      Divider(color: Theme.of(context).dividerColor),
-
+                      // Divider(color: Theme.of(context).dividerColor),
                       DecoratedBox(
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.secondary,
+                          border: BoxBorder.symmetric(
+                            horizontal: BorderSide(
+                              color: Theme.of(context).dividerColor,
+                            ),
+                          ),
                         ),
                         child: InkWell(
                           onTap: () async {
@@ -142,8 +131,7 @@ class HistoryPage extends StatelessWidget {
                         ),
                       ),
 
-                      Divider(color: Theme.of(context).dividerColor),
-
+                      // Divider(color: Theme.of(context).dividerColor),
                       DecoratedBox(
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.secondary,
@@ -169,8 +157,6 @@ class HistoryPage extends StatelessWidget {
                           ),
                         ),
                       ),
-
-                      const SizedBox(height: 8),
 
                       Expanded(
                         child: ListView.separated(

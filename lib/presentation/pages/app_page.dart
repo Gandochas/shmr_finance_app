@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shmr_finance_app/core/widgets/svg_icon.dart';
 import 'package:shmr_finance_app/presentation/pages/articles_page.dart';
 import 'package:shmr_finance_app/presentation/pages/balance_page.dart';
-import 'package:shmr_finance_app/presentation/pages/expenses_incomes_page.dart';
+import 'package:shmr_finance_app/presentation/pages/expenses_incomes_navigator_tab.dart';
 import 'package:shmr_finance_app/presentation/pages/settings_page.dart';
 
 class AppPage extends StatefulWidget {
@@ -23,9 +23,9 @@ class _AppPageState extends State<AppPage> {
   Widget _buildTab(int index) {
     switch (index) {
       case 0:
-        return const ExpensesIncomesPage(isIncomePage: false);
+        return const ExpensesIncomesNavigatorTab(isIncomePage: false);
       case 1:
-        return const ExpensesIncomesPage(isIncomePage: true);
+        return const ExpensesIncomesNavigatorTab(isIncomePage: true);
       case 2:
         return const BalancePage();
       case 3:
@@ -33,7 +33,7 @@ class _AppPageState extends State<AppPage> {
       case 4:
         return const SettingsPage();
       default:
-        return const ExpensesIncomesPage(isIncomePage: false);
+        return const ExpensesIncomesNavigatorTab(isIncomePage: false);
     }
   }
 

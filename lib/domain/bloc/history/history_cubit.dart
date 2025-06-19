@@ -30,17 +30,18 @@ final class HistoryIdleState extends HistoryState {
 
 final class HistoryCubit extends Cubit<HistoryState> {
   HistoryCubit({
-    required this.transactionRepository,
+    required TransactionRepository transactionRepository,
     required this.isIncomePage,
     this.accountId = 1,
-  }) : super(const HistoryLoadingState()) {
+  }) : _transactionRepository = transactionRepository,
+       super(const HistoryLoadingState()) {
     final now = DateTime.now();
     _start = DateTime(now.year, now.month - 1, 1);
     _end = DateTime(now.year, now.month, now.day, 23, 59, 59);
-    loadHistory();
+    // loadHistory();
   }
 
-  final TransactionRepository transactionRepository;
+  final TransactionRepository _transactionRepository;
   final bool isIncomePage;
   final int accountId;
 
@@ -50,7 +51,7 @@ final class HistoryCubit extends Cubit<HistoryState> {
   Future<void> loadHistory() async {
     emit(const HistoryLoadingState());
     try {
-      final transactions = await transactionRepository.getByAccountIdAndPeriod(
+      final transactions = await _transactionRepository.getByAccountIdAndPeriod(
         accountId: accountId,
         startDate: _start,
         endDate: _end,

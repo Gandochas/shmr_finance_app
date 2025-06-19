@@ -6,7 +6,6 @@ import 'package:shmr_finance_app/core/theme/light_theme.dart';
 import 'package:shmr_finance_app/data/repositories/mock/mock_bank_account_repository.dart';
 import 'package:shmr_finance_app/data/repositories/mock/mock_category_repository.dart';
 import 'package:shmr_finance_app/data/repositories/mock/mock_transaction_repository.dart';
-import 'package:shmr_finance_app/domain/bloc/expenses_incomes/expenses_incomes_cubit.dart';
 import 'package:shmr_finance_app/domain/repositories/bank_account_repository.dart';
 import 'package:shmr_finance_app/domain/repositories/category_repository.dart';
 import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart';
@@ -47,12 +46,7 @@ class MainApp extends StatelessWidget {
             ),
           ),
         ],
-        child: BlocProvider(
-          create: (context) => ExpensesIncomesCubit(
-            transactionRepository: context.read<TransactionRepository>(),
-          )..loadAll(),
-          child: const AppPage(),
-        ),
+        child: const AppPage(),
       ),
     );
   }
