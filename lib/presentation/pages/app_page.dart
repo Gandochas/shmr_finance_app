@@ -14,18 +14,44 @@ class AppPage extends StatefulWidget {
 
 class _AppPageState extends State<AppPage> {
   int _currentPageIndex = 0;
-  static const _pages = <Widget>[
-    ExpensesIncomesPage(isIncomePage: false),
-    ExpensesIncomesPage(isIncomePage: true),
-    BalancePage(),
-    ArticlesPage(),
-    SettingsPage(),
-  ];
+
+  final _navigatorKeys = List.generate(
+    5,
+    (index) => GlobalKey<NavigatorState>(),
+  );
+
+  Widget _buildTab(int index) {
+    switch (index) {
+      case 0:
+        return const ExpensesIncomesPage(isIncomePage: false);
+      case 1:
+        return const ExpensesIncomesPage(isIncomePage: true);
+      case 2:
+        return const BalancePage();
+      case 3:
+        return const ArticlesPage();
+      case 4:
+        return const SettingsPage();
+      default:
+        return const ExpensesIncomesPage(isIncomePage: false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _currentPageIndex, children: _pages),
+      body: IndexedStack(
+        index: _currentPageIndex,
+        children: List.generate(
+          5,
+          (index) => Navigator(
+            key: _navigatorKeys[index],
+            onGenerateRoute: (settings) {
+              return MaterialPageRoute(builder: (context) => _buildTab(index));
+            },
+          ),
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         backgroundColor: Theme.of(

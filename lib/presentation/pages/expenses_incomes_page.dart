@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shmr_finance_app/domain/bloc/expenses_incomes/expenses_incomes_cubit.dart';
+import 'package:shmr_finance_app/domain/bloc/history/history_cubit.dart';
+import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart';
+import 'package:shmr_finance_app/presentation/pages/history_page.dart';
 
 class ExpensesIncomesPage extends StatelessWidget {
   const ExpensesIncomesPage({required this.isIncomePage, super.key});
@@ -20,7 +23,29 @@ class ExpensesIncomesPage extends StatelessWidget {
             ),
             centerTitle: true,
             actions: [
-              IconButton(onPressed: () {}, icon: const Icon(Icons.history)),
+              IconButton(
+                onPressed: () {
+                  // TODO: реализовать переход на экран истории в зависимости от текущего экрана
+                  final transactionRepository = context
+                      .read<TransactionRepository>();
+
+                  Navigator.of(context).push<void>(
+                    MaterialPageRoute<void>(
+                      builder: (context) => RepositoryProvider.value(
+                        value: transactionRepository,
+                        child: BlocProvider(
+                          create: (context) => HistoryCubit(
+                            transactionRepository: transactionRepository,
+                            isIncomePage: isIncomePage,
+                          )..loadHistory(),
+                          child: HistoryPage(isIncomePage: isIncomePage),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.history),
+              ),
             ],
           ),
           body: Builder(
@@ -98,7 +123,7 @@ class ExpensesIncomesPage extends StatelessWidget {
                                 transaction.categoryName,
                                 style: Theme.of(context).textTheme.bodyLarge,
                               ),
-                              subtitle: transaction.comment != ''
+                              subtitle: transaction.comment.isNotEmpty
                                   ? Text(
                                       transaction.comment,
                                       style: Theme.of(

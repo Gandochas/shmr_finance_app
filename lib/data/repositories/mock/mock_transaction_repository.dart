@@ -124,6 +124,7 @@ final class MockTransactionRepository implements TransactionRepository {
               'Данной категории не существует',
             ),
           ),
+          comment: transaction.comment,
           amount: transaction.amount,
           transactionDate: transaction.transactionDate,
           createdAt: transaction.createdAt,

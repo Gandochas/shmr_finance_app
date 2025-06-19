@@ -63,7 +63,7 @@ final class ExpensesIncomesCubit extends Cubit<ExpensesIncomesState> {
       );
 
       final newState = transactions
-          .map((e) => e.toTransactionsOnScreen())
+          .map((transaction) => transaction.toTransactionsOnScreen())
           .toList();
 
       emit(ExpensesIncomesIdleState(newState));
