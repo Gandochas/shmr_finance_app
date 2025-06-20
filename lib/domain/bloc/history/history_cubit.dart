@@ -36,9 +36,8 @@ final class HistoryCubit extends Cubit<HistoryState> {
   }) : _transactionRepository = transactionRepository,
        super(const HistoryLoadingState()) {
     final now = DateTime.now();
-    _start = DateTime(now.year, now.month - 1, 1);
+    _start = DateTime(now.year, now.month - 1, now.day);
     _end = DateTime(now.year, now.month, now.day, 23, 59, 59);
-    // loadHistory();
   }
 
   final TransactionRepository _transactionRepository;

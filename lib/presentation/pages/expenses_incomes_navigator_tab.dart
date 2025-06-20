@@ -11,7 +11,7 @@ class ExpensesIncomesNavigatorTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
+    return BlocProvider<ExpensesIncomesCubit>(
       create: (context) => ExpensesIncomesCubit(
         transactionRepository: context.read<TransactionRepository>(),
         isIncomePage: isIncomePage,

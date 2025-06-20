@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TransactionsOnScreen {
 
- String get emoji; String get categoryName; String get amount; String get currency; bool get isIncome; String get comment;
+ String get emoji; String get categoryName; String get amount; String get currency; bool get isIncome; String get comment; DateTime get transactionDate;
 /// Create a copy of TransactionsOnScreen
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $TransactionsOnScreenCopyWith<TransactionsOnScreen> get copyWith => _$Transactio
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TransactionsOnScreen&&(identical(other.emoji, emoji) || other.emoji == emoji)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.isIncome, isIncome) || other.isIncome == isIncome)&&(identical(other.comment, comment) || other.comment == comment));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TransactionsOnScreen&&(identical(other.emoji, emoji) || other.emoji == emoji)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.isIncome, isIncome) || other.isIncome == isIncome)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.transactionDate, transactionDate) || other.transactionDate == transactionDate));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,emoji,categoryName,amount,currency,isIncome,comment);
+int get hashCode => Object.hash(runtimeType,emoji,categoryName,amount,currency,isIncome,comment,transactionDate);
 
 @override
 String toString() {
-  return 'TransactionsOnScreen(emoji: $emoji, categoryName: $categoryName, amount: $amount, currency: $currency, isIncome: $isIncome, comment: $comment)';
+  return 'TransactionsOnScreen(emoji: $emoji, categoryName: $categoryName, amount: $amount, currency: $currency, isIncome: $isIncome, comment: $comment, transactionDate: $transactionDate)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $TransactionsOnScreenCopyWith<$Res>  {
   factory $TransactionsOnScreenCopyWith(TransactionsOnScreen value, $Res Function(TransactionsOnScreen) _then) = _$TransactionsOnScreenCopyWithImpl;
 @useResult
 $Res call({
- String emoji, String categoryName, String amount, String currency, bool isIncome, String comment
+ String emoji, String categoryName, String amount, String currency, bool isIncome, String comment, DateTime transactionDate
 });
 
 
@@ -63,7 +63,7 @@ class _$TransactionsOnScreenCopyWithImpl<$Res>
 
 /// Create a copy of TransactionsOnScreen
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? emoji = null,Object? categoryName = null,Object? amount = null,Object? currency = null,Object? isIncome = null,Object? comment = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? emoji = null,Object? categoryName = null,Object? amount = null,Object? currency = null,Object? isIncome = null,Object? comment = null,Object? transactionDate = null,}) {
   return _then(_self.copyWith(
 emoji: null == emoji ? _self.emoji : emoji // ignore: cast_nullable_to_non_nullable
 as String,categoryName: null == categoryName ? _self.categoryName : categoryName // ignore: cast_nullable_to_non_nullable
@@ -71,7 +71,8 @@ as String,amount: null == amount ? _self.amount : amount // ignore: cast_nullabl
 as String,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
 as String,isIncome: null == isIncome ? _self.isIncome : isIncome // ignore: cast_nullable_to_non_nullable
 as bool,comment: null == comment ? _self.comment : comment // ignore: cast_nullable_to_non_nullable
-as String,
+as String,transactionDate: null == transactionDate ? _self.transactionDate : transactionDate // ignore: cast_nullable_to_non_nullable
+as DateTime,
   ));
 }
 
@@ -82,7 +83,7 @@ as String,
 
 
 class _TransactionsOnScreen implements TransactionsOnScreen {
-  const _TransactionsOnScreen({required this.emoji, required this.categoryName, required this.amount, required this.currency, required this.isIncome, required this.comment});
+  const _TransactionsOnScreen({required this.emoji, required this.categoryName, required this.amount, required this.currency, required this.isIncome, required this.comment, required this.transactionDate});
   
 
 @override final  String emoji;
@@ -91,6 +92,7 @@ class _TransactionsOnScreen implements TransactionsOnScreen {
 @override final  String currency;
 @override final  bool isIncome;
 @override final  String comment;
+@override final  DateTime transactionDate;
 
 /// Create a copy of TransactionsOnScreen
 /// with the given fields replaced by the non-null parameter values.
@@ -102,16 +104,16 @@ _$TransactionsOnScreenCopyWith<_TransactionsOnScreen> get copyWith => __$Transac
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TransactionsOnScreen&&(identical(other.emoji, emoji) || other.emoji == emoji)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.isIncome, isIncome) || other.isIncome == isIncome)&&(identical(other.comment, comment) || other.comment == comment));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TransactionsOnScreen&&(identical(other.emoji, emoji) || other.emoji == emoji)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.isIncome, isIncome) || other.isIncome == isIncome)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.transactionDate, transactionDate) || other.transactionDate == transactionDate));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,emoji,categoryName,amount,currency,isIncome,comment);
+int get hashCode => Object.hash(runtimeType,emoji,categoryName,amount,currency,isIncome,comment,transactionDate);
 
 @override
 String toString() {
-  return 'TransactionsOnScreen(emoji: $emoji, categoryName: $categoryName, amount: $amount, currency: $currency, isIncome: $isIncome, comment: $comment)';
+  return 'TransactionsOnScreen(emoji: $emoji, categoryName: $categoryName, amount: $amount, currency: $currency, isIncome: $isIncome, comment: $comment, transactionDate: $transactionDate)';
 }
 
 
@@ -122,7 +124,7 @@ abstract mixin class _$TransactionsOnScreenCopyWith<$Res> implements $Transactio
   factory _$TransactionsOnScreenCopyWith(_TransactionsOnScreen value, $Res Function(_TransactionsOnScreen) _then) = __$TransactionsOnScreenCopyWithImpl;
 @override @useResult
 $Res call({
- String emoji, String categoryName, String amount, String currency, bool isIncome, String comment
+ String emoji, String categoryName, String amount, String currency, bool isIncome, String comment, DateTime transactionDate
 });
 
 
@@ -139,7 +141,7 @@ class __$TransactionsOnScreenCopyWithImpl<$Res>
 
 /// Create a copy of TransactionsOnScreen
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? emoji = null,Object? categoryName = null,Object? amount = null,Object? currency = null,Object? isIncome = null,Object? comment = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? emoji = null,Object? categoryName = null,Object? amount = null,Object? currency = null,Object? isIncome = null,Object? comment = null,Object? transactionDate = null,}) {
   return _then(_TransactionsOnScreen(
 emoji: null == emoji ? _self.emoji : emoji // ignore: cast_nullable_to_non_nullable
 as String,categoryName: null == categoryName ? _self.categoryName : categoryName // ignore: cast_nullable_to_non_nullable
@@ -147,7 +149,8 @@ as String,amount: null == amount ? _self.amount : amount // ignore: cast_nullabl
 as String,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
 as String,isIncome: null == isIncome ? _self.isIncome : isIncome // ignore: cast_nullable_to_non_nullable
 as bool,comment: null == comment ? _self.comment : comment // ignore: cast_nullable_to_non_nullable
-as String,
+as String,transactionDate: null == transactionDate ? _self.transactionDate : transactionDate // ignore: cast_nullable_to_non_nullable
+as DateTime,
   ));
 }
 

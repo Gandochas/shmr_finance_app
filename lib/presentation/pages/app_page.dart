@@ -20,22 +20,14 @@ class _AppPageState extends State<AppPage> {
     (index) => GlobalKey<NavigatorState>(),
   );
 
-  Widget _buildTab(int index) {
-    switch (index) {
-      case 0:
-        return const ExpensesIncomesNavigatorTab(isIncomePage: false);
-      case 1:
-        return const ExpensesIncomesNavigatorTab(isIncomePage: true);
-      case 2:
-        return const BalancePage();
-      case 3:
-        return const ArticlesPage();
-      case 4:
-        return const SettingsPage();
-      default:
-        return const ExpensesIncomesNavigatorTab(isIncomePage: false);
-    }
-  }
+  Widget _buildTab(int index) => switch (index) {
+    0 => const ExpensesIncomesNavigatorTab(isIncomePage: false),
+    1 => const ExpensesIncomesNavigatorTab(isIncomePage: true),
+    2 => const BalancePage(),
+    3 => const ArticlesPage(),
+    4 => const SettingsPage(),
+    _ => const ExpensesIncomesNavigatorTab(isIncomePage: false),
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +35,7 @@ class _AppPageState extends State<AppPage> {
       body: IndexedStack(
         index: _currentPageIndex,
         children: List.generate(
-          5,
+          _navigatorKeys.length,
           (index) => Navigator(
             key: _navigatorKeys[index],
             onGenerateRoute: (settings) {

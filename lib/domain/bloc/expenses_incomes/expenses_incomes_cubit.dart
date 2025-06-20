@@ -34,6 +34,7 @@ abstract class TransactionsOnScreen with _$TransactionsOnScreen {
     required String currency,
     required bool isIncome,
     required String comment,
+    required DateTime transactionDate,
   }) = _TransactionsOnScreen;
 }
 
@@ -45,6 +46,7 @@ extension TransactionsOnScreenX on TransactionResponse {
     currency: account.currency,
     isIncome: category.isIncome,
     comment: comment ?? '',
+    transactionDate: transactionDate,
   );
 }
 

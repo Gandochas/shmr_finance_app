@@ -70,7 +70,7 @@ final class MockTransactionRepository implements TransactionRepository {
       id: 6,
       accountId: 1,
       categoryId: 3,
-      amount: '100000',
+      amount: '500000',
       transactionDate: DateTime(2025, 6, 19),
       createdAt: DateTime(2025, 6, 19),
       updatedAt: DateTime(2025, 6, 19),
