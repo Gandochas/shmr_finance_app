@@ -1,9 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:shmr_finance_app/domain/models/transaction_response/transaction_response.dart';
 import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart';
-
-part 'expenses_incomes_cubit.freezed.dart';
 
 sealed class ExpensesIncomesState {
   const ExpensesIncomesState();
@@ -22,32 +19,7 @@ final class ExpensesIncomesErrorState extends ExpensesIncomesState {
 final class ExpensesIncomesIdleState extends ExpensesIncomesState {
   const ExpensesIncomesIdleState(this.transactions);
 
-  final List<TransactionsOnScreen> transactions;
-}
-
-@freezed
-abstract class TransactionsOnScreen with _$TransactionsOnScreen {
-  const factory TransactionsOnScreen({
-    required String emoji,
-    required String categoryName,
-    required String amount,
-    required String currency,
-    required bool isIncome,
-    required String comment,
-    required DateTime transactionDate,
-  }) = _TransactionsOnScreen;
-}
-
-extension TransactionsOnScreenX on TransactionResponse {
-  TransactionsOnScreen toTransactionsOnScreen() => TransactionsOnScreen(
-    emoji: category.emoji,
-    categoryName: category.name,
-    amount: amount,
-    currency: account.currency,
-    isIncome: category.isIncome,
-    comment: comment ?? '',
-    transactionDate: transactionDate,
-  );
+  final List<TransactionResponse> transactions;
 }
 
 final class ExpensesIncomesCubit extends Cubit<ExpensesIncomesState> {
@@ -73,8 +45,7 @@ final class ExpensesIncomesCubit extends Cubit<ExpensesIncomesState> {
       );
 
       final newState = transactions
-          .map((transaction) => transaction.toTransactionsOnScreen())
-          .where((element) => element.isIncome == isIncomePage)
+          .where((element) => element.category.isIncome == isIncomePage)
           .toList();
 
       emit(ExpensesIncomesIdleState(newState));

@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shmr_finance_app/domain/bloc/expenses_incomes/expenses_incomes_cubit.dart';
+import 'package:shmr_finance_app/domain/models/transaction_response/transaction_response.dart';
 import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart';
 
 sealed class HistoryState {
@@ -23,7 +23,7 @@ final class HistoryIdleState extends HistoryState {
     required this.endDate,
   });
 
-  final List<TransactionsOnScreen> transactions;
+  final List<TransactionResponse> transactions;
   final DateTime startDate;
   final DateTime endDate;
 }
@@ -57,8 +57,7 @@ final class HistoryCubit extends Cubit<HistoryState> {
       );
 
       final newState = transactions
-          .map((transaction) => transaction.toTransactionsOnScreen())
-          .where((transaction) => transaction.isIncome == isIncomePage)
+          .where((transaction) => transaction.category.isIncome == isIncomePage)
           .toList();
 
       emit(

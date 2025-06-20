@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shmr_finance_app/core/widgets/format_date.dart';
-import 'package:shmr_finance_app/domain/bloc/expenses_incomes/expenses_incomes_cubit.dart';
+import 'package:shmr_finance_app/domain/models/transaction_response/transaction_response.dart';
 
 class TransactionListTile extends StatelessWidget {
   const TransactionListTile({
@@ -10,7 +10,7 @@ class TransactionListTile extends StatelessWidget {
   });
 
   final bool isIncomePage;
-  final TransactionsOnScreen transaction;
+  final TransactionResponse transaction;
 
   @override
   Widget build(BuildContext context) {
@@ -25,18 +25,18 @@ class TransactionListTile extends StatelessWidget {
               ),
               alignment: Alignment.center,
               child: Text(
-                transaction.emoji,
+                transaction.category.emoji,
                 style: const TextStyle(fontSize: 18),
               ),
             )
           : null,
       title: Text(
-        transaction.categoryName,
+        transaction.category.name,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
-      subtitle: transaction.comment.isNotEmpty
+      subtitle: transaction.comment != null
           ? Text(
-              transaction.comment,
+              transaction.comment!,
               style: Theme.of(context).textTheme.bodyMedium,
             )
           : null,
@@ -44,7 +44,7 @@ class TransactionListTile extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '${transaction.amount} ${transaction.currency}\n${formatDate(transaction.transactionDate)}',
+            '${transaction.amount} ${transaction.account.currency}\n${formatDate(transaction.transactionDate)}',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           IconButton(onPressed: () {}, icon: const Icon(Icons.navigate_next)),
