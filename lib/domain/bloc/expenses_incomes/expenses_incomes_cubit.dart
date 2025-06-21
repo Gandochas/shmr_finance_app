@@ -44,11 +44,11 @@ final class ExpensesIncomesCubit extends Cubit<ExpensesIncomesState> {
         endDate: DateTime(now.year, now.month, now.day, 23, 59, 59),
       );
 
-      final newState = transactions
+      final neededTransactions = transactions
           .where((element) => element.category.isIncome == isIncomePage)
           .toList();
 
-      emit(ExpensesIncomesIdleState(newState));
+      emit(ExpensesIncomesIdleState(neededTransactions));
     } on Object {
       emit(const ExpensesIncomesErrorState('Something went wrong!'));
       rethrow;
