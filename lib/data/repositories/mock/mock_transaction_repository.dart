@@ -18,7 +18,73 @@ final class MockTransactionRepository implements TransactionRepository {
   final CategoryRepository _categoriesRepo;
   final BankAccountRepository _accountsRepo;
 
-  final _transactions = <Transaction>[];
+  final _transactions = <Transaction>[
+    Transaction(
+      id: 1,
+      accountId: 1,
+      categoryId: 1,
+      amount: '100000',
+      comment: 'тест',
+      transactionDate: DateTime(2025, 6, 15),
+      createdAt: DateTime(2025, 6, 15),
+      updatedAt: DateTime(2025, 6, 15),
+    ),
+    Transaction(
+      id: 2,
+      accountId: 1,
+      categoryId: 2,
+      amount: '100000',
+      transactionDate: DateTime(2025, 6, 15),
+      createdAt: DateTime(2025, 6, 15),
+      updatedAt: DateTime(2025, 6, 15),
+    ),
+    Transaction(
+      id: 3,
+      accountId: 1,
+      categoryId: 2,
+      amount: '100000',
+      comment: 'Платье',
+      transactionDate: DateTime(2025, 6, 15),
+      createdAt: DateTime(2025, 6, 15),
+      updatedAt: DateTime(2025, 6, 15),
+    ),
+    Transaction(
+      id: 4,
+      accountId: 1,
+      categoryId: 2,
+      amount: '100000',
+      transactionDate: DateTime(2025, 6, 15),
+      createdAt: DateTime(2025, 6, 15),
+      updatedAt: DateTime(2025, 6, 15),
+    ),
+    Transaction(
+      id: 5,
+      accountId: 1,
+      categoryId: 3,
+      amount: '100000',
+      transactionDate: DateTime(2025, 6, 15),
+      createdAt: DateTime(2025, 6, 15),
+      updatedAt: DateTime(2025, 6, 15),
+    ),
+    Transaction(
+      id: 6,
+      accountId: 1,
+      categoryId: 3,
+      amount: '500000',
+      transactionDate: DateTime(2025, 6, 19),
+      createdAt: DateTime(2025, 6, 19),
+      updatedAt: DateTime(2025, 6, 19),
+    ),
+    Transaction(
+      id: 7,
+      accountId: 1,
+      categoryId: 1,
+      amount: '100000',
+      transactionDate: DateTime(2025, 6, 19),
+      createdAt: DateTime(2025, 6, 19),
+      updatedAt: DateTime(2025, 6, 19),
+    ),
+  ];
 
   @override
   Future<Transaction> create(TransactionRequest transactionRequest) async {
@@ -76,6 +142,7 @@ final class MockTransactionRepository implements TransactionRepository {
               'Данной категории не существует',
             ),
           ),
+          comment: transaction.comment,
           amount: transaction.amount,
           transactionDate: transaction.transactionDate,
           createdAt: transaction.createdAt,
@@ -86,7 +153,6 @@ final class MockTransactionRepository implements TransactionRepository {
     return transactionsList;
   }
 
-  //* id разные или нет (TransactionResponse и transactionId)
   @override
   Future<TransactionResponse> getById(int transactionId) async {
     await Future<void>.delayed(const Duration(seconds: 1));

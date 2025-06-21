@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shmr_finance_app/core/widgets/svg_icon.dart';
 import 'package:shmr_finance_app/presentation/pages/articles_page.dart';
 import 'package:shmr_finance_app/presentation/pages/balance_page.dart';
-import 'package:shmr_finance_app/presentation/pages/expenses_page.dart';
-import 'package:shmr_finance_app/presentation/pages/incomes_page.dart';
+import 'package:shmr_finance_app/presentation/pages/expenses_incomes_navigator_tab.dart';
 import 'package:shmr_finance_app/presentation/pages/settings_page.dart';
 
 class AppPage extends StatefulWidget {
@@ -16,18 +15,35 @@ class AppPage extends StatefulWidget {
 class _AppPageState extends State<AppPage> {
   int _currentPageIndex = 0;
 
-  final _pages = const <Widget>[
-    ExpensesPage(),
-    IncomesPage(),
-    BalancePage(),
-    ArticlesPage(),
-    SettingsPage(),
-  ];
+  final _navigatorKeys = List.generate(
+    5,
+    (index) => GlobalKey<NavigatorState>(),
+  );
+
+  Widget _buildTab(int index) => switch (index) {
+    0 => const ExpensesIncomesNavigatorTab(isIncomePage: false),
+    1 => const ExpensesIncomesNavigatorTab(isIncomePage: true),
+    2 => const BalancePage(),
+    3 => const ArticlesPage(),
+    4 => const SettingsPage(),
+    _ => const ExpensesIncomesNavigatorTab(isIncomePage: false),
+  };
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _currentPageIndex, children: _pages),
+      body: IndexedStack(
+        index: _currentPageIndex,
+        children: List.generate(
+          _navigatorKeys.length,
+          (index) => Navigator(
+            key: _navigatorKeys[index],
+            onGenerateRoute: (settings) {
+              return MaterialPageRoute(builder: (context) => _buildTab(index));
+            },
+          ),
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         backgroundColor: Theme.of(

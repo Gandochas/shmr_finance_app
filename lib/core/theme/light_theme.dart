@@ -11,7 +11,7 @@ ThemeData getLightTheme() {
   return ThemeData(
     colorScheme: const ColorScheme.light(
       primary: kPrimaryColor,
-      secondary: kPrimaryColor,
+      secondary: kHighlightColor,
       surface: kSurfaceColor,
       onPrimary: Colors.white,
       onSecondary: Colors.white,
@@ -21,29 +21,64 @@ ThemeData getLightTheme() {
       color: kPrimaryColor,
       elevation: 0,
       titleTextStyle: TextStyle(
+        fontFamily: 'Roboto',
+        fontWeight: FontWeight.w400,
+        fontSize: 22,
+        height: 28 / 22,
+        letterSpacing: 0,
         color: kTextPrimaryColor,
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
       ),
       iconTheme: IconThemeData(color: kTextPrimaryColor),
     ),
     scaffoldBackgroundColor: kSurfaceColor,
+    dividerColor: kTextSecondaryColor,
     textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: kTextPrimaryColor),
-      bodyMedium: TextStyle(color: kTextSecondaryColor),
+      bodyLarge: TextStyle(
+        fontFamily: 'Roboto',
+        fontWeight: FontWeight.w400,
+        fontSize: 16,
+        height: 24 / 16,
+        letterSpacing: 0.5,
+        color: kTextPrimaryColor,
+      ),
+      bodyMedium: TextStyle(
+        fontFamily: 'Roboto',
+        fontWeight: FontWeight.w400,
+        fontSize: 14,
+        height: 20 / 14,
+        letterSpacing: 0.25,
+        color: kTextSecondaryColor,
+      ),
+      labelMedium: TextStyle(
+        fontFamily: 'Roboto',
+        fontWeight: FontWeight.w500,
+        fontSize: 12,
+        height: 16 / 12,
+        letterSpacing: 0.5,
+        color: kTextSecondaryColor,
+      ),
     ),
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: kNavigationBarColor,
-      indicatorColor: kHighlightColor, // подсветка выбранного
-      labelTextStyle: WidgetStateProperty.resolveWith((states) {
-        return TextStyle(
-          color: states.contains(WidgetState.selected)
-              ? kTextPrimaryColor
-              : kTextSecondaryColor,
+      indicatorColor: kHighlightColor,
+      labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>((states) {
+        if (states.contains(WidgetState.selected)) {
+          return const TextStyle(
+            fontFamily: 'Roboto',
+            fontWeight: FontWeight.w500,
+            fontSize: 12,
+            height: 16 / 12,
+            letterSpacing: 0.5,
+            color: kTextPrimaryColor,
+          );
+        }
+        return const TextStyle(
+          fontFamily: 'Roboto',
+          fontWeight: FontWeight.w500,
           fontSize: 12,
-          fontWeight: states.contains(WidgetState.selected)
-              ? FontWeight.w600
-              : FontWeight.w400,
+          height: 16 / 12,
+          letterSpacing: 0.5,
+          color: kTextSecondaryColor,
         );
       }),
       iconTheme: WidgetStateProperty.resolveWith<IconThemeData>((states) {
