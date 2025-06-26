@@ -49,6 +49,14 @@ class ExpensesIncomesPage extends StatelessWidget {
               ),
             ],
           ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {},
+            backgroundColor: Theme.of(
+              context,
+            ).floatingActionButtonTheme.backgroundColor,
+            shape: const CircleBorder(),
+            child: const Icon(Icons.add),
+          ),
           body: Builder(
             builder: (context) {
               return switch (state) {

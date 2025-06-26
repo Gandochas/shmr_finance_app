@@ -18,7 +18,21 @@ final class MockBankAccountRepository implements BankAccountRepository {
       updatedAt: DateTime.now(),
     ),
   ];
-  final _accountHistories = <AccountHistory>[];
+  final _accountHistories = <AccountHistory>[
+    AccountHistory(
+      id: 1,
+      accountId: 1,
+      changeType: AccountHistoryChangeType.creation,
+      newState: const AccountState(
+        id: 1,
+        name: 'my bank acc',
+        balance: '1000',
+        currency: '₽',
+      ),
+      changeTimeStamp: DateTime.now().subtract(const Duration(days: 30)),
+      createdAt: DateTime.now().subtract(const Duration(days: 30)),
+    ),
+  ];
 
   @override
   Future<Account> create(AccountCreateRequest createRequest) async {

@@ -9,6 +9,7 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     required this.textSecondary,
     required this.navigationBarBackground,
     required this.highlight,
+    required this.error,
   });
   final Color primary;
   final Color background;
@@ -17,6 +18,7 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
   final Color textSecondary;
   final Color navigationBarBackground;
   final Color highlight;
+  final Color error;
 
   @override
   AppThemeColors copyWith({
@@ -27,6 +29,7 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
     Color? textSecondary,
     Color? navigationBarBackground,
     Color? highlight,
+    Color? error,
   }) {
     return AppThemeColors(
       primary: primary ?? this.primary,
@@ -37,6 +40,7 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
       navigationBarBackground:
           navigationBarBackground ?? this.navigationBarBackground,
       highlight: highlight ?? this.highlight,
+      error: error ?? this.error,
     );
   }
 
@@ -55,6 +59,7 @@ class AppThemeColors extends ThemeExtension<AppThemeColors> {
         t,
       )!,
       highlight: Color.lerp(highlight, other.highlight, t)!,
+      error: Color.lerp(error, other.error, t)!,
     );
   }
 

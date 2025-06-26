@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shmr_finance_app/core/theme/app_theme.dart';
 
 ThemeData getLightTheme() {
   const kPrimaryColor = Color(0xFF2AE881);
@@ -7,15 +8,18 @@ ThemeData getLightTheme() {
   const kTextSecondaryColor = Color(0xFF49454F);
   const kNavigationBarColor = Color(0xFFF3EDF7);
   const kHighlightColor = Color(0xFFD4FAE6);
+  const kErrorColor = Color(0xFFE46962);
 
-  return ThemeData(
+  final themeData = ThemeData(
     colorScheme: const ColorScheme.light(
       primary: kPrimaryColor,
       secondary: kHighlightColor,
       surface: kSurfaceColor,
+      error: kErrorColor,
       onPrimary: Colors.white,
       onSecondary: Colors.white,
       onSurface: kTextPrimaryColor,
+      onError: Colors.white,
     ),
     appBarTheme: const AppBarTheme(
       color: kPrimaryColor,
@@ -89,5 +93,20 @@ ThemeData getLightTheme() {
         );
       }),
     ),
+  );
+
+  return themeData.copyWith(
+    extensions: <ThemeExtension>[
+      const AppThemeColors(
+        primary: kPrimaryColor,
+        background: kSurfaceColor,
+        surface: kSurfaceColor,
+        textPrimary: kTextPrimaryColor,
+        textSecondary: kTextSecondaryColor,
+        navigationBarBackground: kNavigationBarColor,
+        highlight: kHighlightColor,
+        error: kErrorColor,
+      ),
+    ],
   );
 }

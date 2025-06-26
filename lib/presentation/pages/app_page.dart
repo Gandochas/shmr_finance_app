@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shmr_finance_app/core/widgets/svg_icon.dart';
 import 'package:shmr_finance_app/presentation/pages/articles_page.dart';
-import 'package:shmr_finance_app/presentation/pages/balance_page.dart';
+import 'package:shmr_finance_app/presentation/pages/balance_tab.dart';
 import 'package:shmr_finance_app/presentation/pages/expenses_incomes_navigator_tab.dart';
 import 'package:shmr_finance_app/presentation/pages/settings_page.dart';
 
@@ -23,7 +23,7 @@ class _AppPageState extends State<AppPage> {
   Widget _buildTab(int index) => switch (index) {
     0 => const ExpensesIncomesNavigatorTab(isIncomePage: false),
     1 => const ExpensesIncomesNavigatorTab(isIncomePage: true),
-    2 => const BalancePage(),
+    2 => const BalanceTab(),
     3 => const ArticlesPage(),
     4 => const SettingsPage(),
     _ => const ExpensesIncomesNavigatorTab(isIncomePage: false),
@@ -44,14 +44,7 @@ class _AppPageState extends State<AppPage> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: Theme.of(
-          context,
-        ).floatingActionButtonTheme.backgroundColor,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add),
-      ),
+
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (pageIndex) {
           setState(() {
