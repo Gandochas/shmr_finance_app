@@ -12,16 +12,17 @@ dependencies:
   freezed_annotation: ^3.0.0
   json_annotation: ^4.9.0
   uuid: ^4.4.2
-  flutter_svg: ^2.1.0
+  flutter_svg: ^2.2.0
   flutter_bloc: ^9.1.1
   bloc_concurrency: ^0.3.0
+  fuzzywuzzy: ^1.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   coca_lints: ^1.0.1
-  build_runner: ^2.4.15
+  build_runner: ^2.5.4
   freezed: ^3.0.6
   json_serializable: ^6.9.5
 

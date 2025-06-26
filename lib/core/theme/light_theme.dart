@@ -9,6 +9,7 @@ ThemeData getLightTheme() {
   const kNavigationBarColor = Color(0xFFF3EDF7);
   const kHighlightColor = Color(0xFFD4FAE6);
   const kErrorColor = Color(0xFFE46962);
+  const kSearchColor = Color(0xFFECE6F0);
 
   final themeData = ThemeData(
     colorScheme: const ColorScheme.light(
@@ -21,6 +22,7 @@ ThemeData getLightTheme() {
       onSurface: kTextPrimaryColor,
       onError: Colors.white,
     ),
+    searchViewTheme: const SearchViewThemeData(backgroundColor: kSearchColor),
     appBarTheme: const AppBarTheme(
       color: kPrimaryColor,
       elevation: 0,
