@@ -17,8 +17,13 @@ final class BalanceErrorState extends BalanceState {
 }
 
 final class BalanceIdleState extends BalanceState {
-  BalanceIdleState({required this.balance, required this.currency});
+  BalanceIdleState({
+    required this.name,
+    required this.balance,
+    required this.currency,
+  });
 
+  final String name;
   final String balance;
   final String currency;
 }
@@ -41,7 +46,11 @@ final class BalanceCubit extends Cubit<BalanceState> {
       final account = await _bankAccountRepository.getById(accountId);
 
       emit(
-        BalanceIdleState(balance: account.balance, currency: account.currency),
+        BalanceIdleState(
+          balance: account.balance,
+          currency: account.currency,
+          name: account.name,
+        ),
       );
     } on Object {
       emit(const BalanceErrorState('Failed to load the balance'));
@@ -49,7 +58,7 @@ final class BalanceCubit extends Cubit<BalanceState> {
     }
   }
 
-  Future<void> updateCurrency(String newCurrency) async {
+  Future<void> updateAccountCurrency(String newCurrency) async {
     emit(const BalanceLoadingState());
     try {
       final account = await _bankAccountRepository.getById(accountId);
@@ -67,10 +76,38 @@ final class BalanceCubit extends Cubit<BalanceState> {
         BalanceIdleState(
           balance: updatedAccount.balance,
           currency: updatedAccount.currency,
+          name: updatedAccount.name,
         ),
       );
     } on Object {
       emit(const BalanceErrorState('Failed to change currency!'));
+      rethrow;
+    }
+  }
+
+  Future<void> updateAccountName(String newAccountName) async {
+    emit(const BalanceLoadingState());
+    try {
+      final account = await _bankAccountRepository.getById(accountId);
+
+      final updatedAccount = await _bankAccountRepository.update(
+        accountId: accountId,
+        updateRequest: AccountUpdateRequest(
+          name: newAccountName,
+          balance: account.balance,
+          currency: account.currency,
+        ),
+      );
+
+      emit(
+        BalanceIdleState(
+          balance: updatedAccount.balance,
+          currency: updatedAccount.currency,
+          name: updatedAccount.name,
+        ),
+      );
+    } on Object {
+      emit(const BalanceErrorState('Failed to change account name!'));
       rethrow;
     }
   }

@@ -11,7 +11,7 @@ class BalancePage extends StatefulWidget {
 
 class _BalancePageState extends State<BalancePage> {
   Future<void> _showCurrencyPicker() async {
-    final cubit = context.read<BalanceCubit>();
+    final balanceCubit = context.read<BalanceCubit>();
 
     final selectedCurrency = await showModalBottomSheet<String>(
       context: context,
@@ -63,7 +63,7 @@ class _BalancePageState extends State<BalancePage> {
     );
 
     if (selectedCurrency != null) {
-      await cubit.updateCurrency(selectedCurrency);
+      await balanceCubit.updateAccountCurrency(selectedCurrency);
     }
   }
 
@@ -98,81 +98,145 @@ class _BalancePageState extends State<BalancePage> {
                   child: CircularProgressIndicator.adaptive(),
                 ),
                 BalanceErrorState() => Center(child: Text(state.errorMessage)),
-                BalanceIdleState(:final balance, :final currency) => Column(
-                  children: [
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.secondary,
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Theme.of(context).dividerColor,
+                BalanceIdleState(
+                  :final balance,
+                  :final currency,
+                  :final name,
+                ) =>
+                  Column(
+                    children: [
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.secondary,
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Theme.of(context).dividerColor,
+                            ),
+                          ),
+                        ),
+                        child: ListTile(
+                          leading: Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.surface,
+                              shape: BoxShape.circle,
+                            ),
+                            alignment: Alignment.center,
+                            child: const Text(
+                              '💰',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                          title: Text(
+                            name,
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '$balance $currency',
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  showDialog<void>(
+                                    context: context,
+                                    useRootNavigator: false,
+                                    builder: (context) =>
+                                        UpdateAccountNameWidget(
+                                          accountName: state.name,
+                                        ),
+                                  );
+                                },
+                                icon: const Icon(Icons.navigate_next),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                      child: ListTile(
-                        leading: Container(
-                          width: 24,
-                          height: 24,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface,
-                            shape: BoxShape.circle,
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                        child: ListTile(
+                          title: Text(
+                            'Валюта',
+                            style: Theme.of(context).textTheme.bodyLarge,
                           ),
-                          alignment: Alignment.center,
-                          child: const Text(
-                            '💰',
-                            style: TextStyle(fontSize: 18),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                currency,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              IconButton(
+                                onPressed: _showCurrencyPicker,
+                                icon: const Icon(Icons.navigate_next),
+                              ),
+                            ],
                           ),
                         ),
-                        title: Text(
-                          'Баланс',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              '$balance $currency',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.navigate_next),
-                            ),
-                          ],
-                        ),
                       ),
-                    ),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                      child: ListTile(
-                        title: Text(
-                          'Валюта',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              currency,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            IconButton(
-                              onPressed: _showCurrencyPicker,
-                              icon: const Icon(Icons.navigate_next),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
               };
             },
           ),
         );
       },
+    );
+  }
+}
+
+class UpdateAccountNameWidget extends StatefulWidget {
+  const UpdateAccountNameWidget({required this.accountName, super.key});
+
+  final String accountName;
+
+  @override
+  State<UpdateAccountNameWidget> createState() =>
+      _UpdateAccountNameWidgetState();
+}
+
+class _UpdateAccountNameWidgetState extends State<UpdateAccountNameWidget> {
+  final accountNameController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    final balanceCubit = context.read<BalanceCubit>();
+    return AlertDialog(
+      title: const Text('Изменить имя счёта'),
+      content: TextField(
+        controller: accountNameController,
+        autofocus: true,
+        decoration: InputDecoration(
+          hintText: widget.accountName,
+          hintStyle: Theme.of(context).textTheme.bodyLarge,
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Отмена'),
+        ),
+        TextButton(
+          onPressed: () async {
+            final newName = accountNameController.text.trim();
+            if (newName.isEmpty || newName == widget.accountName) {
+              Navigator.of(context).pop();
+              return;
+            }
+            await balanceCubit.updateAccountName(newName);
+            if (context.mounted) Navigator.of(context).pop();
+          },
+          child: const Text('Изменить'),
+        ),
+      ],
     );
   }
 }
