@@ -125,6 +125,11 @@ class _HistoryPageState extends State<HistoryPage> {
                             return TransactionListTile(
                               isIncomePage: widget.isIncomePage,
                               transaction: transaction,
+                              iconButton: IconButton(
+                                onPressed: () {},
+                                icon: const Icon(Icons.navigate_next),
+                              ),
+                              isHeader: false,
                             );
                           },
                           separatorBuilder: (context, index) => Divider(

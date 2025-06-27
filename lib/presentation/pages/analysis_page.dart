@@ -97,76 +97,32 @@ class _AnalysisPageState extends State<AnalysisPage> {
                                     );
                                 return Column(
                                   children: [
-                                    ListTile(
-                                      leading: Container(
-                                        width: 24,
-                                        height: 24,
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.secondary,
-                                          shape: BoxShape.circle,
+                                    TransactionListTile(
+                                      isIncomePage: widget.isIncomePage,
+                                      transaction:
+                                          transactionsByCategoryName.last,
+                                      iconButton: IconButton(
+                                        icon: Icon(
+                                          isExpanded
+                                              ? Icons.expand_less
+                                              : Icons.expand_more,
                                         ),
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          transactionsByCategoryName
-                                              .last
-                                              .category
-                                              .emoji,
-                                          style: const TextStyle(fontSize: 18),
-                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            if (isExpanded) {
+                                              _expandedCategories.remove(
+                                                groupName,
+                                              );
+                                            } else {
+                                              _expandedCategories.add(
+                                                groupName,
+                                              );
+                                            }
+                                          });
+                                        },
                                       ),
-                                      title: Text(
-                                        groupName,
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.bodyLarge,
-                                      ),
-                                      subtitle:
-                                          transactionsByCategoryName
-                                                  .last
-                                                  .comment !=
-                                              null
-                                          ? Text(
-                                              transactionsByCategoryName
-                                                  .last
-                                                  .comment!,
-                                              style: Theme.of(
-                                                context,
-                                              ).textTheme.bodyLarge,
-                                            )
-                                          : null,
-                                      trailing: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            '$sumByCategory ${transactionsByCategoryName.last.account.currency}',
-                                            style: Theme.of(
-                                              context,
-                                            ).textTheme.bodyLarge,
-                                          ),
-                                          IconButton(
-                                            icon: Icon(
-                                              isExpanded
-                                                  ? Icons.expand_less
-                                                  : Icons.expand_more,
-                                            ),
-                                            onPressed: () {
-                                              setState(() {
-                                                if (isExpanded) {
-                                                  _expandedCategories.remove(
-                                                    groupName,
-                                                  );
-                                                } else {
-                                                  _expandedCategories.add(
-                                                    groupName,
-                                                  );
-                                                }
-                                              });
-                                            },
-                                          ),
-                                        ],
-                                      ),
+                                      isHeader: true,
+                                      sumByCategory: sumByCategory,
                                     ),
                                     if (isExpanded)
                                       ListView.separated(
@@ -188,6 +144,13 @@ class _AnalysisPageState extends State<AnalysisPage> {
                                           return TransactionListTile(
                                             isIncomePage: widget.isIncomePage,
                                             transaction: transaction,
+                                            iconButton: IconButton(
+                                              onPressed: () {},
+                                              icon: const Icon(
+                                                Icons.navigate_next,
+                                              ),
+                                            ),
+                                            isHeader: false,
                                           );
                                         },
                                       ),

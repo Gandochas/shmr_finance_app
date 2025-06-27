@@ -78,6 +78,11 @@ class ExpensesIncomesPage extends StatelessWidget {
                           return TransactionListTile(
                             isIncomePage: isIncomePage,
                             transaction: transaction,
+                            iconButton: IconButton(
+                              onPressed: () {},
+                              icon: const Icon(Icons.navigate_next),
+                            ),
+                            isHeader: false,
                           );
                         },
                         separatorBuilder: (context, index) => Divider(

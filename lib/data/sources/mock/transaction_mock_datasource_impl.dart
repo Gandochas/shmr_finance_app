@@ -1,22 +1,23 @@
 import 'package:shmr_finance_app/core/extensions/core_extensions.dart';
+import 'package:shmr_finance_app/data/sources/mock/bank_account_mock_datasource_impl.dart';
+import 'package:shmr_finance_app/data/sources/mock/category_mock_datasource_impl.dart';
 import 'package:shmr_finance_app/domain/models/account_brief/account_brief.dart';
 import 'package:shmr_finance_app/domain/models/transaction/transaction.dart';
 import 'package:shmr_finance_app/domain/models/transaction_request/transaction_request.dart';
 import 'package:shmr_finance_app/domain/models/transaction_response/transaction_response.dart';
-import 'package:shmr_finance_app/domain/repositories/bank_account_repository.dart';
 import 'package:shmr_finance_app/domain/repositories/category_repository.dart';
 import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart';
 import 'package:uuid/uuid.dart';
 
-final class MockTransactionRepository implements TransactionRepository {
-  MockTransactionRepository({
-    required CategoryRepository categoriesRepo,
-    required BankAccountRepository accountsRepo,
-  }) : _categoriesRepo = categoriesRepo,
-       _accountsRepo = accountsRepo;
+final class TransactionMockDatasourceImpl {
+  TransactionMockDatasourceImpl({
+    required CategoryMockDatasourceImpl categoriesSource,
+    required BankAccountMockDatasourceImpl accountsSource,
+  }) : _categoriesSource = categoriesSource,
+       _accountsSource = accountsSource;
 
-  final CategoryRepository _categoriesRepo;
-  final BankAccountRepository _accountsRepo;
+  final CategoryMockDatasourceImpl _categoriesSource;
+  final BankAccountMockDatasourceImpl _accountsSource;
 
   final _transactions = <Transaction>[
     Transaction(
@@ -86,7 +87,6 @@ final class MockTransactionRepository implements TransactionRepository {
     ),
   ];
 
-  @override
   Future<Transaction> create(TransactionRequest transactionRequest) async {
     await Future<void>.delayed(const Duration(seconds: 1));
     final newTransaction = Transaction(
@@ -102,13 +102,11 @@ final class MockTransactionRepository implements TransactionRepository {
     return newTransaction;
   }
 
-  @override
   Future<void> delete(int transactionId) async {
     await Future<void>.delayed(const Duration(seconds: 1));
     _transactions.removeWhere((transaction) => transaction.id == transactionId);
   }
 
-  @override
   Future<List<TransactionResponse>> getByAccountIdAndPeriod({
     required int accountId,
     DateTime? startDate,
@@ -116,8 +114,8 @@ final class MockTransactionRepository implements TransactionRepository {
   }) async {
     await Future<void>.delayed(const Duration(seconds: 1));
     final transactionsList = <TransactionResponse>[];
-    final account = await _accountsRepo.getById(accountId);
-    final categories = await _categoriesRepo.getAll();
+    final account = await _accountsSource.getById(accountId);
+    final categories = await _categoriesSource.getAll();
     final now = DateTime.now();
     startDate ??= DateTime(now.year, now.month);
     endDate ??= DateTime(now.year, now.month + 1, 0);
@@ -153,7 +151,6 @@ final class MockTransactionRepository implements TransactionRepository {
     return transactionsList;
   }
 
-  @override
   Future<TransactionResponse> getById(int transactionId) async {
     await Future<void>.delayed(const Duration(seconds: 1));
     final transaction = _transactions.firstWhere(
@@ -162,14 +159,14 @@ final class MockTransactionRepository implements TransactionRepository {
         'Данной транзакции не существует',
       ),
     );
-    final categories = await _categoriesRepo.getAll();
+    final categories = await _categoriesSource.getAll();
     final category = categories.firstWhere(
       (category) => category.id == transaction.categoryId,
       orElse: () => throw const CategoryNotExistException(
         'Данной категории не существует',
       ),
     );
-    final account = await _accountsRepo.getById(transaction.accountId);
+    final account = await _accountsSource.getById(transaction.accountId);
     return TransactionResponse(
       id: transaction.id,
       account: AccountBrief(
@@ -187,7 +184,6 @@ final class MockTransactionRepository implements TransactionRepository {
     );
   }
 
-  @override
   Future<TransactionResponse> update({
     required int transactionId,
     required TransactionRequest transactionRequest,
@@ -202,8 +198,8 @@ final class MockTransactionRepository implements TransactionRepository {
       );
     }
     final transaction = _transactions[transactionIndex];
-    final account = await _accountsRepo.getById(transaction.accountId);
-    final categories = await _categoriesRepo.getAll();
+    final account = await _accountsSource.getById(transaction.accountId);
+    final categories = await _categoriesSource.getAll();
     final category = categories.firstWhere(
       (category) => category.id == transaction.categoryId,
       orElse: () => throw const CategoryNotExistException(
