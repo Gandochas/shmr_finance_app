@@ -6,6 +6,7 @@ import 'package:shmr_finance_app/core/widgets/transaction_widgets/transaction_li
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transaction_sorting_widget.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transactions_sum_widget.dart';
 import 'package:shmr_finance_app/domain/bloc/history/history_cubit.dart';
+import 'package:shmr_finance_app/presentation/pages/analysis_page.dart';
 
 enum SortField { date, amount }
 
@@ -34,7 +35,17 @@ class _HistoryPageState extends State<HistoryPage> {
             centerTitle: true,
             actions: [
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  final historyCubit = context.read<HistoryCubit>();
+                  Navigator.of(context).push<void>(
+                    MaterialPageRoute<void>(
+                      builder: (context) => BlocProvider.value(
+                        value: historyCubit,
+                        child: AnalysisPage(isIncomePage: widget.isIncomePage),
+                      ),
+                    ),
+                  );
+                },
                 icon: const SvgIcon(
                   asset: 'assets/icons/history_analysis_icon.svg',
                 ),
