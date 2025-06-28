@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sensors_plus/sensors_plus.dart';
+import 'package:shmr_finance_app/core/widgets/balance_widgets/animated_balance_widget.dart';
 import 'package:shmr_finance_app/domain/bloc/balance/balance_cubit.dart';
 
 class BalancePage extends StatefulWidget {
@@ -9,7 +13,13 @@ class BalancePage extends StatefulWidget {
   State<BalancePage> createState() => _BalancePageState();
 }
 
-class _BalancePageState extends State<BalancePage> {
+class _BalancePageState extends State<BalancePage>
+    with SingleTickerProviderStateMixin {
+  bool _hidden = false;
+  StreamSubscription<AccelerometerEvent>? _accelerometerSubscription;
+
+  static const double _flipThreshold = -7;
+
   Future<void> _showCurrencyPicker() async {
     final balanceCubit = context.read<BalanceCubit>();
 
@@ -65,6 +75,28 @@ class _BalancePageState extends State<BalancePage> {
     if (selectedCurrency != null) {
       await balanceCubit.updateAccountCurrency(selectedCurrency);
     }
+  }
+
+  void _handleAccelerometer(AccelerometerEvent event) {
+    final z = event.z;
+
+    if (z < _flipThreshold) {
+      setState(() => _hidden = !_hidden);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _accelerometerSubscription = accelerometerEventStream().listen(
+      _handleAccelerometer,
+    );
+  }
+
+  @override
+  void dispose() {
+    _accelerometerSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -135,22 +167,15 @@ class _BalancePageState extends State<BalancePage> {
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                '$balance $currency',
-                                style: Theme.of(context).textTheme.bodyLarge,
+                              AnimatedBalanceWidget(
+                                hidden: _hidden,
+                                balance: balance,
+                                currency: currency,
                               ),
                               IconButton(
-                                onPressed: () {
-                                  showDialog<void>(
-                                    context: context,
-                                    useRootNavigator: false,
-                                    builder: (context) =>
-                                        UpdateAccountNameWidget(
-                                          accountName: state.name,
-                                        ),
-                                  );
-                                },
-                                icon: const Icon(Icons.navigate_next),
+                                icon: const Icon(Icons.visibility),
+                                onPressed: () =>
+                                    setState(() => _hidden = !_hidden),
                               ),
                             ],
                           ),
@@ -187,56 +212,6 @@ class _BalancePageState extends State<BalancePage> {
           ),
         );
       },
-    );
-  }
-}
-
-class UpdateAccountNameWidget extends StatefulWidget {
-  const UpdateAccountNameWidget({required this.accountName, super.key});
-
-  final String accountName;
-
-  @override
-  State<UpdateAccountNameWidget> createState() =>
-      _UpdateAccountNameWidgetState();
-}
-
-class _UpdateAccountNameWidgetState extends State<UpdateAccountNameWidget> {
-  final accountNameController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    final balanceCubit = context.read<BalanceCubit>();
-    return AlertDialog(
-      title: const Text('Изменить имя счёта'),
-      content: TextField(
-        controller: accountNameController,
-        autofocus: true,
-        decoration: InputDecoration(
-          hintText: widget.accountName,
-          hintStyle: Theme.of(context).textTheme.bodyLarge,
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text('Отмена'),
-        ),
-        TextButton(
-          onPressed: () async {
-            final newName = accountNameController.text.trim();
-            if (newName.isEmpty || newName == widget.accountName) {
-              Navigator.of(context).pop();
-              return;
-            }
-            await balanceCubit.updateAccountName(newName);
-            if (context.mounted) Navigator.of(context).pop();
-          },
-          child: const Text('Изменить'),
-        ),
-      ],
     );
   }
 }
