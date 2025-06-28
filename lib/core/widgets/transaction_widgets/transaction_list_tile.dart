@@ -6,11 +6,17 @@ class TransactionListTile extends StatelessWidget {
   const TransactionListTile({
     required this.isIncomePage,
     required this.transaction,
+    required this.iconButton,
+    required this.isHeader,
+    this.sumByCategory = 0,
     super.key,
   });
 
   final bool isIncomePage;
   final TransactionResponse transaction;
+  final IconButton iconButton;
+  final bool isHeader;
+  final int sumByCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -44,10 +50,12 @@ class TransactionListTile extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '${transaction.amount} ${transaction.account.currency}\n${formatDate(transaction.transactionDate)}',
+            isHeader
+                ? '$sumByCategory ${transaction.account.currency}'
+                : '${transaction.amount} ${transaction.account.currency}\n${formatDate(transaction.transactionDate)}',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.navigate_next)),
+          iconButton,
         ],
       ),
     );

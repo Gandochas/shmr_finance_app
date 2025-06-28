@@ -6,7 +6,7 @@ import 'package:shmr_finance_app/domain/models/account_state/account_state.dart'
 import 'package:shmr_finance_app/domain/models/account_update_request/account_update_request.dart';
 import 'package:shmr_finance_app/domain/repositories/bank_account_repository.dart';
 
-final class MockBankAccountRepository implements BankAccountRepository {
+final class BankAccountMockDatasourceImpl {
   final _accounts = <Account>[
     Account(
       id: 1,
@@ -18,9 +18,22 @@ final class MockBankAccountRepository implements BankAccountRepository {
       updatedAt: DateTime.now(),
     ),
   ];
-  final _accountHistories = <AccountHistory>[];
+  final _accountHistories = <AccountHistory>[
+    AccountHistory(
+      id: 1,
+      accountId: 1,
+      changeType: AccountHistoryChangeType.creation,
+      newState: const AccountState(
+        id: 1,
+        name: 'my bank acc',
+        balance: '1000',
+        currency: '₽',
+      ),
+      changeTimeStamp: DateTime.now().subtract(const Duration(days: 30)),
+      createdAt: DateTime.now().subtract(const Duration(days: 30)),
+    ),
+  ];
 
-  @override
   Future<Account> create(AccountCreateRequest createRequest) async {
     await Future<void>.delayed(const Duration(seconds: 1));
     final newAccount = Account(
@@ -50,13 +63,11 @@ final class MockBankAccountRepository implements BankAccountRepository {
     return newAccount;
   }
 
-  @override
   Future<List<Account>> getAll() async {
     await Future<void>.delayed(const Duration(seconds: 1));
     return [..._accounts];
   }
 
-  @override
   Future<Account> getById(int accountId) async {
     await Future<void>.delayed(const Duration(seconds: 1));
     return _accounts.firstWhere(
@@ -67,7 +78,6 @@ final class MockBankAccountRepository implements BankAccountRepository {
     );
   }
 
-  @override
   Future<AccountHistoryResponse> getHistory(int accountId) async {
     await Future<void>.delayed(const Duration(seconds: 1));
     final account = _accounts.lastWhere(
@@ -88,7 +98,6 @@ final class MockBankAccountRepository implements BankAccountRepository {
     );
   }
 
-  @override
   Future<Account> update({
     required int accountId,
     required AccountUpdateRequest updateRequest,
