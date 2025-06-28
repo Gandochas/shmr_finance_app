@@ -86,19 +86,10 @@ final class BankAccountRepositoryImpl implements BankAccountRepository {
 
   @override
   Future<AccountHistoryResponse> getHistory(int accountId) async {
-    //! TODO: implement logic
+    // По хорошему наверное надо создать отдельную таблицу под AccountHistory
+    // Но пока что, решил не усложнять получение истории
 
-    // For now, return a simple implementation
-    // This would typically involve getting transaction history
-    final account = await getById(accountId);
-
-    return AccountHistoryResponse(
-      accountId: account.id,
-      accountName: account.name,
-      currency: account.currency,
-      currentBalance: account.balance,
-      history: [],
-    );
+    return _apiSource.getHistory(accountId);
   }
 
   @override
