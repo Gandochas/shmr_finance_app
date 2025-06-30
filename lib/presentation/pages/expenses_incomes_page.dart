@@ -70,7 +70,6 @@ class ExpensesIncomesPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     TransactionsSumWidget(transactions: transactions),
-                    const SizedBox(height: 16),
                     Expanded(
                       child: ListView.separated(
                         itemBuilder: (context, index) {

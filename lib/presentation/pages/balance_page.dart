@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shmr_finance_app/core/widgets/balance_widgets/animated_balance_widget.dart';
+import 'package:shmr_finance_app/core/widgets/balance_widgets/currency_changer_widget.dart';
+import 'package:shmr_finance_app/core/widgets/balance_widgets/update_balance_name_widget.dart';
 import 'package:shmr_finance_app/domain/bloc/balance/balance_cubit.dart';
 
 class BalancePage extends StatefulWidget {
@@ -25,51 +27,7 @@ class _BalancePageState extends State<BalancePage>
 
     final selectedCurrency = await showModalBottomSheet<String>(
       context: context,
-      builder: (context) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Container(
-              width: 32,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Theme.of(context).dividerColor,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          ListTile(
-            leading: Text('₽', style: Theme.of(context).textTheme.bodyLarge),
-            title: Text(
-              'Российский рубль ₽',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            onTap: () => Navigator.of(context).pop('₽'),
-          ),
-          Divider(height: 1, color: Theme.of(context).dividerColor),
-          ListTile(
-            leading: Text(r'$', style: Theme.of(context).textTheme.bodyLarge),
-            title: Text(
-              r'Американский доллар $',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            onTap: () => Navigator.of(context).pop(r'$'),
-          ),
-          Divider(height: 1, color: Theme.of(context).dividerColor),
-          ListTile(
-            leading: Text('€', style: Theme.of(context).textTheme.bodyLarge),
-            title: Text('Евро €', style: Theme.of(context).textTheme.bodyLarge),
-            onTap: () => Navigator.of(context).pop('€'),
-          ),
-          ListTile(
-            tileColor: Theme.of(context).colorScheme.error,
-            leading: const Icon(Icons.close),
-            title: const Text('Отмена'),
-            onTap: () => Navigator.of(context).pop(),
-          ),
-        ],
-      ),
+      builder: (context) => const CurrencyChangerWidget(),
     );
 
     if (selectedCurrency != null) {
@@ -160,9 +118,20 @@ class _BalancePageState extends State<BalancePage>
                               style: TextStyle(fontSize: 18),
                             ),
                           ),
-                          title: Text(
-                            name,
-                            style: Theme.of(context).textTheme.bodyLarge,
+                          title: InkWell(
+                            onTap: () {
+                              showDialog<void>(
+                                context: context,
+                                useRootNavigator: false,
+                                builder: (context) => UpdateBalanceNameWidget(
+                                  accountName: state.name,
+                                ),
+                              );
+                            },
+                            child: Text(
+                              name,
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
                           ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,

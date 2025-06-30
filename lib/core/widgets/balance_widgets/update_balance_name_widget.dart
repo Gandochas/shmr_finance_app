@@ -2,21 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shmr_finance_app/domain/bloc/balance/balance_cubit.dart';
 
-class UpdateBalanceNameWidget extends StatefulWidget {
+class UpdateBalanceNameWidget extends StatelessWidget {
   const UpdateBalanceNameWidget({required this.accountName, super.key});
 
   final String accountName;
 
   @override
-  State<UpdateBalanceNameWidget> createState() =>
-      _UpdateBalanceNameWidgetState();
-}
-
-class _UpdateBalanceNameWidgetState extends State<UpdateBalanceNameWidget> {
-  final accountNameController = TextEditingController();
-
-  @override
   Widget build(BuildContext context) {
+    final accountNameController = TextEditingController();
     final balanceCubit = context.read<BalanceCubit>();
     return AlertDialog(
       title: const Text('Изменить имя счёта'),
@@ -24,7 +17,7 @@ class _UpdateBalanceNameWidgetState extends State<UpdateBalanceNameWidget> {
         controller: accountNameController,
         autofocus: true,
         decoration: InputDecoration(
-          hintText: widget.accountName,
+          hintText: accountName,
           hintStyle: Theme.of(context).textTheme.bodyLarge,
         ),
       ),
@@ -38,7 +31,7 @@ class _UpdateBalanceNameWidgetState extends State<UpdateBalanceNameWidget> {
         TextButton(
           onPressed: () async {
             final newName = accountNameController.text.trim();
-            if (newName.isEmpty || newName == widget.accountName) {
+            if (newName.isEmpty || newName == accountName) {
               Navigator.of(context).pop();
               return;
             }

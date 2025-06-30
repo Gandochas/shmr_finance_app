@@ -2,14 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shmr_finance_app/domain/bloc/articles/articles_cubit.dart';
 
-class SearchArticleWidget extends StatefulWidget {
+class SearchArticleWidget extends StatelessWidget {
   const SearchArticleWidget({super.key});
 
-  @override
-  State<SearchArticleWidget> createState() => _SearchArticleWidgetState();
-}
-
-class _SearchArticleWidgetState extends State<SearchArticleWidget> {
   @override
   Widget build(BuildContext context) {
     final articlesSearchController = TextEditingController();

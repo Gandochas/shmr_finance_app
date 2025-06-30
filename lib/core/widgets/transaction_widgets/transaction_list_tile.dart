@@ -21,6 +21,7 @@ class TransactionListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      minTileHeight: 72,
       leading: !isIncomePage
           ? Container(
               width: 24,

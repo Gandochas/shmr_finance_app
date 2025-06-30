@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shmr_finance_app/core/connection_checker.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/account_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/database/database.dart';
 import 'package:shmr_finance_app/data/sources/drift/mappers/drift_mappers.dart';
@@ -21,11 +20,12 @@ final class BankAccountRepositoryImpl implements BankAccountRepository {
 
   final BankAccountMockDatasourceImpl _apiSource;
   final AccountDao _accountDao;
+  final ConnectionChecker _connectionChecker = ConnectionChecker();
 
   @override
   Future<Account> create(AccountCreateRequest createRequest) async {
     try {
-      if (await _isConnected()) {
+      if (await _connectionChecker.isConnected()) {
         final account = await _apiSource.create(createRequest);
         await _syncAccountToLocal(account);
         return account;
@@ -52,7 +52,7 @@ final class BankAccountRepositoryImpl implements BankAccountRepository {
   @override
   Future<List<Account>> getAll() async {
     try {
-      if (await _isConnected()) {
+      if (await _connectionChecker.isConnected()) {
         final accounts = await _apiSource.getAll();
         await _syncAccountsToLocal(accounts);
         return accounts;
@@ -68,7 +68,7 @@ final class BankAccountRepositoryImpl implements BankAccountRepository {
   @override
   Future<Account> getById(int accountId) async {
     try {
-      if (await _isConnected()) {
+      if (await _connectionChecker.isConnected()) {
         final account = await _apiSource.getById(accountId);
         await _syncAccountToLocal(account);
         return account;
@@ -98,7 +98,7 @@ final class BankAccountRepositoryImpl implements BankAccountRepository {
     required AccountUpdateRequest updateRequest,
   }) async {
     try {
-      if (await _isConnected()) {
+      if (await _connectionChecker.isConnected()) {
         final account = await _apiSource.update(
           accountId: accountId,
           updateRequest: updateRequest,
@@ -121,15 +121,6 @@ final class BankAccountRepositoryImpl implements BankAccountRepository {
     await _accountDao.updateAccount(accountId, companion);
     final entity = await _accountDao.getAccountById(accountId);
     return DriftMappers.accountEntityToModel(entity!);
-  }
-
-  Future<bool> _isConnected() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
-    } on SocketException catch (_) {
-      return false;
-    }
   }
 
   Future<void> _syncAccountsToLocal(List<Account> accounts) async {

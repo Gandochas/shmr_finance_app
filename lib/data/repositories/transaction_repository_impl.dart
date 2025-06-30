@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shmr_finance_app/core/connection_checker.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/transaction_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/database/database.dart';
 import 'package:shmr_finance_app/data/sources/drift/mappers/drift_mappers.dart';
@@ -20,11 +19,12 @@ final class TransactionRepositoryImpl implements TransactionRepository {
 
   final TransactionMockDatasourceImpl _apiSource;
   final TransactionDao _transactionDao;
+  final ConnectionChecker _connectionChecker = ConnectionChecker();
 
   @override
   Future<Transaction> create(TransactionRequest transactionRequest) async {
     try {
-      if (await _isConnected()) {
+      if (await _connectionChecker.isConnected()) {
         final transaction = await _apiSource.create(transactionRequest);
         await _syncTransactionToLocal(transaction);
         return transaction;
@@ -52,7 +52,7 @@ final class TransactionRepositoryImpl implements TransactionRepository {
   @override
   Future<void> delete(int transactionId) async {
     try {
-      if (await _isConnected()) {
+      if (await _connectionChecker.isConnected()) {
         await _apiSource.delete(transactionId);
         await _transactionDao.deleteTransaction(transactionId);
         return;
@@ -71,7 +71,7 @@ final class TransactionRepositoryImpl implements TransactionRepository {
     DateTime? endDate,
   }) async {
     try {
-      if (await _isConnected()) {
+      if (await _connectionChecker.isConnected()) {
         final responses = await _apiSource.getByAccountIdAndPeriod(
           accountId: accountId,
           startDate: startDate,
@@ -95,7 +95,7 @@ final class TransactionRepositoryImpl implements TransactionRepository {
   @override
   Future<TransactionResponse> getById(int transactionId) async {
     try {
-      if (await _isConnected()) {
+      if (await _connectionChecker.isConnected()) {
         final response = await _apiSource.getById(transactionId);
         return response;
       }
@@ -122,7 +122,7 @@ final class TransactionRepositoryImpl implements TransactionRepository {
     required TransactionRequest transactionRequest,
   }) async {
     try {
-      if (await _isConnected()) {
+      if (await _connectionChecker.isConnected()) {
         final response = await _apiSource.update(
           transactionId: transactionId,
           transactionRequest: transactionRequest,
@@ -156,15 +156,6 @@ final class TransactionRepositoryImpl implements TransactionRepository {
     );
 
     return DriftMappers.transactionWithDetailsToResponse(detail);
-  }
-
-  Future<bool> _isConnected() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
-    } on SocketException catch (_) {
-      return false;
-    }
   }
 
   Future<void> _syncTransactionToLocal(Transaction transaction) async {

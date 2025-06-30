@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart' hide Category;
+import 'package:shmr_finance_app/core/connection_checker.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/category_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/database/database.dart';
 import 'package:shmr_finance_app/data/sources/drift/mappers/drift_mappers.dart';
@@ -18,11 +17,12 @@ final class CategoryRepositoryImpl implements CategoryRepository {
 
   final CategoryMockDatasourceImpl _apiSource;
   final CategoryDao _categoryDao;
+  final ConnectionChecker _connectionChecker = ConnectionChecker();
 
   @override
   Future<List<Category>> getAll() async {
     try {
-      if (await _isConnected()) {
+      if (await _connectionChecker.isConnected()) {
         final categories = await _apiSource.getAll();
         await _syncCategoriesToLocal(categories);
         return categories;
@@ -38,7 +38,7 @@ final class CategoryRepositoryImpl implements CategoryRepository {
   @override
   Future<List<Category>> getByType({required bool isIncome}) async {
     try {
-      if (await _isConnected()) {
+      if (await _connectionChecker.isConnected()) {
         final categories = await _apiSource.getAll();
         await _syncCategoriesToLocal(categories);
         return categories
@@ -56,15 +56,6 @@ final class CategoryRepositoryImpl implements CategoryRepository {
     return categories
         .where((category) => category.isIncome == isIncome)
         .toList();
-  }
-
-  Future<bool> _isConnected() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
-    } on SocketException catch (_) {
-      return false;
-    }
   }
 
   Future<void> _syncCategoriesToLocal(List<Category> categories) async {
