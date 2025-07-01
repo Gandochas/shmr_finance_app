@@ -35,7 +35,6 @@ class _AnalysisPageState extends State<AnalysisPage> {
                   child: CircularProgressIndicator.adaptive(),
                 ),
                 HistoryErrorState() => Center(child: Text(state.errorMessage)),
-
                 HistoryIdleState(
                   :final transactions,
                   :final startDate,
