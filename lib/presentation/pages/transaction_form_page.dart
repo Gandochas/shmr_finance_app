@@ -58,6 +58,39 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     super.dispose();
   }
 
+  bool _validateFields() {
+    if (_amountController.text.trim().isEmpty ||
+        _selectedCategoryId == null ||
+        _selectedAccountId == null) {
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> _showValidationDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Ошибка'),
+          content: Text(
+            'Пожалуйста, заполните все обязательные поля.',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context).toString();
@@ -79,6 +112,10 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
           IconButton(
             icon: const Icon(Icons.check),
             onPressed: () async {
+              if (!_validateFields()) {
+                await _showValidationDialog();
+                return;
+              }
               await _onSave();
               if (!context.mounted) return;
               Navigator.of(context).pop();
