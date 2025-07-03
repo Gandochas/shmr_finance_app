@@ -6,22 +6,22 @@ import 'package:shmr_finance_app/domain/repositories/bank_account_repository.dar
 import 'package:shmr_finance_app/domain/repositories/category_repository.dart';
 import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart';
 
-sealed class EditTransactionState {
-  const EditTransactionState();
+sealed class TransactionFormState {
+  const TransactionFormState();
 }
 
-final class EditTransactionLoadingState extends EditTransactionState {
-  const EditTransactionLoadingState();
+final class TransactionFormLoadingState extends TransactionFormState {
+  const TransactionFormLoadingState();
 }
 
-final class EditTransactionErrorState extends EditTransactionState {
-  const EditTransactionErrorState(this.errorMessage);
+final class TransactionFormErrorState extends TransactionFormState {
+  const TransactionFormErrorState(this.errorMessage);
 
   final String errorMessage;
 }
 
-final class EditTransactionIdleState extends EditTransactionState {
-  const EditTransactionIdleState({
+final class TransactionFormIdleState extends TransactionFormState {
+  const TransactionFormIdleState({
     required this.accounts,
     required this.categories,
   });
@@ -29,8 +29,8 @@ final class EditTransactionIdleState extends EditTransactionState {
   final List<Category> categories;
 }
 
-final class EditTransactionCubit extends Cubit<EditTransactionState> {
-  EditTransactionCubit({
+final class TransactionFormCubit extends Cubit<TransactionFormState> {
+  TransactionFormCubit({
     required BankAccountRepository bankAccountRepository,
     required CategoryRepository categoryRepository,
     required TransactionRepository transactionRepository,
@@ -39,7 +39,7 @@ final class EditTransactionCubit extends Cubit<EditTransactionState> {
        _categoryRepository = categoryRepository,
        _transactionRepository = transactionRepository,
        _isIncomePage = isIncomePage,
-       super(const EditTransactionLoadingState()) {
+       super(const TransactionFormLoadingState()) {
     loadData();
   }
 
@@ -49,22 +49,22 @@ final class EditTransactionCubit extends Cubit<EditTransactionState> {
   final bool _isIncomePage;
 
   Future<void> loadData() async {
-    emit(const EditTransactionLoadingState());
+    emit(const TransactionFormLoadingState());
     try {
       final accounts = await _bankAccountRepository.getAll();
       final categories = await _categoryRepository.getByType(
         isIncome: _isIncomePage,
       );
       emit(
-        EditTransactionIdleState(accounts: accounts, categories: categories),
+        TransactionFormIdleState(accounts: accounts, categories: categories),
       );
     } on Object {
-      emit(const EditTransactionErrorState('Не удалось загрузить репозитории'));
+      emit(const TransactionFormErrorState('Не удалось загрузить репозитории'));
     }
   }
 
   Future<void> updateTransaction(TransactionRequest req) async {
-    emit(const EditTransactionLoadingState());
+    emit(const TransactionFormLoadingState());
     try {
       await _transactionRepository.update(
         transactionId: req.id,
@@ -72,17 +72,27 @@ final class EditTransactionCubit extends Cubit<EditTransactionState> {
       );
       await loadData();
     } on Object {
-      emit(const EditTransactionErrorState('Не удалось сохранить изменения'));
+      emit(const TransactionFormErrorState('Не удалось сохранить изменения'));
     }
   }
 
   Future<void> deleteTransaction(int id) async {
-    emit(const EditTransactionLoadingState());
+    emit(const TransactionFormLoadingState());
     try {
       await _transactionRepository.delete(id);
       await loadData();
     } on Object {
-      emit(const EditTransactionErrorState('Не удалось удалить транзакцию'));
+      emit(const TransactionFormErrorState('Не удалось удалить транзакцию'));
+    }
+  }
+
+  Future<void> createTransaction(TransactionRequest transactionRequest) async {
+    emit(const TransactionFormLoadingState());
+    try {
+      await _transactionRepository.create(transactionRequest);
+      await loadData();
+    } on Object {
+      emit(const TransactionFormErrorState('Не удалось создать транзакцию'));
     }
   }
 }

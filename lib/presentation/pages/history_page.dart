@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shmr_finance_app/core/widgets/show_edit_transaction.dart';
+import 'package:shmr_finance_app/core/widgets/show_transaction_form.dart';
 import 'package:shmr_finance_app/core/widgets/svg_icon.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transaction_date_choice_widget.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transaction_list_tile.dart';
@@ -129,7 +129,7 @@ class _HistoryPageState extends State<HistoryPage> {
                               isIncomePage: widget.isIncomePage,
                               transaction: transaction,
                               iconButton: IconButton(
-                                onPressed: () => showEditTransaction(
+                                onPressed: () => showTransactionForm(
                                   context: context,
                                   transaction: transaction,
                                   isIncomePage: widget.isIncomePage,

@@ -97,6 +97,7 @@ final class TransactionMockDatasourceImpl {
       transactionDate: transactionRequest.transactionDate,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
+      comment: transactionRequest.comment,
     );
     _transactions.add(newTransaction);
     return newTransaction;

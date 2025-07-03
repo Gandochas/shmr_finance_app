@@ -3,46 +3,46 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shmr_finance_app/core/widgets/format_date.dart';
 import 'package:shmr_finance_app/core/widgets/format_time.dart';
-import 'package:shmr_finance_app/domain/bloc/edit_transaction/edit_transaction_cubit.dart';
+import 'package:shmr_finance_app/domain/bloc/transaction_form/transaction_form_cubit.dart';
 import 'package:shmr_finance_app/domain/models/transaction_request/transaction_request.dart';
 import 'package:shmr_finance_app/domain/models/transaction_response/transaction_response.dart';
 
-class EditTransactionPage extends StatefulWidget {
-  const EditTransactionPage({
-    required this.transaction,
+class TransactionFormPage extends StatefulWidget {
+  const TransactionFormPage({
     required this.isIncomePage,
     required this.onSave,
     required this.onDelete,
+    this.transaction,
     super.key,
   });
 
-  final TransactionResponse transaction;
+  final TransactionResponse? transaction;
   final bool isIncomePage;
   final Future<void> Function(TransactionRequest updatedTransaction) onSave;
   final Future<void> Function() onDelete;
 
   @override
-  State<EditTransactionPage> createState() => _EditTransactionPageState();
+  State<TransactionFormPage> createState() => _TransactionFormPageState();
 }
 
-class _EditTransactionPageState extends State<EditTransactionPage> {
-  late TextEditingController _amountController;
-  late TextEditingController _commentController;
+class _TransactionFormPageState extends State<TransactionFormPage> {
+  late final TextEditingController _amountController;
+  late final TextEditingController _commentController;
   late DateTime _selectedDate;
   late TimeOfDay _selectedTime;
-  int _selectedAccountId = 1;
-  late int _selectedCategoryId;
+  int? _selectedAccountId;
+  int? _selectedCategoryId;
 
   @override
   void initState() {
     super.initState();
     final transaction = widget.transaction;
-    _amountController = TextEditingController(text: transaction.amount);
-    _commentController = TextEditingController(text: transaction.comment ?? '');
-    _selectedDate = transaction.transactionDate;
-    _selectedTime = TimeOfDay.fromDateTime(transaction.transactionDate);
-    _selectedAccountId = transaction.account.id;
-    _selectedCategoryId = transaction.category.id;
+    _amountController = TextEditingController(text: transaction?.amount ?? '');
+    _commentController = TextEditingController(
+      text: transaction?.comment ?? '',
+    );
+    _selectedDate = transaction?.transactionDate ?? DateTime.now();
+    _selectedTime = TimeOfDay.fromDateTime(_selectedDate);
   }
 
   @override
@@ -59,7 +59,11 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
       appBar: AppBar(
         leading: CloseButton(onPressed: () => Navigator.pop(context)),
         title: Text(
-          widget.isIncomePage ? 'Редактировать доход' : 'Редактировать расход',
+          widget.transaction == null
+              ? (widget.isIncomePage ? 'Добавить доход' : 'Добавить расход')
+              : (widget.isIncomePage
+                    ? 'Редактировать доход'
+                    : 'Редактировать расход'),
         ),
         centerTitle: true,
         actions: [
@@ -73,18 +77,18 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
           ),
         ],
       ),
-      body: BlocBuilder<EditTransactionCubit, EditTransactionState>(
+      body: BlocBuilder<TransactionFormCubit, TransactionFormState>(
         builder: (context, state) {
           return switch (state) {
-            EditTransactionLoadingState() => const Center(
+            TransactionFormLoadingState() => const Center(
               child: CircularProgressIndicator.adaptive(),
             ),
 
-            EditTransactionErrorState() => Center(
+            TransactionFormErrorState() => Center(
               child: Text(state.errorMessage),
             ),
 
-            EditTransactionIdleState(:final accounts, :final categories) =>
+            TransactionFormIdleState(:final accounts, :final categories) =>
               ListView(
                 padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -94,8 +98,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
                     title: const Text('Счет'),
                     trailing: DropdownButtonHideUnderline(
                       child: DropdownButton<int>(
-                        value: _selectedAccountId,
-                        // elevation: 0,
+                        value: _selectedAccountId ??= accounts.first.id,
                         items: accounts
                             .map(
                               (account) => DropdownMenuItem(
@@ -121,7 +124,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
                     title: const Text('Статья'),
                     trailing: DropdownButtonHideUnderline(
                       child: DropdownButton<int>(
-                        value: _selectedCategoryId,
+                        value: _selectedCategoryId ??= categories.first.id,
                         items: categories
                             .map(
                               (category) => DropdownMenuItem(
@@ -134,9 +137,8 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
                             )
                             .toList(),
                         onChanged: (value) {
-                          setState(() {
-                            _selectedCategoryId = value!;
-                          });
+                          if (value == null) return;
+                          setState(() => _selectedCategoryId = value);
                         },
                       ),
                     ),
@@ -204,7 +206,6 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
                         border: UnderlineInputBorder(
                           borderSide: BorderSide.none,
                         ),
-                        // border:
                       ),
                     ),
                   ),
@@ -212,25 +213,28 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
                   Divider(height: 1, color: Theme.of(context).dividerColor),
                   const SizedBox(height: 24),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.error,
+                  if (widget.transaction != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.error,
+                        ),
+                        onPressed: () async {
+                          await widget.onDelete();
+                          if (!context.mounted) return;
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(
+                          widget.isIncomePage
+                              ? 'Удалить доход'
+                              : 'Удалить расход',
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
-                      onPressed: () async {
-                        await widget.onDelete();
-                        if (!context.mounted) return;
-                        Navigator.of(context).pop();
-                      },
-                      child: Text(
-                        widget.isIncomePage
-                            ? 'Удалить доход'
-                            : 'Удалить расход',
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
+                    )
+                  else
+                    const SizedBox.shrink(),
                 ],
               ),
           };
@@ -263,7 +267,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
   }
 
   Future<void> _onSave() async {
-    final combined = DateTime(
+    final combinedDate = DateTime(
       _selectedDate.year,
       _selectedDate.month,
       _selectedDate.day,
@@ -272,10 +276,10 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
     );
 
     final request = TransactionRequest(
-      id: widget.transaction.id,
-      categoryId: _selectedCategoryId,
+      id: widget.transaction?.id ?? _selectedAccountId!,
+      categoryId: _selectedCategoryId!,
       amount: _amountController.text.trim(),
-      transactionDate: combined,
+      transactionDate: combinedDate,
       comment: _commentController.text.trim().isEmpty
           ? null
           : _commentController.text.trim(),
