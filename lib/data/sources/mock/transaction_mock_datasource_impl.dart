@@ -209,12 +209,12 @@ final class TransactionMockDatasourceImpl {
     final updatedTransaction = Transaction(
       id: transaction.id,
       accountId: transaction.accountId,
-      categoryId: transaction.categoryId,
+      categoryId: transactionRequest.categoryId,
       amount: transactionRequest.amount,
       transactionDate: transactionRequest.transactionDate,
       createdAt: transaction.createdAt,
       updatedAt: DateTime.now(),
-      comment: transactionRequest.comment ?? transaction.comment,
+      comment: transactionRequest.comment,
     );
     _transactions[transactionIndex] = updatedTransaction;
     return TransactionResponse(

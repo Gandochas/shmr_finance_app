@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shmr_finance_app/core/widgets/show_edit_transaction.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transaction_date_choice_widget.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transaction_list_tile.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transactions_sum_widget.dart';
@@ -144,7 +145,16 @@ class _AnalysisPageState extends State<AnalysisPage> {
                                             isIncomePage: widget.isIncomePage,
                                             transaction: transaction,
                                             iconButton: IconButton(
-                                              onPressed: () {},
+                                              onPressed: () =>
+                                                  showEditTransaction(
+                                                    context: context,
+                                                    transaction: transaction,
+                                                    isIncomePage:
+                                                        widget.isIncomePage,
+                                                    onReload: () => context
+                                                        .read<HistoryCubit>()
+                                                        .loadHistory(),
+                                                  ),
                                               icon: const Icon(
                                                 Icons.navigate_next,
                                               ),
