@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:shmr_finance_app/core/widgets/format_date.dart';
 import 'package:shmr_finance_app/core/widgets/format_time.dart';
 import 'package:shmr_finance_app/domain/bloc/transaction_form/transaction_form_cubit.dart';
@@ -43,6 +44,11 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     );
     _selectedDate = transaction?.transactionDate ?? DateTime.now();
     _selectedTime = TimeOfDay.fromDateTime(_selectedDate);
+
+    if (transaction != null) {
+      _selectedAccountId = transaction.account.id;
+      _selectedCategoryId = transaction.category.id;
+    }
   }
 
   @override
@@ -54,6 +60,9 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context).toString();
+    final separator = NumberFormat.decimalPattern(locale).symbols.DECIMAL_SEP;
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -124,7 +133,8 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                     title: const Text('Статья'),
                     trailing: DropdownButtonHideUnderline(
                       child: DropdownButton<int>(
-                        value: _selectedCategoryId ??= categories.first.id,
+                        value: _selectedCategoryId,
+                        hint: const Text('Выберите категорию'),
                         items: categories
                             .map(
                               (category) => DropdownMenuItem(
@@ -137,8 +147,9 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                             )
                             .toList(),
                         onChanged: (value) {
-                          if (value == null) return;
-                          setState(() => _selectedCategoryId = value);
+                          if (value != null) {
+                            setState(() => _selectedCategoryId = value);
+                          }
                         },
                       ),
                     ),
@@ -155,9 +166,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                         keyboardType: const TextInputType.numberWithOptions(
                           decimal: true,
                         ),
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[\d.,]')),
-                        ],
+                        inputFormatters: [LocaleDecimalFormatter(separator)],
                         textAlign: TextAlign.right,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
@@ -286,5 +295,43 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     );
 
     await widget.onSave(request);
+  }
+}
+
+class LocaleDecimalFormatter extends TextInputFormatter {
+  const LocaleDecimalFormatter(this.separator);
+
+  final String separator;
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    var text = newValue.text;
+
+    final other = separator == ',' ? '.' : ',';
+
+    if (text.contains(other)) {
+      text = text.replaceAll(other, separator);
+    }
+
+    final buffer = StringBuffer();
+    for (final char in text.characters) {
+      if (char == separator || RegExp(r'\d').hasMatch(char)) {
+        buffer.write(char);
+      }
+    }
+    text = buffer.toString();
+
+    final parts = text.split(separator);
+    if (parts.length > 2) {
+      text = parts.first + separator + parts.sublist(1).join();
+    }
+
+    return TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
   }
 }
