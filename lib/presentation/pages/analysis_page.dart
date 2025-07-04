@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shmr_finance_app/core/widgets/charts/category_pie_chart.dart';
 import 'package:shmr_finance_app/core/widgets/show_transaction_form.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transaction_date_choice_widget.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transaction_list_tile.dart';
@@ -54,6 +55,29 @@ class _AnalysisPageState extends State<AnalysisPage> {
 
                       final categoryNames = groupingByCategory.keys.toList();
 
+                      final amountsByCategory = <double>[];
+
+                      for (final category in groupingByCategory.keys) {
+                        final categoryTransactions =
+                            groupingByCategory[category];
+
+                        final sum =
+                            categoryTransactions?.fold<double>(
+                              0,
+                              (previousValue, transaction) =>
+                                  previousValue +
+                                  double.parse(transaction.amount),
+                            ) ??
+                            0;
+                        amountsByCategory.add(sum);
+                      }
+
+                      final totalTransactionsSum = amountsByCategory
+                          .fold<double>(
+                            0,
+                            (previousValue, element) => previousValue + element,
+                          );
+
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -75,6 +99,10 @@ class _AnalysisPageState extends State<AnalysisPage> {
 
                           TransactionsSumWidget(transactions: transactions),
 
+                          CategoryPieChart(
+                            amountsByCategory: amountsByCategory,
+                            categoryNames: categoryNames,
+                          ),
                           Expanded(
                             child: ListView.separated(
                               itemBuilder: (context, index) {
@@ -99,6 +127,10 @@ class _AnalysisPageState extends State<AnalysisPage> {
                                   children: [
                                     TransactionListTile(
                                       isIncomePage: widget.isIncomePage,
+                                      percentage:
+                                          (sumByCategory /
+                                              totalTransactionsSum) *
+                                          100,
                                       transaction:
                                           transactionsByCategoryName.last,
                                       iconButton: IconButton(
