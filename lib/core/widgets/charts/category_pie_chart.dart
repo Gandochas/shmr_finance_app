@@ -5,11 +5,13 @@ class CategoryPieChart extends StatelessWidget {
   const CategoryPieChart({
     required this.amountsByCategory,
     required this.categoryNames,
+    this.maxTitles = 5,
     super.key,
   });
 
   final List<double> amountsByCategory;
   final List<String> categoryNames;
+  final int maxTitles;
 
   @override
   Widget build(BuildContext context) {
@@ -18,52 +20,69 @@ class CategoryPieChart extends StatelessWidget {
       (previousValue, element) => previousValue + element,
     );
 
+    var titleCount = 0;
+
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(8),
           child: SizedBox(
             height: 250,
-            child: PieChart(
-              PieChartData(
-                borderData: FlBorderData(show: false),
-                pieTouchData: PieTouchData(enabled: false),
-                sectionsSpace: 0,
-                centerSpaceRadius: 60,
-                sections: _buildSections(),
-              ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                PieChart(
+                  PieChartData(
+                    borderData: FlBorderData(show: false),
+                    pieTouchData: PieTouchData(enabled: false),
+                    sectionsSpace: 0,
+                    centerSpaceRadius: 90,
+                    sections: _buildSections(),
+                  ),
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: amountsByCategory.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final percentage = (entry.value / totalAmount) * 100;
+                    final categoryName = categoryNames[index];
+                    final color = _getCategoryColor(index);
+                    if (titleCount > maxTitles) {
+                      return const SizedBox.shrink();
+                    }
+                    if (titleCount == maxTitles) {
+                      return Text(
+                        '...',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      );
+                    }
+                    titleCount++;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 1),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 12,
+                            height: 12,
+                            decoration: BoxDecoration(
+                              color: color,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '${percentage.toStringAsFixed(2)}% $categoryName',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ],
             ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Wrap(
-            spacing: 12,
-            runSpacing: 6,
-            children: amountsByCategory.asMap().entries.map((entry) {
-              final index = entry.key;
-              final percentage = (entry.value / totalAmount) * 100;
-              final categoryName = categoryNames[index];
-              final color = _getCategoryColor(index);
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 12,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: color,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    '${percentage.toStringAsFixed(2)}% $categoryName',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ],
-              );
-            }).toList(),
           ),
         ),
       ],
@@ -78,7 +97,7 @@ class CategoryPieChart extends StatelessWidget {
           value: amountsByCategory[i],
           title: '',
           color: _getCategoryColor(i),
-          radius: 40,
+          radius: 30,
           titleStyle: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
