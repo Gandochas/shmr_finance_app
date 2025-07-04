@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sensors_plus/sensors_plus.dart';
@@ -174,6 +175,7 @@ class _BalancePageState extends State<BalancePage>
                           ),
                         ),
                       ),
+                      CustomBarChart(),
                     ],
                   ),
               };
@@ -181,6 +183,142 @@ class _BalancePageState extends State<BalancePage>
           ),
         );
       },
+    );
+  }
+}
+
+class CustomBarChart extends StatefulWidget {
+  const CustomBarChart({super.key});
+
+  @override
+  State<CustomBarChart> createState() => _CustomBarChartState();
+}
+
+class _CustomBarChartState extends State<CustomBarChart> {
+  late int showingTooltip;
+
+  @override
+  void initState() {
+    showingTooltip = -1;
+    super.initState();
+  }
+
+  List<int> dailyTransactionAmounts = [
+    200,
+    -150,
+    300,
+    -50,
+    0,
+    120,
+    -30,
+    450,
+    -100,
+    80,
+    -20,
+    150,
+    -60,
+    180,
+    50,
+    100,
+    -40,
+    300,
+    -250,
+    500,
+    -10,
+    0,
+    90,
+    -200,
+    40,
+    120,
+    -30,
+    100,
+    -80,
+    250,
+  ];
+
+  BarChartGroupData generateGroupData(int x, int y) {
+    return BarChartGroupData(
+      x: x,
+      showingTooltipIndicators: showingTooltip == x ? [0] : [],
+      barRods: [
+        BarChartRodData(
+          toY: y.toDouble().abs(),
+          color: y > 0 ? Colors.green : Colors.red,
+          width: 8,
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(28),
+      child: AspectRatio(
+        aspectRatio: 2,
+        child: BarChart(
+          BarChartData(
+            barGroups: List.generate(dailyTransactionAmounts.length, (index) {
+              return generateGroupData(index, dailyTransactionAmounts[index]);
+            }),
+            barTouchData: BarTouchData(
+              enabled: true,
+              handleBuiltInTouches: false,
+
+              touchCallback: (event, response) {
+                if (response != null &&
+                    response.spot != null &&
+                    event is FlTapUpEvent) {
+                  setState(() {
+                    final x = response.spot!.touchedBarGroup.x;
+                    final isShowing = showingTooltip == x;
+                    if (isShowing) {
+                      showingTooltip = -1;
+                    } else {
+                      showingTooltip = x;
+                    }
+                  });
+                }
+              },
+              mouseCursorResolver: (event, response) {
+                return response == null || response.spot == null
+                    ? MouseCursor.defer
+                    : SystemMouseCursors.click;
+              },
+            ),
+            titlesData: FlTitlesData(
+              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  // getTitlesWidget: (value, meta) {
+                  //   return value % 100 == 0 ? Text('$value') : const Text('');
+                  // },
+                ),
+              ),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: false,
+                  getTitlesWidget: (value, meta) {
+                    final date = DateTime.now().subtract(
+                      Duration(
+                        days:
+                            dailyTransactionAmounts.length - 1 - value.toInt(),
+                      ),
+                    );
+                    return Text('${date.day}.${date.month}');
+                  },
+                ),
+              ),
+            ),
+            borderData: FlBorderData(show: false),
+            gridData: FlGridData(show: true),
+          ),
+        ),
+      ),
     );
   }
 }
