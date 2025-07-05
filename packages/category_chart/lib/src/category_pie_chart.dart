@@ -5,7 +5,7 @@ import 'package:category_chart/src/chart_data.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-class CategoryPieChart extends StatelessWidget {
+class CategoryPieChart extends StatefulWidget {
   const CategoryPieChart({
     required this.oldData,
     required this.newData,
@@ -19,21 +19,28 @@ class CategoryPieChart extends StatelessWidget {
   final Animation<double> animation;
 
   @override
+  State<CategoryPieChart> createState() => _CategoryPieChartState();
+}
+
+class _CategoryPieChartState extends State<CategoryPieChart> {
+  int? touchedIndex;
+
+  @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: animation,
+      animation: widget.animation,
       builder: (context, child) {
-        final t = animation.value;
+        final t = widget.animation.value;
         final angle = 2 * pi * t;
         final useOld = t <= 0.5;
         final alpha = useOld ? (1 - t * 2) : ((t - 0.5) * 2);
-        final data = useOld ? oldData : newData;
+        final data = useOld ? widget.oldData : widget.newData;
 
         return Opacity(
           opacity: alpha,
           child: Transform.rotate(
             angle: angle,
-            child: _buildChart(data, config, context),
+            child: _buildChart(data, widget.config, context),
           ),
         );
       },
@@ -53,16 +60,43 @@ class CategoryPieChart extends StatelessWidget {
         PieChart(
           PieChartData(
             borderData: FlBorderData(show: false),
-            pieTouchData: PieTouchData(enabled: true),
+            pieTouchData: PieTouchData(
+                enabled: true,
+                touchCallback: (event, response) {
+                  if (event is FlTapUpEvent &&
+                      response != null &&
+                      response.touchedSection != null) {
+                    setState(() {
+                      touchedIndex =
+                          response.touchedSection?.touchedSectionIndex;
+                    });
+                  } else if (event is FlLongPressEnd ||
+                      event is FlPanEndEvent) {
+                    setState(() {
+                      touchedIndex = null;
+                    });
+                  }
+                }),
             sectionsSpace: 0,
             centerSpaceRadius: 90,
             sections: List.generate(data.amounts.length, (index) {
+              final value = data.amounts[index];
+              final color = _getCategoryColor(index);
+              final isTouched = index == touchedIndex;
+              final badge = isTouched
+                  ? _Badge(
+                      label:
+                          '${data.names[index]}:\n${value.toStringAsFixed(2)} (${totalAmount == 0 ? 0.0 : (value / totalAmount * 100).toStringAsFixed(2)}%)',
+                      color: color,
+                    )
+                  : null;
               return PieChartSectionData(
-                value: data.amounts[index],
-                color: _getCategoryColor(index),
-                radius: 30,
-                title: '',
-              );
+                  value: value,
+                  color: color,
+                  radius: isTouched ? 40 : 30,
+                  title: '',
+                  badgeWidget: badge,
+                  badgePositionPercentageOffset: 1.2);
             }),
             // _buildSections(),
           ),
@@ -111,7 +145,37 @@ class CategoryPieChart extends StatelessWidget {
   }
 
   Color _getCategoryColor(int index) {
-    final colors = config.palette;
+    final colors = widget.config.palette;
     return colors[index % colors.length];
+  }
+}
+
+/// Простой виджет для отображения popup-метки
+class _Badge extends StatelessWidget {
+  const _Badge({
+    required this.label,
+    required this.color,
+  });
+
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.9),
+        border: Border.all(color: color, width: 1),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Colors.black87,
+            ),
+      ),
+    );
   }
 }
