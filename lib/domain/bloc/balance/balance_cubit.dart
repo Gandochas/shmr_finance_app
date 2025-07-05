@@ -24,12 +24,14 @@ final class BalanceIdleState extends BalanceState {
     required this.balance,
     required this.currency,
     this.dailyTransactionAmounts = const {},
+    this.monthlyTransactionAmounts = const {},
   });
 
   final String name;
   final String balance;
   final String currency;
   final Map<DateTime, double> dailyTransactionAmounts;
+  final Map<DateTime, double> monthlyTransactionAmounts;
 }
 
 final class BalanceCubit extends Cubit<BalanceState> {
@@ -45,25 +47,6 @@ final class BalanceCubit extends Cubit<BalanceState> {
   final BankAccountRepository _bankAccountRepository;
   final TransactionRepository _transactionRepository;
   final int accountId;
-
-  Future<void> loadBalance() async {
-    emit(const BalanceLoadingState());
-
-    try {
-      final account = await _bankAccountRepository.getById(accountId);
-
-      emit(
-        BalanceIdleState(
-          balance: account.balance,
-          currency: account.currency,
-          name: account.name,
-        ),
-      );
-    } on Object {
-      emit(const BalanceErrorState('Failed to load the balance'));
-      rethrow;
-    }
-  }
 
   Future<void> updateAccountCurrency(String newCurrency) async {
     emit(const BalanceLoadingState());
@@ -119,92 +102,98 @@ final class BalanceCubit extends Cubit<BalanceState> {
     }
   }
 
-  Future<List<TransactionResponse>> getTransactionsForLastMonth() async {
+  Future<void> loadAll() async {
     emit(const BalanceLoadingState());
     try {
-      final now = DateTime.now();
-      final startDate = DateTime(now.year, now.month - 1, now.day);
-      final endDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
-
-      final transactions = await _transactionRepository.getByAccountIdAndPeriod(
-        accountId: accountId,
-        startDate: startDate,
-        endDate: endDate,
-      );
-
       final account = await _bankAccountRepository.getById(accountId);
-      final dailyAmounts = _getDailyTransactionAmounts(transactions);
+      final now = DateTime.now();
+
+      final startDay = DateTime(now.year, now.month - 1, now.day);
+      final endDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+      final txDay = await _transactionRepository.getByAccountIdAndPeriod(
+        accountId: accountId,
+        startDate: startDay,
+        endDate: endDay,
+      );
+      final dailyMap = _computeDailyAmounts(startDay, endDay, txDay);
+
+      final startMonth = DateTime(now.year, now.month - 11, 1);
+
+      final endMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+      final txMonth = await _transactionRepository.getByAccountIdAndPeriod(
+        accountId: accountId,
+        startDate: startMonth,
+        endDate: endMonth,
+      );
+      final monthlyMap = _computeMonthlyAmounts(startMonth, txMonth);
 
       emit(
         BalanceIdleState(
           name: account.name,
           balance: account.balance,
           currency: account.currency,
-          dailyTransactionAmounts: dailyAmounts,
+          dailyTransactionAmounts: dailyMap,
+          monthlyTransactionAmounts: monthlyMap,
         ),
       );
-
-      return transactions;
-    } on Object {
-      emit(const BalanceErrorState('Failed to load transactions.'));
+    } catch (e) {
+      emit(const BalanceErrorState('Failed to load data'));
       rethrow;
     }
   }
 
-  // Map<DateTime, double> _getDailyTransactionAmounts(
-  //   List<TransactionResponse> transactions,
-  // ) {
-  //   final dailyAmounts = <DateTime, double>{};
-
-  //   for (final transaction in transactions) {
-  //     final transactionDate = transaction.transactionDate;
-  //     final amount = double.parse(transaction.amount);
-
-  //     final adjustedAmount = transaction.category.isIncome ? amount : -amount;
-
-  //     if (dailyAmounts.containsKey(transactionDate)) {
-  //       dailyAmounts[transactionDate] =
-  //           dailyAmounts[transactionDate]! + adjustedAmount;
-  //     } else {
-  //       dailyAmounts[transactionDate] = adjustedAmount;
-  //     }
-  //   }
-
-  //   return dailyAmounts;
-  // }
-
-  Map<DateTime, double> _getDailyTransactionAmounts(
-    List<TransactionResponse> transactions,
+  Map<DateTime, double> _computeDailyAmounts(
+    DateTime start,
+    DateTime end,
+    List<TransactionResponse> txs,
   ) {
-    final dailyAmounts = <DateTime, double>{};
-
-    final now = DateTime.now();
-    final startDate = DateTime(now.year, now.month - 1, now.day);
-    final endDate = DateTime(now.year, now.month, now.day);
-
-    // Проходим по всем дням в месяце
+    final map = <DateTime, double>{};
     for (
-      var date = startDate;
-      date.isBefore(endDate) || date.isAtSameMomentAs(endDate);
-      date = date.add(const Duration(days: 1))
+      var d = start;
+      d.isBefore(end) || d.isAtSameMomentAs(end);
+      d = d.add(const Duration(days: 1))
     ) {
-      dailyAmounts[date] = 0.0;
+      map[d] = 0.0;
+    }
+    for (final tx in txs) {
+      final day = DateTime(
+        tx.transactionDate.year,
+        tx.transactionDate.month,
+        tx.transactionDate.day,
+      );
+      final amt = double.parse(tx.amount) * (tx.category.isIncome ? 1 : -1);
+      map[day] = (map[day] ?? 0) + amt;
+    }
+    return map;
+  }
+
+  Map<DateTime, double> _computeMonthlyAmounts(
+    DateTime start,
+    List<TransactionResponse> txs,
+  ) {
+    final end = DateTime(start.year, start.month + 12, 1);
+
+    final map = <DateTime, double>{};
+    for (
+      var d = DateTime(start.year, start.month, 1);
+      d.isBefore(end) || d.isAtSameMomentAs(end);
+      d = DateTime(d.year, d.month + 1, d.day)
+    ) {
+      map[d] = 0.0;
     }
 
-    for (final transaction in transactions) {
-      final transactionDate = transaction.transactionDate;
-      final amount = double.parse(transaction.amount);
-
-      final adjustedAmount = transaction.category.isIncome ? amount : -amount;
-
-      if (dailyAmounts.containsKey(transactionDate)) {
-        dailyAmounts[transactionDate] =
-            dailyAmounts[transactionDate]! + adjustedAmount;
-      } else {
-        dailyAmounts[transactionDate] = adjustedAmount;
+    for (final tx in txs) {
+      final month = DateTime(
+        tx.transactionDate.year,
+        tx.transactionDate.month,
+        1,
+      );
+      if (map.containsKey(month)) {
+        final amt = double.parse(tx.amount) * (tx.category.isIncome ? 1 : -1);
+        map[month] = map[month]! + amt;
       }
     }
 
-    return dailyAmounts;
+    return map;
   }
 }

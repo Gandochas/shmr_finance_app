@@ -14,7 +14,7 @@ class BalanceTab extends StatelessWidget {
       create: (context) => BalanceCubit(
         bankAccountRepository: context.read<BankAccountRepository>(),
         transactionRepository: context.read<TransactionRepository>(),
-      )..loadBalance(),
+      )..loadAll(),
       child: Navigator(
         onGenerateRoute: (settings) {
           return MaterialPageRoute(builder: (context) => const BalancePage());

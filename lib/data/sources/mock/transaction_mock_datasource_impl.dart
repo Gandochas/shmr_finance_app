@@ -220,6 +220,15 @@ final class TransactionMockDatasourceImpl {
       createdAt: DateTime(2025, 6, 19),
       updatedAt: DateTime(2025, 6, 19),
     ),
+    Transaction(
+      id: 23,
+      accountId: 1,
+      categoryId: 3,
+      amount: '5000000',
+      transactionDate: DateTime(2025, 6, 7),
+      createdAt: DateTime(2025, 6, 19),
+      updatedAt: DateTime(2025, 6, 19),
+    ),
   ];
 
   Future<Transaction> create(TransactionRequest transactionRequest) async {
