@@ -26,6 +26,9 @@ dependencies:
   intl: ^0.20.2
   fl_chart: ^1.0.0
 
+  category_chart:
+    path: packages/category_chart
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
