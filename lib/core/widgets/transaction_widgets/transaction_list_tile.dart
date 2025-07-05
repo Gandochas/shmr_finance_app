@@ -55,7 +55,7 @@ class TransactionListTile extends StatelessWidget {
           Text(
             isHeader
                 ? '${percentage.toStringAsFixed(2)}%\n$sumByCategory ${transaction.account.currency}'
-                : '${transaction.amount} ${transaction.account.currency}\n${formatDate(transaction.transactionDate)}',
+                : '${transaction.amount} ${transaction.account.currency}\n${formatDate(date: transaction.transactionDate)}',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           iconButton,

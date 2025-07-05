@@ -219,7 +219,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                     trailing: TextButton(
                       onPressed: _pickDate,
                       child: Text(
-                        formatDate(_selectedDate),
+                        formatDate(date: _selectedDate),
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ),
