@@ -9,6 +9,7 @@ class TransactionListTile extends StatelessWidget {
     required this.iconButton,
     required this.isHeader,
     this.sumByCategory = 0,
+    this.percentage = 0,
     super.key,
   });
 
@@ -17,6 +18,7 @@ class TransactionListTile extends StatelessWidget {
   final IconButton iconButton;
   final bool isHeader;
   final int sumByCategory;
+  final double percentage;
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +54,8 @@ class TransactionListTile extends StatelessWidget {
         children: [
           Text(
             isHeader
-                ? '$sumByCategory ${transaction.account.currency}'
-                : '${transaction.amount} ${transaction.account.currency}\n${formatDate(transaction.transactionDate)}',
+                ? '${percentage.toStringAsFixed(2)}%\n$sumByCategory ${transaction.account.currency}'
+                : '${transaction.amount} ${transaction.account.currency}\n${formatDate(date: transaction.transactionDate)}',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           iconButton,

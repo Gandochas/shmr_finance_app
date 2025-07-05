@@ -2,3 +2,5 @@ include: package:coca_lints/analysis_options.yaml
 analyzer:
   errors:
     discarded_futures: ignore
+    unnecessary_library_directive: ignore
+    unnecessary_library_name: ignore

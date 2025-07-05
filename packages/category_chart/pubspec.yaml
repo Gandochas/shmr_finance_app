@@ -1,0 +1,10 @@
+name: category_chart
+description: A reusable animated category pie chart widget.
+version: 0.1.0
+environment:
+  sdk: ">=2.18.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  fl_chart: ^1.0.0

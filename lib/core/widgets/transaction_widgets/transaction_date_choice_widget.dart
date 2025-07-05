@@ -53,7 +53,7 @@ class TransactionDateChoiceWidget extends StatelessWidget {
             children: [
               Text(title, style: Theme.of(context).textTheme.bodyLarge),
               Text(
-                formatDate(initialDate),
+                formatDate(date: initialDate),
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],
