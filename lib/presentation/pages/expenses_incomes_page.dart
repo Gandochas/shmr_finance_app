@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shmr_finance_app/core/widgets/show_transaction_form.dart';
+import 'package:shmr_finance_app/core/widgets/transaction_widgets/show_transaction_form.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transaction_list_tile.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transactions_sum_widget.dart';
 import 'package:shmr_finance_app/domain/bloc/expenses_incomes/expenses_incomes_cubit.dart';

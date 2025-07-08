@@ -17,7 +17,7 @@ class TransactionListTile extends StatelessWidget {
   final TransactionResponse transaction;
   final IconButton iconButton;
   final bool isHeader;
-  final int sumByCategory;
+  final double sumByCategory;
   final double percentage;
 
   @override

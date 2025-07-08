@@ -8,9 +8,9 @@ class TransactionsSumWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final transactionsSum = transactions.fold(
+    final transactionsSum = transactions.fold<double>(
       0,
-      (previousValue, element) => previousValue + int.parse(element.amount),
+      (previousValue, element) => previousValue + double.parse(element.amount),
     );
     return DecoratedBox(
       decoration: BoxDecoration(color: Theme.of(context).colorScheme.secondary),

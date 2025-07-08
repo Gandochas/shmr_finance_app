@@ -37,8 +37,8 @@ final class ArticlesCubit extends Cubit<ArticlesState> {
       final articles = await _categoryRepository.getAll();
 
       emit(ArticlesIdleState(articles));
-    } on Object {
-      emit(const ArticlesErrorState('Failed to load the articles'));
+    } on Object catch (e, s) {
+      emit(ArticlesErrorState('Failed to load the articles! \n$e: $s'));
       rethrow;
     }
   }
@@ -64,8 +64,8 @@ final class ArticlesCubit extends Cubit<ArticlesState> {
         (a, b) => b.name.toLowerCase().compareTo(a.name.toLowerCase()),
       );
       emit(ArticlesIdleState(neededArticles));
-    } on Object {
-      emit(const ArticlesErrorState('Failed to search the articles'));
+    } on Object catch (e, s) {
+      emit(ArticlesErrorState('Failed to search the articles! \n$e: $s'));
       rethrow;
     }
   }

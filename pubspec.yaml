@@ -49,17 +49,21 @@ flutter:
     - assets/icon/
     - assets/splash/
 
-flutter_icons:
+flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/icon/app_icon.png"
   remove_alpha_ios: true
 
 flutter_native_splash:
-  color: "#ffffff" # фон сплеша
+  color: "#ffffff"
   image: assets/splash/splash_image.png
+  android_12:
+    color: "#ffffff"
+    image: assets/splash/splash_image.png
   android: true
   ios: true
+  web: false
   fullscreen: true
   android_gravity: fill
   ios_content_mode: scaleToFill

@@ -49,8 +49,12 @@ final class ExpensesIncomesCubit extends Cubit<ExpensesIncomesState> {
           .toList();
 
       emit(ExpensesIncomesIdleState(neededTransactions));
-    } on Object {
-      emit(const ExpensesIncomesErrorState('Something went wrong!'));
+    } on Object catch (e, s) {
+      emit(
+        ExpensesIncomesErrorState(
+          'Failed to load today transactions! \n$e: $s',
+        ),
+      );
       rethrow;
     }
   }

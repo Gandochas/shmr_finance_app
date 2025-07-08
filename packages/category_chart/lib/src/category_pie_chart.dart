@@ -1,9 +1,10 @@
 import 'dart:math';
 
+import 'package:category_chart/src/badge.dart';
 import 'package:category_chart/src/chart_config.dart';
 import 'package:category_chart/src/chart_data.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Badge;
 
 class CategoryPieChart extends StatefulWidget {
   const CategoryPieChart({
@@ -84,7 +85,7 @@ class _CategoryPieChartState extends State<CategoryPieChart> {
               final color = _getCategoryColor(index);
               final isTouched = index == touchedIndex;
               final badge = isTouched
-                  ? _Badge(
+                  ? Badge(
                       label:
                           '${data.names[index]}:\n${value.toStringAsFixed(2)} (${totalAmount == 0 ? 0.0 : (value / totalAmount * 100).toStringAsFixed(2)}%)',
                       color: color,
@@ -147,35 +148,5 @@ class _CategoryPieChartState extends State<CategoryPieChart> {
   Color _getCategoryColor(int index) {
     final colors = widget.config.palette;
     return colors[index % colors.length];
-  }
-}
-
-/// Простой виджет для отображения popup-метки
-class _Badge extends StatelessWidget {
-  const _Badge({
-    required this.label,
-    required this.color,
-  });
-
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(6),
-      decoration: BoxDecoration(
-        color: Colors.white70,
-        border: Border.all(color: color, width: 1),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        label,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.black87,
-            ),
-      ),
-    );
   }
 }

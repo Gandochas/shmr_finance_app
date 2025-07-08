@@ -1,9 +1,7 @@
-// import 'package:category_chart/category_chart.dart';
-
 import 'package:category_chart/category_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shmr_finance_app/core/widgets/show_transaction_form.dart';
+import 'package:shmr_finance_app/core/widgets/transaction_widgets/show_transaction_form.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transaction_date_choice_widget.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transaction_list_tile.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transactions_sum_widget.dart';
@@ -65,60 +63,76 @@ class _AnalysisPageState extends State<AnalysisPage>
           final hasError = state is HistoryErrorState;
           final transactions = _cachedTransactions;
 
-          final sumSection = TransactionsSumWidget(transactions: transactions);
+          final transactionsSumSection = TransactionsSumWidget(
+            transactions: transactions,
+          );
 
           Widget chartSection;
           {
-            final byCat = <String, double>{};
-            for (final tx in transactions) {
-              byCat[tx.category.name] =
-                  (byCat[tx.category.name] ?? 0) + double.parse(tx.amount);
+            final transactionsGroupsSumByCategoryName = <String, double>{};
+            for (final transaction in transactions) {
+              transactionsGroupsSumByCategoryName[transaction.category.name] =
+                  (transactionsGroupsSumByCategoryName[transaction
+                          .category
+                          .name] ??
+                      0) +
+                  double.parse(transaction.amount);
             }
-            final names = byCat.keys.toList();
-            final amounts = names.map((n) => byCat[n]!).toList();
+            final groupNames = transactionsGroupsSumByCategoryName.keys
+                .toList();
+            final amounts = groupNames
+                .map((n) => transactionsGroupsSumByCategoryName[n]!)
+                .toList();
 
             chartSection = SizedBox(
               height: 250,
               child: CategoryPieChart(
                 animation: _chartController,
-                oldData: ChartData(amounts: amounts, names: names),
-                newData: ChartData(amounts: amounts, names: names),
+                oldData: ChartData(amounts: amounts, names: groupNames),
+                newData: ChartData(amounts: amounts, names: groupNames),
               ),
             );
           }
 
-          Widget listSection;
+          Widget transactionsListSection;
           if (isLoading) {
-            listSection = const Center(child: CircularProgressIndicator());
+            transactionsListSection = const Center(
+              child: CircularProgressIndicator(),
+            );
           } else if (hasError) {
-            listSection = Center(child: Text(state.errorMessage));
+            transactionsListSection = Center(child: Text(state.errorMessage));
           } else {
-            final grouping = <String, List<TransactionResponse>>{};
-            for (final tx in transactions) {
-              grouping.putIfAbsent(tx.category.name, () => []).add(tx);
+            final transactionsGroupsByCategoryName =
+                <String, List<TransactionResponse>>{};
+            for (final transaction in transactions) {
+              transactionsGroupsByCategoryName
+                  .putIfAbsent(transaction.category.name, () => [])
+                  .add(transaction);
             }
-            final categoryNames = grouping.keys.toList();
-            final totalSum = transactions.fold<int>(
+            final categoryNames = transactionsGroupsByCategoryName.keys
+                .toList();
+            final totalSum = transactions.fold<double>(
               0,
-              (prev, e) => prev + int.parse(e.amount),
+              (prev, e) => prev + double.parse(e.amount),
             );
 
-            listSection = Expanded(
+            transactionsListSection = Expanded(
               child: ListView.separated(
                 itemCount: categoryNames.length,
                 separatorBuilder: (_, _) =>
                     Divider(color: Theme.of(context).dividerColor, height: 1),
                 itemBuilder: (context, index) {
-                  final category = categoryNames[index];
-                  final items = grouping[category]!
+                  final categoryName = categoryNames[index];
+                  final items = transactionsGroupsByCategoryName[categoryName]!
                     ..sort(
                       (a, b) => a.transactionDate.compareTo(b.transactionDate),
                     );
-                  final categorySum = items.fold<int>(
+                  final categorySum = items.fold<double>(
                     0,
-                    (prev, e) => prev + int.parse(e.amount),
+                    (previous, element) =>
+                        previous + double.parse(element.amount),
                   );
-                  final isExpanded = _expandedCategories.contains(category);
+                  final isExpanded = _expandedCategories.contains(categoryName);
 
                   return Column(
                     children: [
@@ -134,9 +148,9 @@ class _AnalysisPageState extends State<AnalysisPage>
                           ),
                           onPressed: () => setState(() {
                             if (isExpanded) {
-                              _expandedCategories.remove(category);
+                              _expandedCategories.remove(categoryName);
                             } else {
-                              _expandedCategories.add(category);
+                              _expandedCategories.add(categoryName);
                             }
                           }),
                         ),
@@ -148,8 +162,10 @@ class _AnalysisPageState extends State<AnalysisPage>
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: items.length,
-                          separatorBuilder: (_, _) =>
-                              Divider(color: Theme.of(context).dividerColor),
+                          separatorBuilder: (_, _) => Divider(
+                            color: Theme.of(context).dividerColor,
+                            height: 1,
+                          ),
                           itemBuilder: (context, index) => TransactionListTile(
                             isIncomePage: widget.isIncomePage,
                             transaction: items[index],
@@ -187,6 +203,7 @@ class _AnalysisPageState extends State<AnalysisPage>
                     : DateTime.now(),
                 isStartDate: true,
               ),
+
               TransactionDateChoiceWidget(
                 title: 'Конец',
                 initialDate: state is HistoryIdleState
@@ -199,11 +216,11 @@ class _AnalysisPageState extends State<AnalysisPage>
                 isStartDate: false,
               ),
 
-              sumSection,
+              transactionsSumSection,
 
               chartSection,
 
-              listSection,
+              transactionsListSection,
             ],
           );
         },

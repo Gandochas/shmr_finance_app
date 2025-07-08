@@ -58,41 +58,43 @@ final class TransactionFormCubit extends Cubit<TransactionFormState> {
       emit(
         TransactionFormIdleState(accounts: accounts, categories: categories),
       );
-    } on Object {
-      emit(const TransactionFormErrorState('Не удалось загрузить репозитории'));
+    } on Object catch (e, s) {
+      emit(
+        TransactionFormErrorState('Failed to load data repositories! \n$e: $s'),
+      );
     }
   }
 
-  Future<void> updateTransaction(TransactionRequest req) async {
+  Future<void> updateTransaction(TransactionRequest updateRequest) async {
     emit(const TransactionFormLoadingState());
     try {
       await _transactionRepository.update(
-        transactionId: req.id,
-        transactionRequest: req,
+        transactionId: updateRequest.id,
+        transactionRequest: updateRequest,
       );
       await loadData();
-    } on Object {
-      emit(const TransactionFormErrorState('Не удалось сохранить изменения'));
+    } on Object catch (e, s) {
+      emit(TransactionFormErrorState('Failed to update transaction! \n$e: $s'));
     }
   }
 
-  Future<void> deleteTransaction(int id) async {
+  Future<void> deleteTransaction(int transactionId) async {
     emit(const TransactionFormLoadingState());
     try {
-      await _transactionRepository.delete(id);
+      await _transactionRepository.delete(transactionId);
       await loadData();
-    } on Object {
-      emit(const TransactionFormErrorState('Не удалось удалить транзакцию'));
+    } on Object catch (e, s) {
+      emit(TransactionFormErrorState('Failed to delete transaction! \n$e: $s'));
     }
   }
 
-  Future<void> createTransaction(TransactionRequest transactionRequest) async {
+  Future<void> createTransaction(TransactionRequest createRequest) async {
     emit(const TransactionFormLoadingState());
     try {
-      await _transactionRepository.create(transactionRequest);
+      await _transactionRepository.create(createRequest);
       await loadData();
-    } on Object {
-      emit(const TransactionFormErrorState('Не удалось создать транзакцию'));
+    } on Object catch (e, s) {
+      emit(TransactionFormErrorState('Failed to create transaction! \n$e: $s'));
     }
   }
 }

@@ -67,8 +67,8 @@ final class HistoryCubit extends Cubit<HistoryState> {
           endDate: _end,
         ),
       );
-    } on Object {
-      emit(const HistoryErrorState('Something went wrong!'));
+    } on Object catch (e, s) {
+      emit(HistoryErrorState('Failed to load transactions history! \n$e: $s'));
       rethrow;
     }
   }

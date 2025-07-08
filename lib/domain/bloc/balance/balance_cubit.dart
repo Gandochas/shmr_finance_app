@@ -51,13 +51,13 @@ final class BalanceCubit extends Cubit<BalanceState> {
   Future<void> updateAccountCurrency(String newCurrency) async {
     emit(const BalanceLoadingState());
     try {
-      final account = await _bankAccountRepository.getById(accountId);
+      final bankAccount = await _bankAccountRepository.getById(accountId);
 
       final updatedAccount = await _bankAccountRepository.update(
         accountId: accountId,
         updateRequest: AccountUpdateRequest(
-          name: account.name,
-          balance: account.balance,
+          name: bankAccount.name,
+          balance: bankAccount.balance,
           currency: newCurrency,
         ),
       );
@@ -69,8 +69,8 @@ final class BalanceCubit extends Cubit<BalanceState> {
           name: updatedAccount.name,
         ),
       );
-    } on Object {
-      emit(const BalanceErrorState('Failed to change currency!'));
+    } on Object catch (e, s) {
+      emit(BalanceErrorState('Failed to change currency! \n$e: $s'));
       rethrow;
     }
   }
@@ -78,14 +78,14 @@ final class BalanceCubit extends Cubit<BalanceState> {
   Future<void> updateAccountName(String newAccountName) async {
     emit(const BalanceLoadingState());
     try {
-      final account = await _bankAccountRepository.getById(accountId);
+      final bankAccount = await _bankAccountRepository.getById(accountId);
 
       final updatedAccount = await _bankAccountRepository.update(
         accountId: accountId,
         updateRequest: AccountUpdateRequest(
           name: newAccountName,
-          balance: account.balance,
-          currency: account.currency,
+          balance: bankAccount.balance,
+          currency: bankAccount.currency,
         ),
       );
 
@@ -96,8 +96,8 @@ final class BalanceCubit extends Cubit<BalanceState> {
           name: updatedAccount.name,
         ),
       );
-    } on Object {
-      emit(const BalanceErrorState('Failed to change account name!'));
+    } on Object catch (e, s) {
+      emit(BalanceErrorState('Failed to change account name! \n$e: $s'));
       rethrow;
     }
   }
@@ -105,95 +105,114 @@ final class BalanceCubit extends Cubit<BalanceState> {
   Future<void> loadAll() async {
     emit(const BalanceLoadingState());
     try {
-      final account = await _bankAccountRepository.getById(accountId);
+      final bankAccount = await _bankAccountRepository.getById(accountId);
       final now = DateTime.now();
 
       final startDay = DateTime(now.year, now.month - 1, now.day);
       final endDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
-      final txDay = await _transactionRepository.getByAccountIdAndPeriod(
-        accountId: accountId,
-        startDate: startDay,
-        endDate: endDay,
+      final lastMonthTransactions = await _transactionRepository
+          .getByAccountIdAndPeriod(
+            accountId: accountId,
+            startDate: startDay,
+            endDate: endDay,
+          );
+      final transactionsAmountsByDayMap = _computeDailyAmounts(
+        startDay,
+        endDay,
+        lastMonthTransactions,
       );
-      final dailyMap = _computeDailyAmounts(startDay, endDay, txDay);
 
       final startMonth = DateTime(now.year, now.month - 11, 1);
 
       final endMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
-      final txMonth = await _transactionRepository.getByAccountIdAndPeriod(
-        accountId: accountId,
-        startDate: startMonth,
-        endDate: endMonth,
+      final lastYearTransactions = await _transactionRepository
+          .getByAccountIdAndPeriod(
+            accountId: accountId,
+            startDate: startMonth,
+            endDate: endMonth,
+          );
+      final transactionsAmountsByMonthMap = _computeMonthlyAmounts(
+        startMonth,
+        lastYearTransactions,
       );
-      final monthlyMap = _computeMonthlyAmounts(startMonth, txMonth);
 
       emit(
         BalanceIdleState(
-          name: account.name,
-          balance: account.balance,
-          currency: account.currency,
-          dailyTransactionAmounts: dailyMap,
-          monthlyTransactionAmounts: monthlyMap,
+          name: bankAccount.name,
+          balance: bankAccount.balance,
+          currency: bankAccount.currency,
+          dailyTransactionAmounts: transactionsAmountsByDayMap,
+          monthlyTransactionAmounts: transactionsAmountsByMonthMap,
         ),
       );
-    } catch (e) {
-      emit(const BalanceErrorState('Failed to load data'));
+    } on Object catch (e, s) {
+      emit(BalanceErrorState('Failed to load data! \n$e: $s'));
       rethrow;
     }
   }
 
   Map<DateTime, double> _computeDailyAmounts(
-    DateTime start,
-    DateTime end,
-    List<TransactionResponse> txs,
+    DateTime startDate,
+    DateTime endDate,
+    List<TransactionResponse> transactions,
   ) {
-    final map = <DateTime, double>{};
+    final transactionsAmountsByDayMap = <DateTime, double>{};
     for (
-      var d = start;
-      d.isBefore(end) || d.isAtSameMomentAs(end);
-      d = d.add(const Duration(days: 1))
+      var currentDate = startDate;
+      currentDate.isBefore(endDate) || currentDate.isAtSameMomentAs(endDate);
+      currentDate = currentDate.add(const Duration(days: 1))
     ) {
-      map[d] = 0.0;
+      transactionsAmountsByDayMap[currentDate] = 0.0;
     }
-    for (final tx in txs) {
-      final day = DateTime(
-        tx.transactionDate.year,
-        tx.transactionDate.month,
-        tx.transactionDate.day,
+    for (final transaction in transactions) {
+      final currentDay = DateTime(
+        transaction.transactionDate.year,
+        transaction.transactionDate.month,
+        transaction.transactionDate.day,
       );
-      final amt = double.parse(tx.amount) * (tx.category.isIncome ? 1 : -1);
-      map[day] = (map[day] ?? 0) + amt;
+      final amount =
+          double.parse(transaction.amount) *
+          (transaction.category.isIncome ? 1 : -1);
+      transactionsAmountsByDayMap[currentDay] =
+          (transactionsAmountsByDayMap[currentDay] ?? 0) + amount;
     }
-    return map;
+    return transactionsAmountsByDayMap;
   }
 
   Map<DateTime, double> _computeMonthlyAmounts(
-    DateTime start,
-    List<TransactionResponse> txs,
+    DateTime startDate,
+    List<TransactionResponse> transactions,
   ) {
-    final end = DateTime(start.year, start.month + 12, 1);
+    final endDate = DateTime(startDate.year, startDate.month + 12, 1);
 
-    final map = <DateTime, double>{};
+    final transactionsAmountsByMonthMap = <DateTime, double>{};
     for (
-      var d = DateTime(start.year, start.month, 1);
-      d.isBefore(end) || d.isAtSameMomentAs(end);
-      d = DateTime(d.year, d.month + 1, d.day)
+      var currentDate = DateTime(startDate.year, startDate.month, 1);
+      currentDate.isBefore(endDate) || currentDate.isAtSameMomentAs(endDate);
+      currentDate = DateTime(
+        currentDate.year,
+        currentDate.month + 1,
+        currentDate.day,
+      )
     ) {
-      map[d] = 0.0;
+      transactionsAmountsByMonthMap[currentDate] = 0.0;
     }
 
-    for (final tx in txs) {
-      final month = DateTime(
-        tx.transactionDate.year,
-        tx.transactionDate.month,
+    for (final transaction in transactions) {
+      final currentMonth = DateTime(
+        transaction.transactionDate.year,
+        transaction.transactionDate.month,
         1,
       );
-      if (map.containsKey(month)) {
-        final amt = double.parse(tx.amount) * (tx.category.isIncome ? 1 : -1);
-        map[month] = map[month]! + amt;
+      if (transactionsAmountsByMonthMap.containsKey(currentMonth)) {
+        final amount =
+            double.parse(transaction.amount) *
+            (transaction.category.isIncome ? 1 : -1);
+        transactionsAmountsByMonthMap[currentMonth] =
+            transactionsAmountsByMonthMap[currentMonth]! + amount;
       }
     }
 
-    return map;
+    return transactionsAmountsByMonthMap;
   }
 }

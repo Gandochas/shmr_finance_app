@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:shmr_finance_app/core/locale_decimal_formatter.dart';
 import 'package:shmr_finance_app/core/widgets/format_date.dart';
 import 'package:shmr_finance_app/core/widgets/format_time.dart';
 import 'package:shmr_finance_app/domain/bloc/transaction_form/transaction_form_cubit.dart';
@@ -332,43 +333,5 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     );
 
     await widget.onSave(request);
-  }
-}
-
-class LocaleDecimalFormatter extends TextInputFormatter {
-  const LocaleDecimalFormatter(this.separator);
-
-  final String separator;
-
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    var text = newValue.text;
-
-    final other = separator == ',' ? '.' : ',';
-
-    if (text.contains(other)) {
-      text = text.replaceAll(other, separator);
-    }
-
-    final buffer = StringBuffer();
-    for (final char in text.characters) {
-      if (char == separator || RegExp(r'\d').hasMatch(char)) {
-        buffer.write(char);
-      }
-    }
-    text = buffer.toString();
-
-    final parts = text.split(separator);
-    if (parts.length > 2) {
-      text = parts.first + separator + parts.sublist(1).join();
-    }
-
-    return TextEditingValue(
-      text: text,
-      selection: TextSelection.collapsed(offset: text.length),
-    );
   }
 }
