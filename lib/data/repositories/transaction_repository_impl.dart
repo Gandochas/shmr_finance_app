@@ -34,7 +34,7 @@ final class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     final companion = TransactionsCompanion.insert(
-      accountId: transactionRequest.id,
+      accountId: transactionRequest.accountId,
       categoryId: transactionRequest.categoryId,
       amount: transactionRequest.amount,
       comment: Value(transactionRequest.comment),
@@ -134,7 +134,7 @@ final class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     final companion = TransactionsCompanion(
-      accountId: Value(transactionRequest.id),
+      accountId: Value(transactionRequest.accountId),
       categoryId: Value(transactionRequest.categoryId),
       amount: Value(transactionRequest.amount),
       comment: Value(transactionRequest.comment),

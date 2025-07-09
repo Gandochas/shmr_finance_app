@@ -237,7 +237,7 @@ final class TransactionMockDatasourceImpl implements TransactionDatasource {
     await Future<void>.delayed(const Duration(seconds: 1));
     final newTransaction = Transaction(
       id: const Uuid().v4().hashCode,
-      accountId: transactionRequest.id,
+      accountId: transactionRequest.accountId,
       categoryId: transactionRequest.categoryId,
       amount: transactionRequest.amount,
       transactionDate: transactionRequest.transactionDate,

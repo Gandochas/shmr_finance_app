@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:shmr_finance_app/core/network/network_client.dart';
 import 'package:shmr_finance_app/domain/models/transaction/transaction.dart';
 import 'package:shmr_finance_app/domain/models/transaction_request/transaction_request.dart';
@@ -15,6 +16,7 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
       final response = await _networkClient.post<Map<String, Object?>>(
         '/transactions',
         data: {
+          'accountId': transactionRequest.accountId,
           'categoryId': transactionRequest.categoryId,
           'amount': transactionRequest.amount,
           'transactionDate': transactionRequest.transactionDate
@@ -24,8 +26,16 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
       );
 
       return Transaction.fromJson(response.data ?? {});
-    } catch (e) {
-      throw Exception('Failed to create transaction: $e');
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw Exception('Bad request, invalid data: ${e.response?.data}');
+      } else if (e.response?.statusCode == 401) {
+        throw Exception('Unauthorized: ${e.response?.data}');
+      } else if (e.response?.statusCode == 404) {
+        throw Exception('Resource not found: ${e.response?.data}');
+      } else {
+        throw Exception('Failed to create transaction: $e');
+      }
     }
   }
 
@@ -33,8 +43,16 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
   Future<void> delete(int transactionId) async {
     try {
       await _networkClient.delete<void>('/transactions/$transactionId');
-    } catch (e) {
-      throw Exception('Failed to delete transaction: $e');
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw Exception('Bad request, invalid data: ${e.response?.data}');
+      } else if (e.response?.statusCode == 401) {
+        throw Exception('Unauthorized: ${e.response?.data}');
+      } else if (e.response?.statusCode == 404) {
+        throw Exception('Resource not found: ${e.response?.data}');
+      } else {
+        throw Exception('Failed to delete transaction: $e');
+      }
     }
   }
 
@@ -45,10 +63,9 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
     DateTime? endDate,
   }) async {
     try {
-      final response = await _networkClient.get<List<dynamic>>(
-        '/transactions',
+      final response = await _networkClient.get<List<Map<String, Object?>>>(
+        '/transactions/account/$accountId/period',
         params: {
-          'accountId': accountId,
           'startDate': startDate?.toIso8601String(),
           'endDate': endDate?.toIso8601String(),
         },
@@ -58,13 +75,17 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
 
       return data
           .map(
-            (transactionData) => TransactionResponse.fromJson(
-              transactionData as Map<String, dynamic>,
-            ),
+            (transactionData) => TransactionResponse.fromJson(transactionData),
           )
           .toList();
-    } catch (e) {
-      throw Exception('Failed to fetch transactions by account and period: $e');
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw Exception('Bad request, invalid data: ${e.response?.data}');
+      } else if (e.response?.statusCode == 401) {
+        throw Exception('Unauthorized: ${e.response?.data}');
+      } else {
+        throw Exception('Failed to fetch transactions: $e');
+      }
     }
   }
 
@@ -76,8 +97,16 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
       );
 
       return TransactionResponse.fromJson(response.data ?? {});
-    } catch (e) {
-      throw Exception('Failed to fetch transaction by id: $e');
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw Exception('Bad request, invalid data: ${e.response?.data}');
+      } else if (e.response?.statusCode == 401) {
+        throw Exception('Unauthorized: ${e.response?.data}');
+      } else if (e.response?.statusCode == 404) {
+        throw Exception('Resource not found: ${e.response?.data}');
+      } else {
+        throw Exception('Failed to fetch transaction by id: $e');
+      }
     }
   }
 
@@ -90,6 +119,7 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
       final response = await _networkClient.put<Map<String, Object?>>(
         '/transactions/$transactionId',
         data: {
+          'accountId': transactionRequest.accountId,
           'categoryId': transactionRequest.categoryId,
           'amount': transactionRequest.amount,
           'transactionDate': transactionRequest.transactionDate
@@ -99,8 +129,16 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
       );
 
       return TransactionResponse.fromJson(response.data ?? {});
-    } catch (e) {
-      throw Exception('Failed to update transaction: $e');
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw Exception('Bad request, invalid data: ${e.response?.data}');
+      } else if (e.response?.statusCode == 401) {
+        throw Exception('Unauthorized: ${e.response?.data}');
+      } else if (e.response?.statusCode == 404) {
+        throw Exception('Resource not found: ${e.response?.data}');
+      } else {
+        throw Exception('Failed to update transaction: $e');
+      }
     }
   }
 }

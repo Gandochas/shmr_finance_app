@@ -14,19 +14,16 @@ final class NetworkClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          // Логирование запроса
           debugPrint('Request: ${options.method} ${options.path}');
-          return handler.next(options); // Продолжаем с запросом
+          return handler.next(options);
         },
         onResponse: (response, handler) {
-          // Логирование ответа
           debugPrint('Response: ${response.statusCode} ${response.data}');
-          return handler.next(response); // Продолжаем с ответом
+          return handler.next(response);
         },
         onError: (e, handler) {
-          // Логирование ошибки
           debugPrint('Error: ${e.message}');
-          return handler.next(e); // Продолжаем с ошибкой
+          return handler.next(e);
         },
       ),
     );

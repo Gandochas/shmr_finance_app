@@ -6,7 +6,7 @@ part 'transaction_request.g.dart';
 @freezed
 abstract class TransactionRequest with _$TransactionRequest {
   const factory TransactionRequest({
-    required int id,
+    required int accountId,
     required int categoryId,
     required String amount,
     required DateTime transactionDate,

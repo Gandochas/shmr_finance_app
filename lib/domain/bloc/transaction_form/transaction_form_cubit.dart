@@ -65,11 +65,14 @@ final class TransactionFormCubit extends Cubit<TransactionFormState> {
     }
   }
 
-  Future<void> updateTransaction(TransactionRequest updateRequest) async {
+  Future<void> updateTransaction({
+    required int transactionId,
+    required TransactionRequest updateRequest,
+  }) async {
     emit(const TransactionFormLoadingState());
     try {
       await _transactionRepository.update(
-        transactionId: updateRequest.id,
+        transactionId: transactionId,
         transactionRequest: updateRequest,
       );
       await loadData();

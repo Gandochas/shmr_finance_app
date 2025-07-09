@@ -45,7 +45,10 @@ void showTransactionForm({
                   } else {
                     await context
                         .read<TransactionFormCubit>()
-                        .updateTransaction(request);
+                        .updateTransaction(
+                          transactionId: transaction.id,
+                          updateRequest: request,
+                        );
                   }
                 },
                 onDelete: () async {

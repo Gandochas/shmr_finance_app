@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:shmr_finance_app/core/network/network_client.dart';
 import 'package:shmr_finance_app/domain/models/account/account.dart';
 import 'package:shmr_finance_app/domain/models/account_create_request/account_create_request.dart';
@@ -23,26 +24,33 @@ final class BankAccountNetworkDatasourceImpl implements BankAccountDatasource {
       );
 
       return Account.fromJson(response.data ?? {});
-    } catch (e) {
-      throw Exception('Failed to create account: $e');
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw Exception('Bad request, invalid data: ${e.response?.data}');
+      } else if (e.response?.statusCode == 401) {
+        throw Exception('Unauthorized: ${e.response?.data}');
+      } else {
+        throw Exception('Failed to create account: $e');
+      }
     }
   }
 
   @override
   Future<List<Account>> getAll() async {
     try {
-      final response = await _networkClient.get<List<dynamic>>('/accounts');
+      final response = await _networkClient.get<List<Map<String, Object?>>>(
+        '/accounts',
+      );
 
       final data = response.data ?? [];
 
-      return data
-          .map(
-            (accountData) =>
-                Account.fromJson(accountData as Map<String, dynamic>),
-          )
-          .toList();
-    } catch (e) {
-      throw Exception('Failed to fetch accounts: $e');
+      return data.map((accountData) => Account.fromJson(accountData)).toList();
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        throw Exception('Unauthorized: ${e.response?.data}');
+      } else {
+        throw Exception('Failed to fetch accounts: $e');
+      }
     }
   }
 
@@ -54,8 +62,16 @@ final class BankAccountNetworkDatasourceImpl implements BankAccountDatasource {
       );
 
       return Account.fromJson(response.data ?? {});
-    } catch (e) {
-      throw Exception('Failed to fetch account by id: $e');
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw Exception('Bad request, invalid data: ${e.response?.data}');
+      } else if (e.response?.statusCode == 401) {
+        throw Exception('Unauthorized: ${e.response?.data}');
+      } else if (e.response?.statusCode == 404) {
+        throw Exception('Resource not found: ${e.response?.data}');
+      } else {
+        throw Exception('Failed to fetch account by id: $e');
+      }
     }
   }
 
@@ -67,8 +83,16 @@ final class BankAccountNetworkDatasourceImpl implements BankAccountDatasource {
       );
 
       return AccountHistoryResponse.fromJson(response.data ?? {});
-    } catch (e) {
-      throw Exception('Failed to fetch account history: $e');
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw Exception('Bad request, invalid data: ${e.response?.data}');
+      } else if (e.response?.statusCode == 401) {
+        throw Exception('Unauthorized: ${e.response?.data}');
+      } else if (e.response?.statusCode == 404) {
+        throw Exception('Resource not found: ${e.response?.data}');
+      } else {
+        throw Exception('Failed to fetch account history: $e');
+      }
     }
   }
 
@@ -88,8 +112,16 @@ final class BankAccountNetworkDatasourceImpl implements BankAccountDatasource {
       );
 
       return Account.fromJson(response.data ?? {});
-    } catch (e) {
-      throw Exception('Failed to update account: $e');
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw Exception('Bad request, invalid data: ${e.response?.data}');
+      } else if (e.response?.statusCode == 401) {
+        throw Exception('Unauthorized: ${e.response?.data}');
+      } else if (e.response?.statusCode == 404) {
+        throw Exception('Resource not found: ${e.response?.data}');
+      } else {
+        throw Exception('Failed to update account: $e');
+      }
     }
   }
 }

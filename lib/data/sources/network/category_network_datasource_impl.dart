@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:shmr_finance_app/core/network/network_client.dart';
 import 'package:shmr_finance_app/domain/models/category/category.dart';
 import 'package:shmr_finance_app/domain/sources/category_datasource.dart';
@@ -10,39 +11,44 @@ final class CategoryNetworkDatasourceImpl implements CategoryDatasource {
   @override
   Future<List<Category>> getAll() async {
     try {
-      final response = await _networkClient.get<List<dynamic>>('/categories');
+      final response = await _networkClient.get<List<Map<String, Object?>>>(
+        '/categories',
+      );
 
       final data = response.data ?? [];
 
       return data
-          .map(
-            (categoryData) =>
-                Category.fromJson(categoryData as Map<String, dynamic>),
-          )
+          .map((categoryData) => Category.fromJson(categoryData))
           .toList();
-    } catch (e) {
-      throw Exception('Failed to fetch categories: $e');
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        throw Exception('Unauthorized: ${e.response?.data}');
+      } else {
+        throw Exception('Failed to fetch categories: $e');
+      }
     }
   }
 
   @override
   Future<List<Category>> getByType({required bool isIncome}) async {
     try {
-      final response = await _networkClient.get<List<dynamic>>(
-        '/categories',
-        params: {'isIncome': isIncome},
+      final response = await _networkClient.get<List<Map<String, Object?>>>(
+        '/categories/type/$isIncome',
       );
 
       final data = response.data ?? [];
 
       return data
-          .map(
-            (categoryData) =>
-                Category.fromJson(categoryData as Map<String, dynamic>),
-          )
+          .map((categoryData) => Category.fromJson(categoryData))
           .toList();
-    } catch (e) {
-      throw Exception('Failed to fetch categories by type: $e');
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw Exception('Bad request, invalid data: ${e.response?.data}');
+      } else if (e.response?.statusCode == 401) {
+        throw Exception('Unauthorized: ${e.response?.data}');
+      } else {
+        throw Exception('Failed to fetch categories by type: $e');
+      }
     }
   }
 }
