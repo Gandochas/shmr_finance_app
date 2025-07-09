@@ -2,6 +2,7 @@ import 'package:shmr_finance_app/data/sources/drift/daos/transaction_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/database/database.dart';
 import 'package:shmr_finance_app/domain/models/account/account.dart';
 import 'package:shmr_finance_app/domain/models/account_brief/account_brief.dart';
+import 'package:shmr_finance_app/domain/models/account_response/account_response.dart';
 import 'package:shmr_finance_app/domain/models/category/category.dart';
 import 'package:shmr_finance_app/domain/models/transaction/transaction.dart';
 import 'package:shmr_finance_app/domain/models/transaction_response/transaction_response.dart';
@@ -15,6 +16,20 @@ class DriftMappers {
       name: entity.name,
       balance: entity.balance,
       currency: entity.currency,
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
+    );
+  }
+
+  //! TODO: rethink income and expense Stats
+  static AccountResponse accountEntityToResponse(AccountEntity entity) {
+    return AccountResponse(
+      id: entity.id,
+      name: entity.name,
+      balance: entity.balance,
+      currency: entity.currency,
+      incomeStats: [],
+      expenseStats: [],
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
     );
