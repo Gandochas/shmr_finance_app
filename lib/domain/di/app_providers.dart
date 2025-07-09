@@ -7,12 +7,15 @@ import 'package:shmr_finance_app/data/sources/drift/daos/account_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/category_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/transaction_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/database/database.dart';
-import 'package:shmr_finance_app/data/sources/mock/bank_account_mock_datasource_impl.dart';
-import 'package:shmr_finance_app/data/sources/mock/category_mock_datasource_impl.dart';
-import 'package:shmr_finance_app/data/sources/mock/transaction_mock_datasource_impl.dart';
+import 'package:shmr_finance_app/data/sources/network/bank_account_network_datasource_impl.dart';
+import 'package:shmr_finance_app/data/sources/network/category_network_datasource_impl.dart';
+import 'package:shmr_finance_app/data/sources/network/transaction_network_datasource_impl.dart';
 import 'package:shmr_finance_app/domain/repositories/bank_account_repository.dart';
 import 'package:shmr_finance_app/domain/repositories/category_repository.dart';
 import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart';
+import 'package:shmr_finance_app/domain/sources/bank_account_datasource.dart';
+import 'package:shmr_finance_app/domain/sources/category_datasource.dart';
+import 'package:shmr_finance_app/domain/sources/transaction_datasource.dart';
 
 class AppProviders extends StatelessWidget {
   const AppProviders({required this.child, super.key});
@@ -24,34 +27,34 @@ class AppProviders extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<AppDatabase>(create: (context) => AppDatabase()),
-        Provider<BankAccountMockDatasourceImpl>(
-          create: (context) => BankAccountMockDatasourceImpl(),
+        Provider<BankAccountDatasource>(
+          create: (context) => BankAccountNetworkDatasourceImpl(),
         ),
         Provider<AccountDao>(
           create: (context) => context.read<AppDatabase>().accountDao,
         ),
         Provider<BankAccountRepository>(
           create: (context) => BankAccountRepositoryImpl(
-            apiSource: context.read<BankAccountMockDatasourceImpl>(),
+            apiSource: context.read<BankAccountDatasource>(),
             accountDao: context.read<AccountDao>(),
           ),
         ),
-        Provider<CategoryMockDatasourceImpl>(
-          create: (context) => CategoryMockDatasourceImpl(),
+        Provider<CategoryDatasource>(
+          create: (context) => CategoryNetworkDatasourceImpl(),
         ),
         Provider<CategoryDao>(
           create: (context) => context.read<AppDatabase>().categoryDao,
         ),
         Provider<CategoryRepository>(
           create: (context) => CategoryRepositoryImpl(
-            apiSource: context.read<CategoryMockDatasourceImpl>(),
+            apiSource: context.read<CategoryDatasource>(),
             categoryDao: context.read<CategoryDao>(),
           ),
         ),
-        Provider<TransactionMockDatasourceImpl>(
-          create: (context) => TransactionMockDatasourceImpl(
-            categoriesSource: context.read<CategoryMockDatasourceImpl>(),
-            accountsSource: context.read<BankAccountMockDatasourceImpl>(),
+        Provider<TransactionDatasource>(
+          create: (context) => TransactionNetworkDatasourceImpl(
+            // categoriesSource: context.read<CategoryDatasource>(),
+            // accountsSource: context.read<BankAccountDatasource>(),
           ),
         ),
         Provider<TransactionDao>(
@@ -59,7 +62,7 @@ class AppProviders extends StatelessWidget {
         ),
         Provider<TransactionRepository>(
           create: (context) => TransactionRepositoryImpl(
-            apiSource: context.read<TransactionMockDatasourceImpl>(),
+            apiSource: context.read<TransactionDatasource>(),
             transactionDao: context.read<TransactionDao>(),
           ),
         ),

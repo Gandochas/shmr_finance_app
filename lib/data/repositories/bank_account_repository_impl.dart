@@ -1,24 +1,24 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
-import 'package:shmr_finance_app/core/connection_checker.dart';
+import 'package:shmr_finance_app/core/network/connection_checker.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/account_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/database/database.dart';
 import 'package:shmr_finance_app/data/sources/drift/mappers/drift_mappers.dart';
-import 'package:shmr_finance_app/data/sources/mock/bank_account_mock_datasource_impl.dart';
 import 'package:shmr_finance_app/domain/models/account/account.dart';
 import 'package:shmr_finance_app/domain/models/account_create_request/account_create_request.dart';
 import 'package:shmr_finance_app/domain/models/account_history_response/account_history_response.dart';
 import 'package:shmr_finance_app/domain/models/account_update_request/account_update_request.dart';
 import 'package:shmr_finance_app/domain/repositories/bank_account_repository.dart';
+import 'package:shmr_finance_app/domain/sources/bank_account_datasource.dart';
 
 final class BankAccountRepositoryImpl implements BankAccountRepository {
   BankAccountRepositoryImpl({
-    required BankAccountMockDatasourceImpl apiSource,
+    required BankAccountDatasource apiSource,
     required AccountDao accountDao,
   }) : _apiSource = apiSource,
        _accountDao = accountDao;
 
-  final BankAccountMockDatasourceImpl _apiSource;
+  final BankAccountDatasource _apiSource;
   final AccountDao _accountDao;
   final ConnectionChecker _connectionChecker = ConnectionChecker();
 

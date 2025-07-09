@@ -1,23 +1,24 @@
 import 'package:shmr_finance_app/core/extensions/core_extensions.dart';
-import 'package:shmr_finance_app/data/sources/mock/bank_account_mock_datasource_impl.dart';
-import 'package:shmr_finance_app/data/sources/mock/category_mock_datasource_impl.dart';
 import 'package:shmr_finance_app/domain/models/account_brief/account_brief.dart';
 import 'package:shmr_finance_app/domain/models/transaction/transaction.dart';
 import 'package:shmr_finance_app/domain/models/transaction_request/transaction_request.dart';
 import 'package:shmr_finance_app/domain/models/transaction_response/transaction_response.dart';
 import 'package:shmr_finance_app/domain/repositories/category_repository.dart';
 import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart';
+import 'package:shmr_finance_app/domain/sources/bank_account_datasource.dart';
+import 'package:shmr_finance_app/domain/sources/category_datasource.dart';
+import 'package:shmr_finance_app/domain/sources/transaction_datasource.dart';
 import 'package:uuid/uuid.dart';
 
-final class TransactionMockDatasourceImpl {
+final class TransactionMockDatasourceImpl implements TransactionDatasource {
   TransactionMockDatasourceImpl({
-    required CategoryMockDatasourceImpl categoriesSource,
-    required BankAccountMockDatasourceImpl accountsSource,
+    required CategoryDatasource categoriesSource,
+    required BankAccountDatasource accountsSource,
   }) : _categoriesSource = categoriesSource,
        _accountsSource = accountsSource;
 
-  final CategoryMockDatasourceImpl _categoriesSource;
-  final BankAccountMockDatasourceImpl _accountsSource;
+  final CategoryDatasource _categoriesSource;
+  final BankAccountDatasource _accountsSource;
 
   final _transactions = <Transaction>[
     Transaction(
@@ -231,6 +232,7 @@ final class TransactionMockDatasourceImpl {
     ),
   ];
 
+  @override
   Future<Transaction> create(TransactionRequest transactionRequest) async {
     await Future<void>.delayed(const Duration(seconds: 1));
     final newTransaction = Transaction(
@@ -247,11 +249,13 @@ final class TransactionMockDatasourceImpl {
     return newTransaction;
   }
 
+  @override
   Future<void> delete(int transactionId) async {
     await Future<void>.delayed(const Duration(seconds: 1));
     _transactions.removeWhere((transaction) => transaction.id == transactionId);
   }
 
+  @override
   Future<List<TransactionResponse>> getByAccountIdAndPeriod({
     required int accountId,
     DateTime? startDate,
@@ -296,6 +300,7 @@ final class TransactionMockDatasourceImpl {
     return transactionsList;
   }
 
+  @override
   Future<TransactionResponse> getById(int transactionId) async {
     await Future<void>.delayed(const Duration(seconds: 1));
     final transaction = _transactions.firstWhere(
@@ -329,6 +334,7 @@ final class TransactionMockDatasourceImpl {
     );
   }
 
+  @override
   Future<TransactionResponse> update({
     required int transactionId,
     required TransactionRequest transactionRequest,

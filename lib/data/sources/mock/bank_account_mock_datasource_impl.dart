@@ -5,8 +5,9 @@ import 'package:shmr_finance_app/domain/models/account_history_response/account_
 import 'package:shmr_finance_app/domain/models/account_state/account_state.dart';
 import 'package:shmr_finance_app/domain/models/account_update_request/account_update_request.dart';
 import 'package:shmr_finance_app/domain/repositories/bank_account_repository.dart';
+import 'package:shmr_finance_app/domain/sources/bank_account_datasource.dart';
 
-final class BankAccountMockDatasourceImpl {
+final class BankAccountMockDatasourceImpl implements BankAccountDatasource {
   final _accounts = <Account>[
     Account(
       id: 1,
@@ -34,6 +35,7 @@ final class BankAccountMockDatasourceImpl {
     ),
   ];
 
+  @override
   Future<Account> create(AccountCreateRequest createRequest) async {
     await Future<void>.delayed(const Duration(seconds: 1));
     final newAccount = Account(
@@ -63,11 +65,13 @@ final class BankAccountMockDatasourceImpl {
     return newAccount;
   }
 
+  @override
   Future<List<Account>> getAll() async {
     await Future<void>.delayed(const Duration(seconds: 1));
     return [..._accounts];
   }
 
+  @override
   Future<Account> getById(int accountId) async {
     await Future<void>.delayed(const Duration(seconds: 1));
     return _accounts.firstWhere(
@@ -78,6 +82,7 @@ final class BankAccountMockDatasourceImpl {
     );
   }
 
+  @override
   Future<AccountHistoryResponse> getHistory(int accountId) async {
     await Future<void>.delayed(const Duration(seconds: 1));
     final account = _accounts.lastWhere(
@@ -98,6 +103,7 @@ final class BankAccountMockDatasourceImpl {
     );
   }
 
+  @override
   Future<Account> update({
     required int accountId,
     required AccountUpdateRequest updateRequest,

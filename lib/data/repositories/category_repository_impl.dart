@@ -1,21 +1,21 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart' hide Category;
-import 'package:shmr_finance_app/core/connection_checker.dart';
+import 'package:shmr_finance_app/core/network/connection_checker.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/category_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/database/database.dart';
 import 'package:shmr_finance_app/data/sources/drift/mappers/drift_mappers.dart';
-import 'package:shmr_finance_app/data/sources/mock/category_mock_datasource_impl.dart';
 import 'package:shmr_finance_app/domain/models/category/category.dart';
 import 'package:shmr_finance_app/domain/repositories/category_repository.dart';
+import 'package:shmr_finance_app/domain/sources/category_datasource.dart';
 
 final class CategoryRepositoryImpl implements CategoryRepository {
   CategoryRepositoryImpl({
-    required CategoryMockDatasourceImpl apiSource,
+    required CategoryDatasource apiSource,
     required CategoryDao categoryDao,
   }) : _apiSource = apiSource,
        _categoryDao = categoryDao;
 
-  final CategoryMockDatasourceImpl _apiSource;
+  final CategoryDatasource _apiSource;
   final CategoryDao _categoryDao;
   final ConnectionChecker _connectionChecker = ConnectionChecker();
 

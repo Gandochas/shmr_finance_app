@@ -1,23 +1,23 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
-import 'package:shmr_finance_app/core/connection_checker.dart';
+import 'package:shmr_finance_app/core/network/connection_checker.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/transaction_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/database/database.dart';
 import 'package:shmr_finance_app/data/sources/drift/mappers/drift_mappers.dart';
-import 'package:shmr_finance_app/data/sources/mock/transaction_mock_datasource_impl.dart';
 import 'package:shmr_finance_app/domain/models/transaction/transaction.dart';
 import 'package:shmr_finance_app/domain/models/transaction_request/transaction_request.dart';
 import 'package:shmr_finance_app/domain/models/transaction_response/transaction_response.dart';
 import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart';
+import 'package:shmr_finance_app/domain/sources/transaction_datasource.dart';
 
 final class TransactionRepositoryImpl implements TransactionRepository {
   TransactionRepositoryImpl({
-    required TransactionMockDatasourceImpl apiSource,
+    required TransactionDatasource apiSource,
     required TransactionDao transactionDao,
   }) : _apiSource = apiSource,
        _transactionDao = transactionDao;
 
-  final TransactionMockDatasourceImpl _apiSource;
+  final TransactionDatasource _apiSource;
   final TransactionDao _transactionDao;
   final ConnectionChecker _connectionChecker = ConnectionChecker();
 
