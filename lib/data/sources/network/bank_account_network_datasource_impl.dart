@@ -3,6 +3,7 @@ import 'package:shmr_finance_app/core/network/network_client.dart';
 import 'package:shmr_finance_app/domain/models/account/account.dart';
 import 'package:shmr_finance_app/domain/models/account_create_request/account_create_request.dart';
 import 'package:shmr_finance_app/domain/models/account_history_response/account_history_response.dart';
+import 'package:shmr_finance_app/domain/models/account_response/account_response.dart';
 import 'package:shmr_finance_app/domain/models/account_update_request/account_update_request.dart';
 import 'package:shmr_finance_app/domain/sources/bank_account_datasource.dart';
 
@@ -55,13 +56,13 @@ final class BankAccountNetworkDatasourceImpl implements BankAccountDatasource {
   }
 
   @override
-  Future<Account> getById(int accountId) async {
+  Future<AccountResponse> getById(int accountId) async {
     try {
       final response = await _networkClient.get<Map<String, Object?>>(
         '/accounts/$accountId',
       );
 
-      return Account.fromJson(response.data ?? {});
+      return AccountResponse.fromJson(response.data ?? {});
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         throw Exception('Bad request, invalid data: ${e.response?.data}');

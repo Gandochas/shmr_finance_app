@@ -7,6 +7,7 @@ import 'package:shmr_finance_app/data/sources/drift/mappers/drift_mappers.dart';
 import 'package:shmr_finance_app/domain/models/account/account.dart';
 import 'package:shmr_finance_app/domain/models/account_create_request/account_create_request.dart';
 import 'package:shmr_finance_app/domain/models/account_history_response/account_history_response.dart';
+import 'package:shmr_finance_app/domain/models/account_response/account_response.dart';
 import 'package:shmr_finance_app/domain/models/account_update_request/account_update_request.dart';
 import 'package:shmr_finance_app/domain/repositories/bank_account_repository.dart';
 import 'package:shmr_finance_app/domain/sources/bank_account_datasource.dart';
@@ -66,12 +67,22 @@ final class BankAccountRepositoryImpl implements BankAccountRepository {
   }
 
   @override
-  Future<Account> getById(int accountId) async {
+  Future<AccountResponse> getById(int accountId) async {
     try {
       if (await _connectionChecker.isConnected()) {
-        final account = await _apiSource.getById(accountId);
+        final accountResponse = await _apiSource.getById(accountId);
+        final account = Account(
+          id: accountResponse.id,
+          //! TODO: figure ount user ID
+          userId: accountId,
+          name: accountResponse.name,
+          balance: accountResponse.balance,
+          currency: accountResponse.currency,
+          createdAt: accountResponse.createdAt,
+          updatedAt: accountResponse.updatedAt,
+        );
         await _syncAccountToLocal(account);
-        return account;
+        return accountResponse;
       }
     } on Exception catch (e) {
       debugPrint('API call failed: $e');
@@ -81,7 +92,7 @@ final class BankAccountRepositoryImpl implements BankAccountRepository {
     if (entity == null) {
       throw Exception('Account not found');
     }
-    return DriftMappers.accountEntityToModel(entity);
+    return DriftMappers.accountEntityToResponse(entity);
   }
 
   @override
