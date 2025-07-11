@@ -12,22 +12,22 @@ final class NetworkClient {
       'Content-Type': 'application/json',
     };
 
-    _dio.interceptors.add(
-      RetryInterceptor(
-        dio: _dio,
-        logPrint: debugPrint, // For debugging
-        retries: 3, // Number of retries
-        retryDelays: const [
-          Duration(seconds: 1), // 1s delay
-          Duration(seconds: 2), // 2s delay
-          Duration(seconds: 4), // 4s delay
-        ],
-        retryableExtraStatuses: {
-          408, // Request Timeout
-          429, // Too Many Requests
-        },
-      ),
-    );
+    // _dio.interceptors.add(
+    //   RetryInterceptor(
+    //     dio: _dio,
+    //     logPrint: debugPrint, // For debugging
+    //     retries: 3, // Number of retries
+    //     retryDelays: const [
+    //       Duration(seconds: 1), // 1s delay
+    //       Duration(seconds: 2), // 2s delay
+    //       Duration(seconds: 4), // 4s delay
+    //     ],
+    //     retryableExtraStatuses: {
+    //       408, // Request Timeout
+    //       429, // Too Many Requests
+    //     },
+    //   ),
+    // );
 
     _dio.interceptors.add(
       InterceptorsWrapper(

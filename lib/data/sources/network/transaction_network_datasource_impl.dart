@@ -13,10 +13,11 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
 
   @override
   Future<Transaction> create(TransactionRequest transactionRequest) async {
+    final now = DateTime.now().toUtc();
     try {
       final parsedDateFormat = DateFormat(
-        'yyyy-MM-ddTHH:mm:ssZ',
-      ).format(transactionRequest.transactionDate.toLocal());
+        "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+      ).format(transactionRequest.transactionDate.toUtc());
 
       final response = await _networkClient.post<Map<String, Object?>>(
         '/transactions',
@@ -24,7 +25,7 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
           'accountId': transactionRequest.accountId,
           'categoryId': transactionRequest.categoryId,
           'amount': transactionRequest.amount,
-          'transactionDate': parsedDateFormat,
+          'transactionDate': now.toIso8601String(),
           'comment': transactionRequest.comment,
         },
       );

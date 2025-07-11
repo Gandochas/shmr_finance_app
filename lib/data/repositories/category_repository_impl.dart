@@ -32,6 +32,7 @@ final class CategoryRepositoryImpl implements CategoryRepository {
     final allCategories = await getAll();
     return allCategories
         .where((category) => category.isIncome == isIncome)
+        .toSet()
         .toList();
   }
 
