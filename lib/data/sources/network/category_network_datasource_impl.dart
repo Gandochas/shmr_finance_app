@@ -11,14 +11,15 @@ final class CategoryNetworkDatasourceImpl implements CategoryDatasource {
   @override
   Future<List<Category>> getAll() async {
     try {
-      final response = await _networkClient.get<List<Map<String, Object?>>>(
-        '/categories',
-      );
+      final response = await _networkClient.get<List<dynamic>>('/categories');
 
       final data = response.data ?? [];
 
       return data
-          .map((categoryData) => Category.fromJson(categoryData))
+          .map(
+            (categoryData) =>
+                Category.fromJson(categoryData as Map<String, dynamic>),
+          )
           .toList();
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
@@ -32,14 +33,17 @@ final class CategoryNetworkDatasourceImpl implements CategoryDatasource {
   @override
   Future<List<Category>> getByType({required bool isIncome}) async {
     try {
-      final response = await _networkClient.get<List<Map<String, Object?>>>(
+      final response = await _networkClient.get<List<dynamic>>(
         '/categories/type/$isIncome',
       );
 
       final data = response.data ?? [];
 
       return data
-          .map((categoryData) => Category.fromJson(categoryData))
+          .map(
+            (categoryData) =>
+                Category.fromJson(categoryData as Map<String, dynamic>),
+          )
           .toList();
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {

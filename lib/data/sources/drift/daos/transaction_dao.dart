@@ -47,6 +47,10 @@ class TransactionDao extends DatabaseAccessor<AppDatabase>
     return into(transactions).insert(transaction);
   }
 
+  Future<TransactionEntity> insertAndReturn(TransactionsCompanion transaction) {
+    return into(transactions).insertReturning(transaction);
+  }
+
   Future<int> updateTransaction(int id, TransactionsCompanion transaction) {
     return (update(
       transactions,
@@ -57,31 +61,32 @@ class TransactionDao extends DatabaseAccessor<AppDatabase>
     return (delete(transactions)..where((txn) => txn.id.equals(id))).go();
   }
 
-  Future<void> markAsDirty(int id) async {
-    await (update(transactions)..where((txn) => txn.id.equals(id))).write(
-      TransactionsCompanion(
-        isDirty: const Value(true),
-        updatedAt: Value(DateTime.now()),
-      ),
-    );
-  }
-
-  Future<List<TransactionEntity>> getDirtyTransactions() {
-    return (select(
-      transactions,
-    )..where((txn) => txn.isDirty.equals(true))).get();
-  }
-
-  Future<void> markAsSynced(int id) async {
-    await (update(transactions)..where((txn) => txn.id.equals(id))).write(
-      TransactionsCompanion(
-        isDirty: const Value(false),
-        lastSyncDate: Value(DateTime.now()),
-      ),
-    );
+  Future<void> clearAndInsert(List<TransactionsCompanion> companions) async {
+    await batch((batch) {
+      batch.deleteAll(transactions);
+      batch.insertAll(transactions, companions);
+    });
   }
 
   // Join queries for getting transactions with related data
+  Future<TransactionWithDetails?> getTransactionWithDetails(int id) {
+    final query = select(transactions).join([
+      leftOuterJoin(accounts, accounts.id.equalsExp(transactions.accountId)),
+      leftOuterJoin(
+        categories,
+        categories.id.equalsExp(transactions.categoryId),
+      ),
+    ])..where(transactions.id.equals(id));
+
+    return query.map((row) {
+      return TransactionWithDetails(
+        transaction: row.readTable(transactions),
+        account: row.readTableOrNull(accounts),
+        category: row.readTableOrNull(categories),
+      );
+    }).getSingleOrNull();
+  }
+
   Future<List<TransactionWithDetails>> getTransactionsWithDetails({
     required int accountId,
     DateTime? startDate,

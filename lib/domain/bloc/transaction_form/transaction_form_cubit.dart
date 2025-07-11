@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shmr_finance_app/core/mixins/cubit_mixin.dart';
 import 'package:shmr_finance_app/domain/models/account/account.dart';
 import 'package:shmr_finance_app/domain/models/category/category.dart';
 import 'package:shmr_finance_app/domain/models/transaction_request/transaction_request.dart';
@@ -29,7 +30,8 @@ final class TransactionFormIdleState extends TransactionFormState {
   final List<Category> categories;
 }
 
-final class TransactionFormCubit extends Cubit<TransactionFormState> {
+final class TransactionFormCubit extends Cubit<TransactionFormState>
+    with SafeCubit {
   TransactionFormCubit({
     required BankAccountRepository bankAccountRepository,
     required CategoryRepository categoryRepository,

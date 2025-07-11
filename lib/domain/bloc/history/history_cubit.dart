@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shmr_finance_app/core/mixins/cubit_mixin.dart';
 import 'package:shmr_finance_app/domain/models/transaction_response/transaction_response.dart';
 import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart';
 
@@ -28,7 +29,7 @@ final class HistoryIdleState extends HistoryState {
   final DateTime endDate;
 }
 
-final class HistoryCubit extends Cubit<HistoryState> {
+final class HistoryCubit extends Cubit<HistoryState> with SafeCubit {
   HistoryCubit({
     required TransactionRepository transactionRepository,
     required this.isIncomePage,

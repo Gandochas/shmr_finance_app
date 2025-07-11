@@ -6,10 +6,13 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/account_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/category_dao.dart';
+import 'package:shmr_finance_app/data/sources/drift/daos/pending_operations_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/transaction_dao.dart';
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 
 part 'database.g.dart';
+
+enum OperationType { create, update, delete }
 
 // Tables
 @DataClassName('AccountEntity')
@@ -21,8 +24,6 @@ class Accounts extends Table {
   TextColumn get currency => text()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
-  DateTimeColumn get lastSyncDate => dateTime().nullable()();
-  BoolColumn get isDirty => boolean().withDefault(const Constant(false))();
 }
 
 @DataClassName('CategoryEntity')
@@ -33,8 +34,6 @@ class Categories extends Table {
   BoolColumn get isIncome => boolean()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
-  DateTimeColumn get lastSyncDate => dateTime().nullable()();
-  BoolColumn get isDirty => boolean().withDefault(const Constant(false))();
 }
 
 @DataClassName('TransactionEntity')
@@ -47,19 +46,39 @@ class Transactions extends Table {
   DateTimeColumn get transactionDate => dateTime()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
-  DateTimeColumn get lastSyncDate => dateTime().nullable()();
-  BoolColumn get isDirty => boolean().withDefault(const Constant(false))();
+}
+
+@DataClassName('PendingOperationEntity')
+class PendingOperations extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get entityType => text()(); // 'transaction', 'account'
+  IntColumn get entityId => integer()();
+  IntColumn get operationType => intEnum<OperationType>()();
+  TextColumn get data => text()(); // JSON string of the request body
+  DateTimeColumn get createdAt => dateTime()();
 }
 
 @DriftDatabase(
-  tables: [Accounts, Categories, Transactions],
-  daos: [AccountDao, CategoryDao, TransactionDao],
+  tables: [Accounts, Categories, Transactions, PendingOperations],
+  daos: [AccountDao, CategoryDao, TransactionDao, PendingOperationsDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onUpgrade: (m, from, to) async {
+        if (from == 1) {
+          // Manually create the pending_operations table
+          await m.createTable(pendingOperations);
+        }
+      },
+    );
+  }
 }
 
 LazyDatabase _openConnection() {
@@ -70,10 +89,6 @@ LazyDatabase _openConnection() {
     if (Platform.isAndroid) {
       await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
     }
-
-    final cachebase = (Platform.isIOS || Platform.isAndroid)
-        ? await getTemporaryDirectory()
-        : await getApplicationDocumentsDirectory();
 
     return NativeDatabase.createInBackground(file);
   });

@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/transaction_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/database/database.dart';
 import 'package:shmr_finance_app/domain/models/account/account.dart';
@@ -89,6 +90,21 @@ class DriftMappers {
       transactionDate: transaction.transactionDate,
       createdAt: transaction.createdAt,
       updatedAt: transaction.updatedAt,
+    );
+  }
+
+  static TransactionsCompanion transactionResponseToCompanion(
+    TransactionResponse response,
+  ) {
+    return TransactionsCompanion.insert(
+      id: Value(response.id),
+      accountId: response.account.id,
+      categoryId: response.category.id,
+      amount: response.amount,
+      comment: Value(response.comment),
+      transactionDate: response.transactionDate,
+      createdAt: response.createdAt,
+      updatedAt: response.updatedAt,
     );
   }
 }

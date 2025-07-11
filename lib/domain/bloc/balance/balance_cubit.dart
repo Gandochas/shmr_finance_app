@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shmr_finance_app/core/mixins/cubit_mixin.dart';
 import 'package:shmr_finance_app/domain/models/account_update_request/account_update_request.dart';
 import 'package:shmr_finance_app/domain/models/transaction_response/transaction_response.dart';
 import 'package:shmr_finance_app/domain/repositories/bank_account_repository.dart';
@@ -13,9 +14,28 @@ final class BalanceLoadingState extends BalanceState {
 }
 
 final class BalanceErrorState extends BalanceState {
-  const BalanceErrorState(this.errorMessage);
+  const BalanceErrorState(
+    this.errorMessage, {
+    this.name,
+    this.balance,
+    this.currency,
+    this.dailyTransactionAmounts,
+    this.monthlyTransactionAmounts,
+  });
 
   final String errorMessage;
+  final String? name;
+  final String? balance;
+  final String? currency;
+  final Map<DateTime, double>? dailyTransactionAmounts;
+  final Map<DateTime, double>? monthlyTransactionAmounts;
+
+  bool get hasData =>
+      name != null &&
+      balance != null &&
+      currency != null &&
+      dailyTransactionAmounts != null &&
+      monthlyTransactionAmounts != null;
 }
 
 final class BalanceIdleState extends BalanceState {
@@ -34,7 +54,7 @@ final class BalanceIdleState extends BalanceState {
   final Map<DateTime, double> monthlyTransactionAmounts;
 }
 
-final class BalanceCubit extends Cubit<BalanceState> {
+final class BalanceCubit extends Cubit<BalanceState> with SafeCubit {
   BalanceCubit({
     required BankAccountRepository bankAccountRepository,
     required TransactionRepository transactionRepository,
@@ -49,6 +69,12 @@ final class BalanceCubit extends Cubit<BalanceState> {
   final int accountId;
 
   Future<void> updateAccountCurrency(String newCurrency) async {
+    final currentState = state;
+
+    if (currentState is! BalanceIdleState) {
+      return;
+    }
+
     emit(const BalanceLoadingState());
     try {
       final bankAccount = await _bankAccountRepository.getById(accountId);
@@ -67,15 +93,32 @@ final class BalanceCubit extends Cubit<BalanceState> {
           balance: updatedAccount.balance,
           currency: updatedAccount.currency,
           name: updatedAccount.name,
+          dailyTransactionAmounts: currentState.dailyTransactionAmounts,
+          monthlyTransactionAmounts: currentState.monthlyTransactionAmounts,
         ),
       );
     } on Object catch (e, s) {
-      emit(BalanceErrorState('Failed to change currency! \n$e: $s'));
+      emit(
+        BalanceErrorState(
+          'Failed to change currency! \n$e: $s',
+          name: currentState.name,
+          balance: currentState.balance,
+          currency: currentState.currency,
+          dailyTransactionAmounts: currentState.dailyTransactionAmounts,
+          monthlyTransactionAmounts: currentState.monthlyTransactionAmounts,
+        ),
+      );
       rethrow;
     }
   }
 
   Future<void> updateAccountName(String newAccountName) async {
+    final currentState = state;
+
+    if (currentState is! BalanceIdleState) {
+      return;
+    }
+
     emit(const BalanceLoadingState());
     try {
       final bankAccount = await _bankAccountRepository.getById(accountId);
@@ -94,10 +137,21 @@ final class BalanceCubit extends Cubit<BalanceState> {
           balance: updatedAccount.balance,
           currency: updatedAccount.currency,
           name: updatedAccount.name,
+          dailyTransactionAmounts: currentState.dailyTransactionAmounts,
+          monthlyTransactionAmounts: currentState.monthlyTransactionAmounts,
         ),
       );
     } on Object catch (e, s) {
-      emit(BalanceErrorState('Failed to change account name! \n$e: $s'));
+      emit(
+        BalanceErrorState(
+          'Failed to change account name! \n$e: $s',
+          name: currentState.name,
+          balance: currentState.balance,
+          currency: currentState.currency,
+          dailyTransactionAmounts: currentState.dailyTransactionAmounts,
+          monthlyTransactionAmounts: currentState.monthlyTransactionAmounts,
+        ),
+      );
       rethrow;
     }
   }

@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fuzzywuzzy/fuzzywuzzy.dart';
+import 'package:shmr_finance_app/core/mixins/cubit_mixin.dart';
 import 'package:shmr_finance_app/domain/models/category/category.dart';
 import 'package:shmr_finance_app/domain/repositories/category_repository.dart';
 
@@ -23,7 +24,7 @@ final class ArticlesIdleState extends ArticlesState {
   final List<Category> articles;
 }
 
-final class ArticlesCubit extends Cubit<ArticlesState> {
+final class ArticlesCubit extends Cubit<ArticlesState> with SafeCubit {
   ArticlesCubit({required CategoryRepository categoryRepository})
     : _categoryRepository = categoryRepository,
       super(const ArticlesLoadingState());

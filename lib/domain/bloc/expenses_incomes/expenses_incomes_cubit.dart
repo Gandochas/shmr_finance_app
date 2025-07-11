@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shmr_finance_app/core/mixins/cubit_mixin.dart';
 import 'package:shmr_finance_app/domain/models/transaction_response/transaction_response.dart';
 import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart';
 
@@ -22,7 +23,8 @@ final class ExpensesIncomesIdleState extends ExpensesIncomesState {
   final List<TransactionResponse> transactions;
 }
 
-final class ExpensesIncomesCubit extends Cubit<ExpensesIncomesState> {
+final class ExpensesIncomesCubit extends Cubit<ExpensesIncomesState>
+    with SafeCubit {
   ExpensesIncomesCubit({
     required TransactionRepository transactionRepository,
     required this.isIncomePage,

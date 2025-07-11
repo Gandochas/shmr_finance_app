@@ -84,32 +84,6 @@ class $AccountsTable extends Accounts
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _lastSyncDateMeta = const VerificationMeta(
-    'lastSyncDate',
-  );
-  @override
-  late final GeneratedColumn<DateTime> lastSyncDate = GeneratedColumn<DateTime>(
-    'last_sync_date',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _isDirtyMeta = const VerificationMeta(
-    'isDirty',
-  );
-  @override
-  late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
-    'is_dirty',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_dirty" IN (0, 1))',
-    ),
-    defaultValue: const Constant(false),
-  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -119,8 +93,6 @@ class $AccountsTable extends Accounts
     currency,
     createdAt,
     updatedAt,
-    lastSyncDate,
-    isDirty,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -185,21 +157,6 @@ class $AccountsTable extends Accounts
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
     }
-    if (data.containsKey('last_sync_date')) {
-      context.handle(
-        _lastSyncDateMeta,
-        lastSyncDate.isAcceptableOrUnknown(
-          data['last_sync_date']!,
-          _lastSyncDateMeta,
-        ),
-      );
-    }
-    if (data.containsKey('is_dirty')) {
-      context.handle(
-        _isDirtyMeta,
-        isDirty.isAcceptableOrUnknown(data['is_dirty']!, _isDirtyMeta),
-      );
-    }
     return context;
   }
 
@@ -237,14 +194,6 @@ class $AccountsTable extends Accounts
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
-      lastSyncDate: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}last_sync_date'],
-      ),
-      isDirty: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_dirty'],
-      )!,
     );
   }
 
@@ -262,8 +211,6 @@ class AccountEntity extends DataClass implements Insertable<AccountEntity> {
   final String currency;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final DateTime? lastSyncDate;
-  final bool isDirty;
   const AccountEntity({
     required this.id,
     required this.userId,
@@ -272,8 +219,6 @@ class AccountEntity extends DataClass implements Insertable<AccountEntity> {
     required this.currency,
     required this.createdAt,
     required this.updatedAt,
-    this.lastSyncDate,
-    required this.isDirty,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -285,10 +230,6 @@ class AccountEntity extends DataClass implements Insertable<AccountEntity> {
     map['currency'] = Variable<String>(currency);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
-    if (!nullToAbsent || lastSyncDate != null) {
-      map['last_sync_date'] = Variable<DateTime>(lastSyncDate);
-    }
-    map['is_dirty'] = Variable<bool>(isDirty);
     return map;
   }
 
@@ -301,10 +242,6 @@ class AccountEntity extends DataClass implements Insertable<AccountEntity> {
       currency: Value(currency),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
-      lastSyncDate: lastSyncDate == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lastSyncDate),
-      isDirty: Value(isDirty),
     );
   }
 
@@ -321,8 +258,6 @@ class AccountEntity extends DataClass implements Insertable<AccountEntity> {
       currency: serializer.fromJson<String>(json['currency']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      lastSyncDate: serializer.fromJson<DateTime?>(json['lastSyncDate']),
-      isDirty: serializer.fromJson<bool>(json['isDirty']),
     );
   }
   @override
@@ -336,8 +271,6 @@ class AccountEntity extends DataClass implements Insertable<AccountEntity> {
       'currency': serializer.toJson<String>(currency),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'lastSyncDate': serializer.toJson<DateTime?>(lastSyncDate),
-      'isDirty': serializer.toJson<bool>(isDirty),
     };
   }
 
@@ -349,8 +282,6 @@ class AccountEntity extends DataClass implements Insertable<AccountEntity> {
     String? currency,
     DateTime? createdAt,
     DateTime? updatedAt,
-    Value<DateTime?> lastSyncDate = const Value.absent(),
-    bool? isDirty,
   }) => AccountEntity(
     id: id ?? this.id,
     userId: userId ?? this.userId,
@@ -359,8 +290,6 @@ class AccountEntity extends DataClass implements Insertable<AccountEntity> {
     currency: currency ?? this.currency,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
-    lastSyncDate: lastSyncDate.present ? lastSyncDate.value : this.lastSyncDate,
-    isDirty: isDirty ?? this.isDirty,
   );
   AccountEntity copyWithCompanion(AccountsCompanion data) {
     return AccountEntity(
@@ -371,10 +300,6 @@ class AccountEntity extends DataClass implements Insertable<AccountEntity> {
       currency: data.currency.present ? data.currency.value : this.currency,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
-      lastSyncDate: data.lastSyncDate.present
-          ? data.lastSyncDate.value
-          : this.lastSyncDate,
-      isDirty: data.isDirty.present ? data.isDirty.value : this.isDirty,
     );
   }
 
@@ -387,25 +312,14 @@ class AccountEntity extends DataClass implements Insertable<AccountEntity> {
           ..write('balance: $balance, ')
           ..write('currency: $currency, ')
           ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('lastSyncDate: $lastSyncDate, ')
-          ..write('isDirty: $isDirty')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-    id,
-    userId,
-    name,
-    balance,
-    currency,
-    createdAt,
-    updatedAt,
-    lastSyncDate,
-    isDirty,
-  );
+  int get hashCode =>
+      Object.hash(id, userId, name, balance, currency, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -416,9 +330,7 @@ class AccountEntity extends DataClass implements Insertable<AccountEntity> {
           other.balance == this.balance &&
           other.currency == this.currency &&
           other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
-          other.lastSyncDate == this.lastSyncDate &&
-          other.isDirty == this.isDirty);
+          other.updatedAt == this.updatedAt);
 }
 
 class AccountsCompanion extends UpdateCompanion<AccountEntity> {
@@ -429,8 +341,6 @@ class AccountsCompanion extends UpdateCompanion<AccountEntity> {
   final Value<String> currency;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
-  final Value<DateTime?> lastSyncDate;
-  final Value<bool> isDirty;
   const AccountsCompanion({
     this.id = const Value.absent(),
     this.userId = const Value.absent(),
@@ -439,8 +349,6 @@ class AccountsCompanion extends UpdateCompanion<AccountEntity> {
     this.currency = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
-    this.lastSyncDate = const Value.absent(),
-    this.isDirty = const Value.absent(),
   });
   AccountsCompanion.insert({
     this.id = const Value.absent(),
@@ -450,8 +358,6 @@ class AccountsCompanion extends UpdateCompanion<AccountEntity> {
     required String currency,
     required DateTime createdAt,
     required DateTime updatedAt,
-    this.lastSyncDate = const Value.absent(),
-    this.isDirty = const Value.absent(),
   }) : userId = Value(userId),
        name = Value(name),
        balance = Value(balance),
@@ -466,8 +372,6 @@ class AccountsCompanion extends UpdateCompanion<AccountEntity> {
     Expression<String>? currency,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
-    Expression<DateTime>? lastSyncDate,
-    Expression<bool>? isDirty,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -477,8 +381,6 @@ class AccountsCompanion extends UpdateCompanion<AccountEntity> {
       if (currency != null) 'currency': currency,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
-      if (lastSyncDate != null) 'last_sync_date': lastSyncDate,
-      if (isDirty != null) 'is_dirty': isDirty,
     });
   }
 
@@ -490,8 +392,6 @@ class AccountsCompanion extends UpdateCompanion<AccountEntity> {
     Value<String>? currency,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
-    Value<DateTime?>? lastSyncDate,
-    Value<bool>? isDirty,
   }) {
     return AccountsCompanion(
       id: id ?? this.id,
@@ -501,8 +401,6 @@ class AccountsCompanion extends UpdateCompanion<AccountEntity> {
       currency: currency ?? this.currency,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      lastSyncDate: lastSyncDate ?? this.lastSyncDate,
-      isDirty: isDirty ?? this.isDirty,
     );
   }
 
@@ -530,12 +428,6 @@ class AccountsCompanion extends UpdateCompanion<AccountEntity> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
-    if (lastSyncDate.present) {
-      map['last_sync_date'] = Variable<DateTime>(lastSyncDate.value);
-    }
-    if (isDirty.present) {
-      map['is_dirty'] = Variable<bool>(isDirty.value);
-    }
     return map;
   }
 
@@ -548,9 +440,7 @@ class AccountsCompanion extends UpdateCompanion<AccountEntity> {
           ..write('balance: $balance, ')
           ..write('currency: $currency, ')
           ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('lastSyncDate: $lastSyncDate, ')
-          ..write('isDirty: $isDirty')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
@@ -629,32 +519,6 @@ class $CategoriesTable extends Categories
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _lastSyncDateMeta = const VerificationMeta(
-    'lastSyncDate',
-  );
-  @override
-  late final GeneratedColumn<DateTime> lastSyncDate = GeneratedColumn<DateTime>(
-    'last_sync_date',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _isDirtyMeta = const VerificationMeta(
-    'isDirty',
-  );
-  @override
-  late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
-    'is_dirty',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_dirty" IN (0, 1))',
-    ),
-    defaultValue: const Constant(false),
-  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -663,8 +527,6 @@ class $CategoriesTable extends Categories
     isIncome,
     createdAt,
     updatedAt,
-    lastSyncDate,
-    isDirty,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -721,21 +583,6 @@ class $CategoriesTable extends Categories
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
     }
-    if (data.containsKey('last_sync_date')) {
-      context.handle(
-        _lastSyncDateMeta,
-        lastSyncDate.isAcceptableOrUnknown(
-          data['last_sync_date']!,
-          _lastSyncDateMeta,
-        ),
-      );
-    }
-    if (data.containsKey('is_dirty')) {
-      context.handle(
-        _isDirtyMeta,
-        isDirty.isAcceptableOrUnknown(data['is_dirty']!, _isDirtyMeta),
-      );
-    }
     return context;
   }
 
@@ -769,14 +616,6 @@ class $CategoriesTable extends Categories
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
-      lastSyncDate: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}last_sync_date'],
-      ),
-      isDirty: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_dirty'],
-      )!,
     );
   }
 
@@ -793,8 +632,6 @@ class CategoryEntity extends DataClass implements Insertable<CategoryEntity> {
   final bool isIncome;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final DateTime? lastSyncDate;
-  final bool isDirty;
   const CategoryEntity({
     required this.id,
     required this.name,
@@ -802,8 +639,6 @@ class CategoryEntity extends DataClass implements Insertable<CategoryEntity> {
     required this.isIncome,
     required this.createdAt,
     required this.updatedAt,
-    this.lastSyncDate,
-    required this.isDirty,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -814,10 +649,6 @@ class CategoryEntity extends DataClass implements Insertable<CategoryEntity> {
     map['is_income'] = Variable<bool>(isIncome);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
-    if (!nullToAbsent || lastSyncDate != null) {
-      map['last_sync_date'] = Variable<DateTime>(lastSyncDate);
-    }
-    map['is_dirty'] = Variable<bool>(isDirty);
     return map;
   }
 
@@ -829,10 +660,6 @@ class CategoryEntity extends DataClass implements Insertable<CategoryEntity> {
       isIncome: Value(isIncome),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
-      lastSyncDate: lastSyncDate == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lastSyncDate),
-      isDirty: Value(isDirty),
     );
   }
 
@@ -848,8 +675,6 @@ class CategoryEntity extends DataClass implements Insertable<CategoryEntity> {
       isIncome: serializer.fromJson<bool>(json['isIncome']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      lastSyncDate: serializer.fromJson<DateTime?>(json['lastSyncDate']),
-      isDirty: serializer.fromJson<bool>(json['isDirty']),
     );
   }
   @override
@@ -862,8 +687,6 @@ class CategoryEntity extends DataClass implements Insertable<CategoryEntity> {
       'isIncome': serializer.toJson<bool>(isIncome),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'lastSyncDate': serializer.toJson<DateTime?>(lastSyncDate),
-      'isDirty': serializer.toJson<bool>(isDirty),
     };
   }
 
@@ -874,8 +697,6 @@ class CategoryEntity extends DataClass implements Insertable<CategoryEntity> {
     bool? isIncome,
     DateTime? createdAt,
     DateTime? updatedAt,
-    Value<DateTime?> lastSyncDate = const Value.absent(),
-    bool? isDirty,
   }) => CategoryEntity(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -883,8 +704,6 @@ class CategoryEntity extends DataClass implements Insertable<CategoryEntity> {
     isIncome: isIncome ?? this.isIncome,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
-    lastSyncDate: lastSyncDate.present ? lastSyncDate.value : this.lastSyncDate,
-    isDirty: isDirty ?? this.isDirty,
   );
   CategoryEntity copyWithCompanion(CategoriesCompanion data) {
     return CategoryEntity(
@@ -894,10 +713,6 @@ class CategoryEntity extends DataClass implements Insertable<CategoryEntity> {
       isIncome: data.isIncome.present ? data.isIncome.value : this.isIncome,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
-      lastSyncDate: data.lastSyncDate.present
-          ? data.lastSyncDate.value
-          : this.lastSyncDate,
-      isDirty: data.isDirty.present ? data.isDirty.value : this.isDirty,
     );
   }
 
@@ -909,24 +724,14 @@ class CategoryEntity extends DataClass implements Insertable<CategoryEntity> {
           ..write('emoji: $emoji, ')
           ..write('isIncome: $isIncome, ')
           ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('lastSyncDate: $lastSyncDate, ')
-          ..write('isDirty: $isDirty')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-    id,
-    name,
-    emoji,
-    isIncome,
-    createdAt,
-    updatedAt,
-    lastSyncDate,
-    isDirty,
-  );
+  int get hashCode =>
+      Object.hash(id, name, emoji, isIncome, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -936,9 +741,7 @@ class CategoryEntity extends DataClass implements Insertable<CategoryEntity> {
           other.emoji == this.emoji &&
           other.isIncome == this.isIncome &&
           other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
-          other.lastSyncDate == this.lastSyncDate &&
-          other.isDirty == this.isDirty);
+          other.updatedAt == this.updatedAt);
 }
 
 class CategoriesCompanion extends UpdateCompanion<CategoryEntity> {
@@ -948,8 +751,6 @@ class CategoriesCompanion extends UpdateCompanion<CategoryEntity> {
   final Value<bool> isIncome;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
-  final Value<DateTime?> lastSyncDate;
-  final Value<bool> isDirty;
   const CategoriesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -957,8 +758,6 @@ class CategoriesCompanion extends UpdateCompanion<CategoryEntity> {
     this.isIncome = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
-    this.lastSyncDate = const Value.absent(),
-    this.isDirty = const Value.absent(),
   });
   CategoriesCompanion.insert({
     this.id = const Value.absent(),
@@ -967,8 +766,6 @@ class CategoriesCompanion extends UpdateCompanion<CategoryEntity> {
     required bool isIncome,
     required DateTime createdAt,
     required DateTime updatedAt,
-    this.lastSyncDate = const Value.absent(),
-    this.isDirty = const Value.absent(),
   }) : name = Value(name),
        emoji = Value(emoji),
        isIncome = Value(isIncome),
@@ -981,8 +778,6 @@ class CategoriesCompanion extends UpdateCompanion<CategoryEntity> {
     Expression<bool>? isIncome,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
-    Expression<DateTime>? lastSyncDate,
-    Expression<bool>? isDirty,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -991,8 +786,6 @@ class CategoriesCompanion extends UpdateCompanion<CategoryEntity> {
       if (isIncome != null) 'is_income': isIncome,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
-      if (lastSyncDate != null) 'last_sync_date': lastSyncDate,
-      if (isDirty != null) 'is_dirty': isDirty,
     });
   }
 
@@ -1003,8 +796,6 @@ class CategoriesCompanion extends UpdateCompanion<CategoryEntity> {
     Value<bool>? isIncome,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
-    Value<DateTime?>? lastSyncDate,
-    Value<bool>? isDirty,
   }) {
     return CategoriesCompanion(
       id: id ?? this.id,
@@ -1013,8 +804,6 @@ class CategoriesCompanion extends UpdateCompanion<CategoryEntity> {
       isIncome: isIncome ?? this.isIncome,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      lastSyncDate: lastSyncDate ?? this.lastSyncDate,
-      isDirty: isDirty ?? this.isDirty,
     );
   }
 
@@ -1039,12 +828,6 @@ class CategoriesCompanion extends UpdateCompanion<CategoryEntity> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
-    if (lastSyncDate.present) {
-      map['last_sync_date'] = Variable<DateTime>(lastSyncDate.value);
-    }
-    if (isDirty.present) {
-      map['is_dirty'] = Variable<bool>(isDirty.value);
-    }
     return map;
   }
 
@@ -1056,9 +839,7 @@ class CategoriesCompanion extends UpdateCompanion<CategoryEntity> {
           ..write('emoji: $emoji, ')
           ..write('isIncome: $isIncome, ')
           ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('lastSyncDate: $lastSyncDate, ')
-          ..write('isDirty: $isDirty')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
@@ -1165,32 +946,6 @@ class $TransactionsTable extends Transactions
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _lastSyncDateMeta = const VerificationMeta(
-    'lastSyncDate',
-  );
-  @override
-  late final GeneratedColumn<DateTime> lastSyncDate = GeneratedColumn<DateTime>(
-    'last_sync_date',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _isDirtyMeta = const VerificationMeta(
-    'isDirty',
-  );
-  @override
-  late final GeneratedColumn<bool> isDirty = GeneratedColumn<bool>(
-    'is_dirty',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_dirty" IN (0, 1))',
-    ),
-    defaultValue: const Constant(false),
-  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1201,8 +956,6 @@ class $TransactionsTable extends Transactions
     transactionDate,
     createdAt,
     updatedAt,
-    lastSyncDate,
-    isDirty,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1276,21 +1029,6 @@ class $TransactionsTable extends Transactions
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
     }
-    if (data.containsKey('last_sync_date')) {
-      context.handle(
-        _lastSyncDateMeta,
-        lastSyncDate.isAcceptableOrUnknown(
-          data['last_sync_date']!,
-          _lastSyncDateMeta,
-        ),
-      );
-    }
-    if (data.containsKey('is_dirty')) {
-      context.handle(
-        _isDirtyMeta,
-        isDirty.isAcceptableOrUnknown(data['is_dirty']!, _isDirtyMeta),
-      );
-    }
     return context;
   }
 
@@ -1332,14 +1070,6 @@ class $TransactionsTable extends Transactions
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
-      lastSyncDate: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}last_sync_date'],
-      ),
-      isDirty: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_dirty'],
-      )!,
     );
   }
 
@@ -1359,8 +1089,6 @@ class TransactionEntity extends DataClass
   final DateTime transactionDate;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final DateTime? lastSyncDate;
-  final bool isDirty;
   const TransactionEntity({
     required this.id,
     required this.accountId,
@@ -1370,8 +1098,6 @@ class TransactionEntity extends DataClass
     required this.transactionDate,
     required this.createdAt,
     required this.updatedAt,
-    this.lastSyncDate,
-    required this.isDirty,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1386,10 +1112,6 @@ class TransactionEntity extends DataClass
     map['transaction_date'] = Variable<DateTime>(transactionDate);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
-    if (!nullToAbsent || lastSyncDate != null) {
-      map['last_sync_date'] = Variable<DateTime>(lastSyncDate);
-    }
-    map['is_dirty'] = Variable<bool>(isDirty);
     return map;
   }
 
@@ -1405,10 +1127,6 @@ class TransactionEntity extends DataClass
       transactionDate: Value(transactionDate),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
-      lastSyncDate: lastSyncDate == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lastSyncDate),
-      isDirty: Value(isDirty),
     );
   }
 
@@ -1426,8 +1144,6 @@ class TransactionEntity extends DataClass
       transactionDate: serializer.fromJson<DateTime>(json['transactionDate']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      lastSyncDate: serializer.fromJson<DateTime?>(json['lastSyncDate']),
-      isDirty: serializer.fromJson<bool>(json['isDirty']),
     );
   }
   @override
@@ -1442,8 +1158,6 @@ class TransactionEntity extends DataClass
       'transactionDate': serializer.toJson<DateTime>(transactionDate),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'lastSyncDate': serializer.toJson<DateTime?>(lastSyncDate),
-      'isDirty': serializer.toJson<bool>(isDirty),
     };
   }
 
@@ -1456,8 +1170,6 @@ class TransactionEntity extends DataClass
     DateTime? transactionDate,
     DateTime? createdAt,
     DateTime? updatedAt,
-    Value<DateTime?> lastSyncDate = const Value.absent(),
-    bool? isDirty,
   }) => TransactionEntity(
     id: id ?? this.id,
     accountId: accountId ?? this.accountId,
@@ -1467,8 +1179,6 @@ class TransactionEntity extends DataClass
     transactionDate: transactionDate ?? this.transactionDate,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
-    lastSyncDate: lastSyncDate.present ? lastSyncDate.value : this.lastSyncDate,
-    isDirty: isDirty ?? this.isDirty,
   );
   TransactionEntity copyWithCompanion(TransactionsCompanion data) {
     return TransactionEntity(
@@ -1484,10 +1194,6 @@ class TransactionEntity extends DataClass
           : this.transactionDate,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
-      lastSyncDate: data.lastSyncDate.present
-          ? data.lastSyncDate.value
-          : this.lastSyncDate,
-      isDirty: data.isDirty.present ? data.isDirty.value : this.isDirty,
     );
   }
 
@@ -1501,9 +1207,7 @@ class TransactionEntity extends DataClass
           ..write('comment: $comment, ')
           ..write('transactionDate: $transactionDate, ')
           ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('lastSyncDate: $lastSyncDate, ')
-          ..write('isDirty: $isDirty')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
@@ -1518,8 +1222,6 @@ class TransactionEntity extends DataClass
     transactionDate,
     createdAt,
     updatedAt,
-    lastSyncDate,
-    isDirty,
   );
   @override
   bool operator ==(Object other) =>
@@ -1532,9 +1234,7 @@ class TransactionEntity extends DataClass
           other.comment == this.comment &&
           other.transactionDate == this.transactionDate &&
           other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
-          other.lastSyncDate == this.lastSyncDate &&
-          other.isDirty == this.isDirty);
+          other.updatedAt == this.updatedAt);
 }
 
 class TransactionsCompanion extends UpdateCompanion<TransactionEntity> {
@@ -1546,8 +1246,6 @@ class TransactionsCompanion extends UpdateCompanion<TransactionEntity> {
   final Value<DateTime> transactionDate;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
-  final Value<DateTime?> lastSyncDate;
-  final Value<bool> isDirty;
   const TransactionsCompanion({
     this.id = const Value.absent(),
     this.accountId = const Value.absent(),
@@ -1557,8 +1255,6 @@ class TransactionsCompanion extends UpdateCompanion<TransactionEntity> {
     this.transactionDate = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
-    this.lastSyncDate = const Value.absent(),
-    this.isDirty = const Value.absent(),
   });
   TransactionsCompanion.insert({
     this.id = const Value.absent(),
@@ -1569,8 +1265,6 @@ class TransactionsCompanion extends UpdateCompanion<TransactionEntity> {
     required DateTime transactionDate,
     required DateTime createdAt,
     required DateTime updatedAt,
-    this.lastSyncDate = const Value.absent(),
-    this.isDirty = const Value.absent(),
   }) : accountId = Value(accountId),
        categoryId = Value(categoryId),
        amount = Value(amount),
@@ -1586,8 +1280,6 @@ class TransactionsCompanion extends UpdateCompanion<TransactionEntity> {
     Expression<DateTime>? transactionDate,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
-    Expression<DateTime>? lastSyncDate,
-    Expression<bool>? isDirty,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1598,8 +1290,6 @@ class TransactionsCompanion extends UpdateCompanion<TransactionEntity> {
       if (transactionDate != null) 'transaction_date': transactionDate,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
-      if (lastSyncDate != null) 'last_sync_date': lastSyncDate,
-      if (isDirty != null) 'is_dirty': isDirty,
     });
   }
 
@@ -1612,8 +1302,6 @@ class TransactionsCompanion extends UpdateCompanion<TransactionEntity> {
     Value<DateTime>? transactionDate,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
-    Value<DateTime?>? lastSyncDate,
-    Value<bool>? isDirty,
   }) {
     return TransactionsCompanion(
       id: id ?? this.id,
@@ -1624,8 +1312,6 @@ class TransactionsCompanion extends UpdateCompanion<TransactionEntity> {
       transactionDate: transactionDate ?? this.transactionDate,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      lastSyncDate: lastSyncDate ?? this.lastSyncDate,
-      isDirty: isDirty ?? this.isDirty,
     );
   }
 
@@ -1656,12 +1342,6 @@ class TransactionsCompanion extends UpdateCompanion<TransactionEntity> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
-    if (lastSyncDate.present) {
-      map['last_sync_date'] = Variable<DateTime>(lastSyncDate.value);
-    }
-    if (isDirty.present) {
-      map['is_dirty'] = Variable<bool>(isDirty.value);
-    }
     return map;
   }
 
@@ -1675,9 +1355,421 @@ class TransactionsCompanion extends UpdateCompanion<TransactionEntity> {
           ..write('comment: $comment, ')
           ..write('transactionDate: $transactionDate, ')
           ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('lastSyncDate: $lastSyncDate, ')
-          ..write('isDirty: $isDirty')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PendingOperationsTable extends PendingOperations
+    with TableInfo<$PendingOperationsTable, PendingOperationEntity> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PendingOperationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _entityTypeMeta = const VerificationMeta(
+    'entityType',
+  );
+  @override
+  late final GeneratedColumn<String> entityType = GeneratedColumn<String>(
+    'entity_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _entityIdMeta = const VerificationMeta(
+    'entityId',
+  );
+  @override
+  late final GeneratedColumn<int> entityId = GeneratedColumn<int>(
+    'entity_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<OperationType, int>
+  operationType =
+      GeneratedColumn<int>(
+        'operation_type',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+      ).withConverter<OperationType>(
+        $PendingOperationsTable.$converteroperationType,
+      );
+  static const VerificationMeta _dataMeta = const VerificationMeta('data');
+  @override
+  late final GeneratedColumn<String> data = GeneratedColumn<String>(
+    'data',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    entityType,
+    entityId,
+    operationType,
+    data,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'pending_operations';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PendingOperationEntity> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('entity_type')) {
+      context.handle(
+        _entityTypeMeta,
+        entityType.isAcceptableOrUnknown(data['entity_type']!, _entityTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityTypeMeta);
+    }
+    if (data.containsKey('entity_id')) {
+      context.handle(
+        _entityIdMeta,
+        entityId.isAcceptableOrUnknown(data['entity_id']!, _entityIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityIdMeta);
+    }
+    if (data.containsKey('data')) {
+      context.handle(
+        _dataMeta,
+        this.data.isAcceptableOrUnknown(data['data']!, _dataMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dataMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PendingOperationEntity map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PendingOperationEntity(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      entityType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_type'],
+      )!,
+      entityId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}entity_id'],
+      )!,
+      operationType: $PendingOperationsTable.$converteroperationType.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}operation_type'],
+        )!,
+      ),
+      data: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}data'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PendingOperationsTable createAlias(String alias) {
+    return $PendingOperationsTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<OperationType, int, int> $converteroperationType =
+      const EnumIndexConverter<OperationType>(OperationType.values);
+}
+
+class PendingOperationEntity extends DataClass
+    implements Insertable<PendingOperationEntity> {
+  final int id;
+  final String entityType;
+  final int entityId;
+  final OperationType operationType;
+  final String data;
+  final DateTime createdAt;
+  const PendingOperationEntity({
+    required this.id,
+    required this.entityType,
+    required this.entityId,
+    required this.operationType,
+    required this.data,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['entity_type'] = Variable<String>(entityType);
+    map['entity_id'] = Variable<int>(entityId);
+    {
+      map['operation_type'] = Variable<int>(
+        $PendingOperationsTable.$converteroperationType.toSql(operationType),
+      );
+    }
+    map['data'] = Variable<String>(data);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  PendingOperationsCompanion toCompanion(bool nullToAbsent) {
+    return PendingOperationsCompanion(
+      id: Value(id),
+      entityType: Value(entityType),
+      entityId: Value(entityId),
+      operationType: Value(operationType),
+      data: Value(data),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory PendingOperationEntity.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PendingOperationEntity(
+      id: serializer.fromJson<int>(json['id']),
+      entityType: serializer.fromJson<String>(json['entityType']),
+      entityId: serializer.fromJson<int>(json['entityId']),
+      operationType: $PendingOperationsTable.$converteroperationType.fromJson(
+        serializer.fromJson<int>(json['operationType']),
+      ),
+      data: serializer.fromJson<String>(json['data']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'entityType': serializer.toJson<String>(entityType),
+      'entityId': serializer.toJson<int>(entityId),
+      'operationType': serializer.toJson<int>(
+        $PendingOperationsTable.$converteroperationType.toJson(operationType),
+      ),
+      'data': serializer.toJson<String>(data),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  PendingOperationEntity copyWith({
+    int? id,
+    String? entityType,
+    int? entityId,
+    OperationType? operationType,
+    String? data,
+    DateTime? createdAt,
+  }) => PendingOperationEntity(
+    id: id ?? this.id,
+    entityType: entityType ?? this.entityType,
+    entityId: entityId ?? this.entityId,
+    operationType: operationType ?? this.operationType,
+    data: data ?? this.data,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  PendingOperationEntity copyWithCompanion(PendingOperationsCompanion data) {
+    return PendingOperationEntity(
+      id: data.id.present ? data.id.value : this.id,
+      entityType: data.entityType.present
+          ? data.entityType.value
+          : this.entityType,
+      entityId: data.entityId.present ? data.entityId.value : this.entityId,
+      operationType: data.operationType.present
+          ? data.operationType.value
+          : this.operationType,
+      data: data.data.present ? data.data.value : this.data,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PendingOperationEntity(')
+          ..write('id: $id, ')
+          ..write('entityType: $entityType, ')
+          ..write('entityId: $entityId, ')
+          ..write('operationType: $operationType, ')
+          ..write('data: $data, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, entityType, entityId, operationType, data, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PendingOperationEntity &&
+          other.id == this.id &&
+          other.entityType == this.entityType &&
+          other.entityId == this.entityId &&
+          other.operationType == this.operationType &&
+          other.data == this.data &&
+          other.createdAt == this.createdAt);
+}
+
+class PendingOperationsCompanion
+    extends UpdateCompanion<PendingOperationEntity> {
+  final Value<int> id;
+  final Value<String> entityType;
+  final Value<int> entityId;
+  final Value<OperationType> operationType;
+  final Value<String> data;
+  final Value<DateTime> createdAt;
+  const PendingOperationsCompanion({
+    this.id = const Value.absent(),
+    this.entityType = const Value.absent(),
+    this.entityId = const Value.absent(),
+    this.operationType = const Value.absent(),
+    this.data = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  PendingOperationsCompanion.insert({
+    this.id = const Value.absent(),
+    required String entityType,
+    required int entityId,
+    required OperationType operationType,
+    required String data,
+    required DateTime createdAt,
+  }) : entityType = Value(entityType),
+       entityId = Value(entityId),
+       operationType = Value(operationType),
+       data = Value(data),
+       createdAt = Value(createdAt);
+  static Insertable<PendingOperationEntity> custom({
+    Expression<int>? id,
+    Expression<String>? entityType,
+    Expression<int>? entityId,
+    Expression<int>? operationType,
+    Expression<String>? data,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (entityType != null) 'entity_type': entityType,
+      if (entityId != null) 'entity_id': entityId,
+      if (operationType != null) 'operation_type': operationType,
+      if (data != null) 'data': data,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  PendingOperationsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? entityType,
+    Value<int>? entityId,
+    Value<OperationType>? operationType,
+    Value<String>? data,
+    Value<DateTime>? createdAt,
+  }) {
+    return PendingOperationsCompanion(
+      id: id ?? this.id,
+      entityType: entityType ?? this.entityType,
+      entityId: entityId ?? this.entityId,
+      operationType: operationType ?? this.operationType,
+      data: data ?? this.data,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (entityType.present) {
+      map['entity_type'] = Variable<String>(entityType.value);
+    }
+    if (entityId.present) {
+      map['entity_id'] = Variable<int>(entityId.value);
+    }
+    if (operationType.present) {
+      map['operation_type'] = Variable<int>(
+        $PendingOperationsTable.$converteroperationType.toSql(
+          operationType.value,
+        ),
+      );
+    }
+    if (data.present) {
+      map['data'] = Variable<String>(data.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PendingOperationsCompanion(')
+          ..write('id: $id, ')
+          ..write('entityType: $entityType, ')
+          ..write('entityId: $entityId, ')
+          ..write('operationType: $operationType, ')
+          ..write('data: $data, ')
+          ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
@@ -1689,9 +1781,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $AccountsTable accounts = $AccountsTable(this);
   late final $CategoriesTable categories = $CategoriesTable(this);
   late final $TransactionsTable transactions = $TransactionsTable(this);
+  late final $PendingOperationsTable pendingOperations =
+      $PendingOperationsTable(this);
   late final AccountDao accountDao = AccountDao(this as AppDatabase);
   late final CategoryDao categoryDao = CategoryDao(this as AppDatabase);
   late final TransactionDao transactionDao = TransactionDao(
+    this as AppDatabase,
+  );
+  late final PendingOperationsDao pendingOperationsDao = PendingOperationsDao(
     this as AppDatabase,
   );
   @override
@@ -1702,6 +1799,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     accounts,
     categories,
     transactions,
+    pendingOperations,
   ];
 }
 
@@ -1714,8 +1812,6 @@ typedef $$AccountsTableCreateCompanionBuilder =
       required String currency,
       required DateTime createdAt,
       required DateTime updatedAt,
-      Value<DateTime?> lastSyncDate,
-      Value<bool> isDirty,
     });
 typedef $$AccountsTableUpdateCompanionBuilder =
     AccountsCompanion Function({
@@ -1726,8 +1822,6 @@ typedef $$AccountsTableUpdateCompanionBuilder =
       Value<String> currency,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<DateTime?> lastSyncDate,
-      Value<bool> isDirty,
     });
 
 final class $$AccountsTableReferences
@@ -1794,16 +1888,6 @@ class $$AccountsTableFilterComposer
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get lastSyncDate => $composableBuilder(
-    column: $table.lastSyncDate,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isDirty => $composableBuilder(
-    column: $table.isDirty,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1876,16 +1960,6 @@ class $$AccountsTableOrderingComposer
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
-
-  ColumnOrderings<DateTime> get lastSyncDate => $composableBuilder(
-    column: $table.lastSyncDate,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isDirty => $composableBuilder(
-    column: $table.isDirty,
-    builder: (column) => ColumnOrderings(column),
-  );
 }
 
 class $$AccountsTableAnnotationComposer
@@ -1917,14 +1991,6 @@ class $$AccountsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get lastSyncDate => $composableBuilder(
-    column: $table.lastSyncDate,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<bool> get isDirty =>
-      $composableBuilder(column: $table.isDirty, builder: (column) => column);
 
   Expression<T> transactionsRefs<T extends Object>(
     Expression<T> Function($$TransactionsTableAnnotationComposer a) f,
@@ -1987,8 +2053,6 @@ class $$AccountsTableTableManager
                 Value<String> currency = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<DateTime?> lastSyncDate = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
               }) => AccountsCompanion(
                 id: id,
                 userId: userId,
@@ -1997,8 +2061,6 @@ class $$AccountsTableTableManager
                 currency: currency,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
-                lastSyncDate: lastSyncDate,
-                isDirty: isDirty,
               ),
           createCompanionCallback:
               ({
@@ -2009,8 +2071,6 @@ class $$AccountsTableTableManager
                 required String currency,
                 required DateTime createdAt,
                 required DateTime updatedAt,
-                Value<DateTime?> lastSyncDate = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
               }) => AccountsCompanion.insert(
                 id: id,
                 userId: userId,
@@ -2019,8 +2079,6 @@ class $$AccountsTableTableManager
                 currency: currency,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
-                lastSyncDate: lastSyncDate,
-                isDirty: isDirty,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -2085,8 +2143,6 @@ typedef $$CategoriesTableCreateCompanionBuilder =
       required bool isIncome,
       required DateTime createdAt,
       required DateTime updatedAt,
-      Value<DateTime?> lastSyncDate,
-      Value<bool> isDirty,
     });
 typedef $$CategoriesTableUpdateCompanionBuilder =
     CategoriesCompanion Function({
@@ -2096,8 +2152,6 @@ typedef $$CategoriesTableUpdateCompanionBuilder =
       Value<bool> isIncome,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<DateTime?> lastSyncDate,
-      Value<bool> isDirty,
     });
 
 final class $$CategoriesTableReferences
@@ -2165,16 +2219,6 @@ class $$CategoriesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get lastSyncDate => $composableBuilder(
-    column: $table.lastSyncDate,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isDirty => $composableBuilder(
-    column: $table.isDirty,
-    builder: (column) => ColumnFilters(column),
-  );
-
   Expression<bool> transactionsRefs(
     Expression<bool> Function($$TransactionsTableFilterComposer f) f,
   ) {
@@ -2239,16 +2283,6 @@ class $$CategoriesTableOrderingComposer
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
-
-  ColumnOrderings<DateTime> get lastSyncDate => $composableBuilder(
-    column: $table.lastSyncDate,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isDirty => $composableBuilder(
-    column: $table.isDirty,
-    builder: (column) => ColumnOrderings(column),
-  );
 }
 
 class $$CategoriesTableAnnotationComposer
@@ -2277,14 +2311,6 @@ class $$CategoriesTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get lastSyncDate => $composableBuilder(
-    column: $table.lastSyncDate,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<bool> get isDirty =>
-      $composableBuilder(column: $table.isDirty, builder: (column) => column);
 
   Expression<T> transactionsRefs<T extends Object>(
     Expression<T> Function($$TransactionsTableAnnotationComposer a) f,
@@ -2346,8 +2372,6 @@ class $$CategoriesTableTableManager
                 Value<bool> isIncome = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<DateTime?> lastSyncDate = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
               }) => CategoriesCompanion(
                 id: id,
                 name: name,
@@ -2355,8 +2379,6 @@ class $$CategoriesTableTableManager
                 isIncome: isIncome,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
-                lastSyncDate: lastSyncDate,
-                isDirty: isDirty,
               ),
           createCompanionCallback:
               ({
@@ -2366,8 +2388,6 @@ class $$CategoriesTableTableManager
                 required bool isIncome,
                 required DateTime createdAt,
                 required DateTime updatedAt,
-                Value<DateTime?> lastSyncDate = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
               }) => CategoriesCompanion.insert(
                 id: id,
                 name: name,
@@ -2375,8 +2395,6 @@ class $$CategoriesTableTableManager
                 isIncome: isIncome,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
-                lastSyncDate: lastSyncDate,
-                isDirty: isDirty,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -2444,8 +2462,6 @@ typedef $$TransactionsTableCreateCompanionBuilder =
       required DateTime transactionDate,
       required DateTime createdAt,
       required DateTime updatedAt,
-      Value<DateTime?> lastSyncDate,
-      Value<bool> isDirty,
     });
 typedef $$TransactionsTableUpdateCompanionBuilder =
     TransactionsCompanion Function({
@@ -2457,8 +2473,6 @@ typedef $$TransactionsTableUpdateCompanionBuilder =
       Value<DateTime> transactionDate,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
-      Value<DateTime?> lastSyncDate,
-      Value<bool> isDirty,
     });
 
 final class $$TransactionsTableReferences
@@ -2541,16 +2555,6 @@ class $$TransactionsTableFilterComposer
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get lastSyncDate => $composableBuilder(
-    column: $table.lastSyncDate,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isDirty => $composableBuilder(
-    column: $table.isDirty,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2640,16 +2644,6 @@ class $$TransactionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get lastSyncDate => $composableBuilder(
-    column: $table.lastSyncDate,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isDirty => $composableBuilder(
-    column: $table.isDirty,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   $$AccountsTableOrderingComposer get accountId {
     final $$AccountsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -2725,14 +2719,6 @@ class $$TransactionsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get lastSyncDate => $composableBuilder(
-    column: $table.lastSyncDate,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<bool> get isDirty =>
-      $composableBuilder(column: $table.isDirty, builder: (column) => column);
 
   $$AccountsTableAnnotationComposer get accountId {
     final $$AccountsTableAnnotationComposer composer = $composerBuilder(
@@ -2817,8 +2803,6 @@ class $$TransactionsTableTableManager
                 Value<DateTime> transactionDate = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
-                Value<DateTime?> lastSyncDate = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
               }) => TransactionsCompanion(
                 id: id,
                 accountId: accountId,
@@ -2828,8 +2812,6 @@ class $$TransactionsTableTableManager
                 transactionDate: transactionDate,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
-                lastSyncDate: lastSyncDate,
-                isDirty: isDirty,
               ),
           createCompanionCallback:
               ({
@@ -2841,8 +2823,6 @@ class $$TransactionsTableTableManager
                 required DateTime transactionDate,
                 required DateTime createdAt,
                 required DateTime updatedAt,
-                Value<DateTime?> lastSyncDate = const Value.absent(),
-                Value<bool> isDirty = const Value.absent(),
               }) => TransactionsCompanion.insert(
                 id: id,
                 accountId: accountId,
@@ -2852,8 +2832,6 @@ class $$TransactionsTableTableManager
                 transactionDate: transactionDate,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
-                lastSyncDate: lastSyncDate,
-                isDirty: isDirty,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -2935,6 +2913,238 @@ typedef $$TransactionsTableProcessedTableManager =
       TransactionEntity,
       PrefetchHooks Function({bool accountId, bool categoryId})
     >;
+typedef $$PendingOperationsTableCreateCompanionBuilder =
+    PendingOperationsCompanion Function({
+      Value<int> id,
+      required String entityType,
+      required int entityId,
+      required OperationType operationType,
+      required String data,
+      required DateTime createdAt,
+    });
+typedef $$PendingOperationsTableUpdateCompanionBuilder =
+    PendingOperationsCompanion Function({
+      Value<int> id,
+      Value<String> entityType,
+      Value<int> entityId,
+      Value<OperationType> operationType,
+      Value<String> data,
+      Value<DateTime> createdAt,
+    });
+
+class $$PendingOperationsTableFilterComposer
+    extends Composer<_$AppDatabase, $PendingOperationsTable> {
+  $$PendingOperationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get entityId => $composableBuilder(
+    column: $table.entityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<OperationType, OperationType, int>
+  get operationType => $composableBuilder(
+    column: $table.operationType,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<String> get data => $composableBuilder(
+    column: $table.data,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PendingOperationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $PendingOperationsTable> {
+  $$PendingOperationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get entityId => $composableBuilder(
+    column: $table.entityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get operationType => $composableBuilder(
+    column: $table.operationType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get data => $composableBuilder(
+    column: $table.data,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PendingOperationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PendingOperationsTable> {
+  $$PendingOperationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get entityId =>
+      $composableBuilder(column: $table.entityId, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<OperationType, int> get operationType =>
+      $composableBuilder(
+        column: $table.operationType,
+        builder: (column) => column,
+      );
+
+  GeneratedColumn<String> get data =>
+      $composableBuilder(column: $table.data, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$PendingOperationsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PendingOperationsTable,
+          PendingOperationEntity,
+          $$PendingOperationsTableFilterComposer,
+          $$PendingOperationsTableOrderingComposer,
+          $$PendingOperationsTableAnnotationComposer,
+          $$PendingOperationsTableCreateCompanionBuilder,
+          $$PendingOperationsTableUpdateCompanionBuilder,
+          (
+            PendingOperationEntity,
+            BaseReferences<
+              _$AppDatabase,
+              $PendingOperationsTable,
+              PendingOperationEntity
+            >,
+          ),
+          PendingOperationEntity,
+          PrefetchHooks Function()
+        > {
+  $$PendingOperationsTableTableManager(
+    _$AppDatabase db,
+    $PendingOperationsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PendingOperationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PendingOperationsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PendingOperationsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> entityType = const Value.absent(),
+                Value<int> entityId = const Value.absent(),
+                Value<OperationType> operationType = const Value.absent(),
+                Value<String> data = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => PendingOperationsCompanion(
+                id: id,
+                entityType: entityType,
+                entityId: entityId,
+                operationType: operationType,
+                data: data,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String entityType,
+                required int entityId,
+                required OperationType operationType,
+                required String data,
+                required DateTime createdAt,
+              }) => PendingOperationsCompanion.insert(
+                id: id,
+                entityType: entityType,
+                entityId: entityId,
+                operationType: operationType,
+                data: data,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PendingOperationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PendingOperationsTable,
+      PendingOperationEntity,
+      $$PendingOperationsTableFilterComposer,
+      $$PendingOperationsTableOrderingComposer,
+      $$PendingOperationsTableAnnotationComposer,
+      $$PendingOperationsTableCreateCompanionBuilder,
+      $$PendingOperationsTableUpdateCompanionBuilder,
+      (
+        PendingOperationEntity,
+        BaseReferences<
+          _$AppDatabase,
+          $PendingOperationsTable,
+          PendingOperationEntity
+        >,
+      ),
+      PendingOperationEntity,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2945,4 +3155,6 @@ class $AppDatabaseManager {
       $$CategoriesTableTableManager(_db, _db.categories);
   $$TransactionsTableTableManager get transactions =>
       $$TransactionsTableTableManager(_db, _db.transactions);
+  $$PendingOperationsTableTableManager get pendingOperations =>
+      $$PendingOperationsTableTableManager(_db, _db.pendingOperations);
 }

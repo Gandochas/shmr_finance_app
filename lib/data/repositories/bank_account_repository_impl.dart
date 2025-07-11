@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart';
-import 'package:flutter/foundation.dart';
-import 'package:shmr_finance_app/core/network/connection_checker.dart';
+import 'package:shmr_finance_app/data/services/sync_service.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/account_dao.dart';
+import 'package:shmr_finance_app/data/sources/drift/daos/pending_operations_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/database/database.dart';
 import 'package:shmr_finance_app/data/sources/drift/mappers/drift_mappers.dart';
 import 'package:shmr_finance_app/domain/models/account/account.dart';
@@ -14,81 +16,60 @@ import 'package:shmr_finance_app/domain/sources/bank_account_datasource.dart';
 
 final class BankAccountRepositoryImpl implements BankAccountRepository {
   BankAccountRepositoryImpl({
-    required BankAccountDatasource apiSource,
-    required AccountDao accountDao,
-  }) : _apiSource = apiSource,
-       _accountDao = accountDao;
+    required this.apiSource,
+    required this.accountDao,
+    required this.pendingOperationsDao,
+    required this.syncService,
+  });
 
-  final BankAccountDatasource _apiSource;
-  final AccountDao _accountDao;
-  final ConnectionChecker _connectionChecker = ConnectionChecker();
+  final BankAccountDatasource apiSource;
+  final AccountDao accountDao;
+  final PendingOperationsDao pendingOperationsDao;
+  final SyncService syncService;
 
   @override
   Future<Account> create(AccountCreateRequest createRequest) async {
-    try {
-      if (await _connectionChecker.isConnected()) {
-        final account = await _apiSource.create(createRequest);
-        await _syncAccountToLocal(account);
-        return account;
-      }
-    } on Exception catch (e) {
-      debugPrint('API call failed: $e');
-    }
-
-    final companion = AccountsCompanion.insert(
-      userId: 1,
-      name: createRequest.name,
-      balance: createRequest.balance,
-      currency: createRequest.currency,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      isDirty: const Value(true),
-    );
-
-    final id = await _accountDao.insertAccount(companion);
-    final entity = await _accountDao.getAccountById(id);
-    return DriftMappers.accountEntityToModel(entity!);
+    // Creating accounts offline is not supported in this logic,
+    // as we usually need an immediate ID from the server.
+    // We will perform a direct API call.
+    final account = await apiSource.create(createRequest);
+    await _syncAccountToLocal(account);
+    return account;
   }
 
   @override
   Future<List<Account>> getAll() async {
+    await syncService.sync();
     try {
-      if (await _connectionChecker.isConnected()) {
-        final accounts = await _apiSource.getAll();
-        await _syncAccountsToLocal(accounts);
-        return accounts;
-      }
-    } on Exception catch (e) {
-      debugPrint('API call failed: $e');
+      final accounts = await apiSource.getAll();
+      await _syncAccountsToLocal(accounts);
+    } on Exception {
+      // In case of network error, we proceed with local data
     }
-
-    final entities = await _accountDao.getAllAccounts();
+    final entities = await accountDao.getAllAccounts();
     return entities.map(DriftMappers.accountEntityToModel).toList();
   }
 
   @override
   Future<AccountResponse> getById(int accountId) async {
+    await syncService.sync();
     try {
-      if (await _connectionChecker.isConnected()) {
-        final accountResponse = await _apiSource.getById(accountId);
-        final account = Account(
-          id: accountResponse.id,
-          //! TODO: figure ount user ID
-          userId: accountId,
-          name: accountResponse.name,
-          balance: accountResponse.balance,
-          currency: accountResponse.currency,
-          createdAt: accountResponse.createdAt,
-          updatedAt: accountResponse.updatedAt,
-        );
-        await _syncAccountToLocal(account);
-        return accountResponse;
-      }
-    } on Exception catch (e) {
-      debugPrint('API call failed: $e');
+      final accountResponse = await apiSource.getById(accountId);
+      final account = Account(
+        id: accountResponse.id,
+        userId: 1, // TODO: Figure out user ID
+        name: accountResponse.name,
+        balance: accountResponse.balance,
+        currency: accountResponse.currency,
+        createdAt: accountResponse.createdAt,
+        updatedAt: accountResponse.updatedAt,
+      );
+      await _syncAccountToLocal(account);
+    } on Exception {
+      // In case of network error, we proceed with local data
     }
 
-    final entity = await _accountDao.getAccountById(accountId);
+    final entity = await accountDao.getAccountById(accountId);
     if (entity == null) {
       throw Exception('Account not found');
     }
@@ -96,11 +77,9 @@ final class BankAccountRepositoryImpl implements BankAccountRepository {
   }
 
   @override
-  Future<AccountHistoryResponse> getHistory(int accountId) async {
-    // По хорошему наверное надо создать отдельную таблицу под AccountHistory
-    // Но пока что, решил не усложнять получение истории
-
-    return _apiSource.getHistory(accountId);
+  Future<AccountHistoryResponse> getHistory(int accountId) {
+    // This should also be synced, but for now, we pass it through.
+    return apiSource.getHistory(accountId);
   }
 
   @override
@@ -108,29 +87,31 @@ final class BankAccountRepositoryImpl implements BankAccountRepository {
     required int accountId,
     required AccountUpdateRequest updateRequest,
   }) async {
-    try {
-      if (await _connectionChecker.isConnected()) {
-        final account = await _apiSource.update(
-          accountId: accountId,
-          updateRequest: updateRequest,
-        );
-        await _syncAccountToLocal(account);
-        return account;
-      }
-    } on Exception catch (e) {
-      debugPrint('API call failed: $e');
-    }
-
+    // 1. Update locally
     final companion = AccountsCompanion(
       name: Value(updateRequest.name),
       balance: Value(updateRequest.balance),
       currency: Value(updateRequest.currency),
       updatedAt: Value(DateTime.now()),
-      isDirty: const Value(true),
+    );
+    await accountDao.updateAccount(accountId, companion);
+    final entity = await accountDao.getAccountById(accountId);
+
+    // 2. Add to pending operations
+    await pendingOperationsDao.insert(
+      PendingOperationsCompanion.insert(
+        entityType: 'account',
+        entityId: accountId,
+        operationType: OperationType.update,
+        data: jsonEncode(updateRequest.toJson()),
+        createdAt: DateTime.now(),
+      ),
     );
 
-    await _accountDao.updateAccount(accountId, companion);
-    final entity = await _accountDao.getAccountById(accountId);
+    // 3. Try to sync
+    syncService.sync();
+
+    // 4. Return local data
     return DriftMappers.accountEntityToModel(entity!);
   }
 
@@ -141,35 +122,15 @@ final class BankAccountRepositoryImpl implements BankAccountRepository {
   }
 
   Future<void> _syncAccountToLocal(Account account) async {
-    final existing = await _accountDao.getAccountById(account.id);
-
-    if (existing == null) {
-      // Insert new account
-      final companion = AccountsCompanion.insert(
-        id: Value(account.id),
-        userId: account.userId,
-        name: account.name,
-        balance: account.balance,
-        currency: account.currency,
-        createdAt: account.createdAt,
-        updatedAt: account.updatedAt,
-        lastSyncDate: Value(DateTime.now()),
-        isDirty: const Value(false),
-      );
-      await _accountDao.insertAccount(companion);
-    } else {
-      // Update existing account
-      final companion = AccountsCompanion(
-        userId: Value(account.userId),
-        name: Value(account.name),
-        balance: Value(account.balance),
-        currency: Value(account.currency),
-        createdAt: Value(account.createdAt),
-        updatedAt: Value(account.updatedAt),
-        lastSyncDate: Value(DateTime.now()),
-        isDirty: const Value(false),
-      );
-      await _accountDao.updateAccount(account.id, companion);
-    }
+    final companion = AccountsCompanion(
+      id: Value(account.id),
+      userId: Value(account.userId),
+      name: Value(account.name),
+      balance: Value(account.balance),
+      currency: Value(account.currency),
+      createdAt: Value(account.createdAt),
+      updatedAt: Value(account.updatedAt),
+    );
+    await accountDao.insertOrUpdate(companion);
   }
 }

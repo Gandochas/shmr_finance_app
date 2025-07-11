@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 import 'package:shmr_finance_app/core/network/network_client.dart';
 import 'package:shmr_finance_app/domain/models/transaction/transaction.dart';
 import 'package:shmr_finance_app/domain/models/transaction_request/transaction_request.dart';
@@ -13,14 +14,17 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
   @override
   Future<Transaction> create(TransactionRequest transactionRequest) async {
     try {
+      final parsedDateFormat = DateFormat(
+        'yyyy-MM-ddTHH:mm:ssZ',
+      ).format(transactionRequest.transactionDate.toLocal());
+
       final response = await _networkClient.post<Map<String, Object?>>(
         '/transactions',
         data: {
           'accountId': transactionRequest.accountId,
           'categoryId': transactionRequest.categoryId,
           'amount': transactionRequest.amount,
-          'transactionDate': transactionRequest.transactionDate
-              .toIso8601String(),
+          'transactionDate': parsedDateFormat,
           'comment': transactionRequest.comment,
         },
       );
@@ -63,11 +67,11 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
     DateTime? endDate,
   }) async {
     try {
-      final response = await _networkClient.get<List<Map<String, Object?>>>(
+      final response = await _networkClient.get<List<dynamic>>(
         '/transactions/account/$accountId/period',
         params: {
-          'startDate': startDate?.toIso8601String(),
-          'endDate': endDate?.toIso8601String(),
+          'startDate': startDate?.toIso8601String().substring(0, 10),
+          'endDate': endDate?.toIso8601String().substring(0, 10),
         },
       );
 
@@ -75,7 +79,9 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
 
       return data
           .map(
-            (transactionData) => TransactionResponse.fromJson(transactionData),
+            (transactionData) => TransactionResponse.fromJson(
+              transactionData as Map<String, dynamic>,
+            ),
           )
           .toList();
     } on DioException catch (e) {
@@ -123,7 +129,8 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
           'categoryId': transactionRequest.categoryId,
           'amount': transactionRequest.amount,
           'transactionDate': transactionRequest.transactionDate
-              .toIso8601String(),
+              .toIso8601String()
+              .substring(0, 10),
           'comment': transactionRequest.comment,
         },
       );

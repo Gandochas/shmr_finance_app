@@ -28,7 +28,7 @@ dependencies:
   uuid: ^4.5.1
   dio: ^5.8.0+1
   flutter_dotenv: ^5.2.1
-  retry: ^3.1.2
+  dio_smart_retry: ^7.0.1
 
   category_chart:
     path: packages/category_chart
