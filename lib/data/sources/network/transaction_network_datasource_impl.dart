@@ -13,19 +13,16 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
 
   @override
   Future<Transaction> create(TransactionRequest transactionRequest) async {
-    final now = DateTime.now().toUtc();
     try {
-      final parsedDateFormat = DateFormat(
-        "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
-      ).format(transactionRequest.transactionDate.toUtc());
-
       final response = await _networkClient.post<Map<String, Object?>>(
         '/transactions',
         data: {
           'accountId': transactionRequest.accountId,
           'categoryId': transactionRequest.categoryId,
           'amount': transactionRequest.amount,
-          'transactionDate': now.toIso8601String(),
+          'transactionDate': transactionRequest.transactionDate
+              .toUtc()
+              .toIso8601String(),
           'comment': transactionRequest.comment,
         },
       );
@@ -68,11 +65,16 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
     DateTime? endDate,
   }) async {
     try {
+      final dateFormat = DateFormat('yyyy-MM-dd');
       final response = await _networkClient.get<List<dynamic>>(
         '/transactions/account/$accountId/period',
         params: {
-          'startDate': startDate?.toIso8601String().substring(0, 10),
-          'endDate': endDate?.toIso8601String().substring(0, 10),
+          'startDate': ?(startDate != null
+              ? dateFormat.format(startDate.toUtc())
+              : null),
+          'endDate': ?(endDate != null
+              ? dateFormat.format(endDate.toUtc())
+              : null),
         },
       );
 
@@ -130,8 +132,8 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
           'categoryId': transactionRequest.categoryId,
           'amount': transactionRequest.amount,
           'transactionDate': transactionRequest.transactionDate
-              .toIso8601String()
-              .substring(0, 10),
+              .toUtc()
+              .toIso8601String(),
           'comment': transactionRequest.comment,
         },
       );

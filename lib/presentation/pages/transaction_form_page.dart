@@ -322,7 +322,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     );
 
     final request = TransactionRequest(
-      accountId: widget.transaction?.id ?? _selectedAccountId!,
+      accountId: _selectedAccountId ?? 1,
       categoryId: _selectedCategoryId!,
       amount: _amountController.text.trim(),
       transactionDate: combinedDate,

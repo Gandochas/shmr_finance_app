@@ -12,35 +12,60 @@ final class NetworkClient {
       'Content-Type': 'application/json',
     };
 
-    // _dio.interceptors.add(
-    //   RetryInterceptor(
-    //     dio: _dio,
-    //     logPrint: debugPrint, // For debugging
-    //     retries: 3, // Number of retries
-    //     retryDelays: const [
-    //       Duration(seconds: 1), // 1s delay
-    //       Duration(seconds: 2), // 2s delay
-    //       Duration(seconds: 4), // 4s delay
-    //     ],
-    //     retryableExtraStatuses: {
-    //       408, // Request Timeout
-    //       429, // Too Many Requests
-    //     },
-    //   ),
-    // );
+    _dio.interceptors.add(
+      RetryInterceptor(
+        dio: _dio,
+        logPrint: debugPrint,
+        retries: 3,
+        retryDelays: const [
+          Duration(seconds: 1),
+          Duration(seconds: 2),
+          Duration(seconds: 4),
+        ],
+        retryableExtraStatuses: {500, 502, 503, 504, 408, 429},
+      ),
+    );
 
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          debugPrint('Request: ${options.method} ${options.path}');
+          final log = StringBuffer();
+          log.writeln('*** Request ***');
+          log.writeln('method: ${options.method}');
+          log.writeln('uri: ${options.uri}');
+          if (options.queryParameters.isNotEmpty) {
+            log.writeln('queryParameters:');
+            options.queryParameters.forEach((k, v) => log.writeln('  $k: $v'));
+          }
+          if (options.data != null) {
+            log.writeln('body: ${options.data}');
+          }
+          debugPrint(log.toString());
           return handler.next(options);
         },
         onResponse: (response, handler) {
-          debugPrint('Response: ${response.statusCode} ${response.data}');
+          final log = StringBuffer();
+          log.writeln('*** Response ***');
+          log.writeln('uri: ${response.requestOptions.uri}');
+          log.writeln('statusCode: ${response.statusCode}');
+          log.writeln('headers:');
+          response.headers.forEach(
+            (k, v) => log.writeln('  $k: ${v.join(', ')}'),
+          );
+          log.writeln('data: ${response.data}');
+          debugPrint(log.toString());
           return handler.next(response);
         },
         onError: (e, handler) {
-          debugPrint('Error: ${e.message}');
+          final log = StringBuffer();
+          log.writeln('*** Error ***');
+          log.writeln('uri: ${e.requestOptions.uri}');
+          log.writeln('message: ${e.message}');
+          if (e.response != null) {
+            log.writeln('statusCode: ${e.response?.statusCode}');
+            log.writeln('data: ${e.response?.data}');
+          }
+          debugPrint(log.toString());
           return handler.next(e);
         },
       ),
@@ -48,8 +73,6 @@ final class NetworkClient {
   }
 
   final Dio _dio;
-
-  Dio get client => _dio;
 
   Future<Response<T>> get<T>(
     String path, {
