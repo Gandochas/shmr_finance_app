@@ -112,9 +112,11 @@ class _CategoryPieChartState extends State<CategoryPieChart> {
             final categoryName = data.names[index];
             final color = _getCategoryColor(index);
             if (titleCount > config.maxTitles) {
+              titleCount++;
               return const SizedBox.shrink();
             }
             if (titleCount == config.maxTitles) {
+              titleCount++;
               return Text('...', style: Theme.of(context).textTheme.bodyLarge);
             }
             titleCount++;

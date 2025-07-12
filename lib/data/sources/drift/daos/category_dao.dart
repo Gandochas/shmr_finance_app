@@ -18,6 +18,13 @@ class CategoryDao extends DatabaseAccessor<AppDatabase>
     )..where((cat) => cat.id.equals(id))).getSingleOrNull();
   }
 
+  Future<void> clearAndInsertAll(List<CategoriesCompanion> companions) async {
+    await batch((batch) {
+      batch.deleteAll(categories);
+      batch.insertAll(categories, companions);
+    });
+  }
+
   Future<int> insertCategory(CategoriesCompanion category) {
     return into(categories).insert(category);
   }
@@ -30,27 +37,5 @@ class CategoryDao extends DatabaseAccessor<AppDatabase>
 
   Future<int> deleteCategory(int id) {
     return (delete(categories)..where((cat) => cat.id.equals(id))).go();
-  }
-
-  Future<void> markAsDirty(int id) async {
-    await (update(categories)..where((cat) => cat.id.equals(id))).write(
-      CategoriesCompanion(
-        isDirty: const Value(true),
-        updatedAt: Value(DateTime.now()),
-      ),
-    );
-  }
-
-  Future<List<CategoryEntity>> getDirtyCategories() {
-    return (select(categories)..where((cat) => cat.isDirty.equals(true))).get();
-  }
-
-  Future<void> markAsSynced(int id) async {
-    await (update(categories)..where((cat) => cat.id.equals(id))).write(
-      CategoriesCompanion(
-        isDirty: const Value(false),
-        lastSyncDate: Value(DateTime.now()),
-      ),
-    );
   }
 }

@@ -2,11 +2,13 @@ import 'package:shmr_finance_app/domain/models/account/account.dart';
 import 'package:shmr_finance_app/domain/models/account_create_request/account_create_request.dart';
 import 'package:shmr_finance_app/domain/models/account_history/account_history.dart';
 import 'package:shmr_finance_app/domain/models/account_history_response/account_history_response.dart';
+import 'package:shmr_finance_app/domain/models/account_response/account_response.dart';
 import 'package:shmr_finance_app/domain/models/account_state/account_state.dart';
 import 'package:shmr_finance_app/domain/models/account_update_request/account_update_request.dart';
 import 'package:shmr_finance_app/domain/repositories/bank_account_repository.dart';
+import 'package:shmr_finance_app/domain/sources/bank_account_datasource.dart';
 
-final class BankAccountMockDatasourceImpl {
+final class BankAccountMockDatasourceImpl implements BankAccountDatasource {
   final _accounts = <Account>[
     Account(
       id: 1,
@@ -34,6 +36,7 @@ final class BankAccountMockDatasourceImpl {
     ),
   ];
 
+  @override
   Future<Account> create(AccountCreateRequest createRequest) async {
     await Future<void>.delayed(const Duration(seconds: 1));
     final newAccount = Account(
@@ -63,21 +66,35 @@ final class BankAccountMockDatasourceImpl {
     return newAccount;
   }
 
+  @override
   Future<List<Account>> getAll() async {
     await Future<void>.delayed(const Duration(seconds: 1));
     return [..._accounts];
   }
 
-  Future<Account> getById(int accountId) async {
+  @override
+  Future<AccountResponse> getById(int accountId) async {
     await Future<void>.delayed(const Duration(seconds: 1));
-    return _accounts.firstWhere(
+    final account = _accounts.firstWhere(
       (account) => account.id == accountId,
       orElse: () => throw const BankAccountNotExistsException(
         'Такого аккаунта не существует!',
       ),
     );
+
+    return AccountResponse(
+      id: account.id,
+      name: account.name,
+      balance: account.balance,
+      currency: account.currency,
+      incomeStats: [],
+      expenseStats: [],
+      createdAt: DateTime.now().subtract(const Duration(days: 30)),
+      updatedAt: DateTime.now(),
+    );
   }
 
+  @override
   Future<AccountHistoryResponse> getHistory(int accountId) async {
     await Future<void>.delayed(const Duration(seconds: 1));
     final account = _accounts.lastWhere(
@@ -98,6 +115,7 @@ final class BankAccountMockDatasourceImpl {
     );
   }
 
+  @override
   Future<Account> update({
     required int accountId,
     required AccountUpdateRequest updateRequest,

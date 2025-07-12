@@ -21,33 +21,15 @@ class AccountDao extends DatabaseAccessor<AppDatabase> with _$AccountDaoMixin {
     return into(accounts).insert(account);
   }
 
+  Future<void> insertOrUpdate(AccountsCompanion account) {
+    return into(accounts).insertOnConflictUpdate(account);
+  }
+
   Future<int> updateAccount(int id, AccountsCompanion account) {
     return (update(accounts)..where((acc) => acc.id.equals(id))).write(account);
   }
 
   Future<int> deleteAccount(int id) {
     return (delete(accounts)..where((acc) => acc.id.equals(id))).go();
-  }
-
-  Future<void> markAsDirty(int id) async {
-    await (update(accounts)..where((acc) => acc.id.equals(id))).write(
-      AccountsCompanion(
-        isDirty: const Value(true),
-        updatedAt: Value(DateTime.now()),
-      ),
-    );
-  }
-
-  Future<List<AccountEntity>> getDirtyAccounts() {
-    return (select(accounts)..where((acc) => acc.isDirty.equals(true))).get();
-  }
-
-  Future<void> markAsSynced(int id) async {
-    await (update(accounts)..where((acc) => acc.id.equals(id))).write(
-      AccountsCompanion(
-        isDirty: const Value(false),
-        lastSyncDate: Value(DateTime.now()),
-      ),
-    );
   }
 }

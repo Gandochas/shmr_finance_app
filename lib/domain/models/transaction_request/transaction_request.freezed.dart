@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TransactionRequest {
 
- int get id; int get categoryId; String get amount; DateTime get transactionDate; String? get comment;
+ int get accountId; int get categoryId; String get amount; DateTime get transactionDate; String? get comment;
 /// Create a copy of TransactionRequest
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $TransactionRequestCopyWith<TransactionRequest> get copyWith => _$TransactionReq
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TransactionRequest&&(identical(other.id, id) || other.id == id)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.transactionDate, transactionDate) || other.transactionDate == transactionDate)&&(identical(other.comment, comment) || other.comment == comment));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TransactionRequest&&(identical(other.accountId, accountId) || other.accountId == accountId)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.transactionDate, transactionDate) || other.transactionDate == transactionDate)&&(identical(other.comment, comment) || other.comment == comment));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,categoryId,amount,transactionDate,comment);
+int get hashCode => Object.hash(runtimeType,accountId,categoryId,amount,transactionDate,comment);
 
 @override
 String toString() {
-  return 'TransactionRequest(id: $id, categoryId: $categoryId, amount: $amount, transactionDate: $transactionDate, comment: $comment)';
+  return 'TransactionRequest(accountId: $accountId, categoryId: $categoryId, amount: $amount, transactionDate: $transactionDate, comment: $comment)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $TransactionRequestCopyWith<$Res>  {
   factory $TransactionRequestCopyWith(TransactionRequest value, $Res Function(TransactionRequest) _then) = _$TransactionRequestCopyWithImpl;
 @useResult
 $Res call({
- int id, int categoryId, String amount, DateTime transactionDate, String? comment
+ int accountId, int categoryId, String amount, DateTime transactionDate, String? comment
 });
 
 
@@ -66,9 +66,9 @@ class _$TransactionRequestCopyWithImpl<$Res>
 
 /// Create a copy of TransactionRequest
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? categoryId = null,Object? amount = null,Object? transactionDate = null,Object? comment = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? accountId = null,Object? categoryId = null,Object? amount = null,Object? transactionDate = null,Object? comment = freezed,}) {
   return _then(_self.copyWith(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+accountId: null == accountId ? _self.accountId : accountId // ignore: cast_nullable_to_non_nullable
 as int,categoryId: null == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
 as int,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
 as String,transactionDate: null == transactionDate ? _self.transactionDate : transactionDate // ignore: cast_nullable_to_non_nullable
@@ -84,10 +84,10 @@ as String?,
 @JsonSerializable()
 
 class _TransactionRequest implements TransactionRequest {
-  const _TransactionRequest({required this.id, required this.categoryId, required this.amount, required this.transactionDate, this.comment});
+  const _TransactionRequest({required this.accountId, required this.categoryId, required this.amount, required this.transactionDate, this.comment});
   factory _TransactionRequest.fromJson(Map<String, dynamic> json) => _$TransactionRequestFromJson(json);
 
-@override final  int id;
+@override final  int accountId;
 @override final  int categoryId;
 @override final  String amount;
 @override final  DateTime transactionDate;
@@ -106,16 +106,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TransactionRequest&&(identical(other.id, id) || other.id == id)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.transactionDate, transactionDate) || other.transactionDate == transactionDate)&&(identical(other.comment, comment) || other.comment == comment));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TransactionRequest&&(identical(other.accountId, accountId) || other.accountId == accountId)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.transactionDate, transactionDate) || other.transactionDate == transactionDate)&&(identical(other.comment, comment) || other.comment == comment));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,categoryId,amount,transactionDate,comment);
+int get hashCode => Object.hash(runtimeType,accountId,categoryId,amount,transactionDate,comment);
 
 @override
 String toString() {
-  return 'TransactionRequest(id: $id, categoryId: $categoryId, amount: $amount, transactionDate: $transactionDate, comment: $comment)';
+  return 'TransactionRequest(accountId: $accountId, categoryId: $categoryId, amount: $amount, transactionDate: $transactionDate, comment: $comment)';
 }
 
 
@@ -126,7 +126,7 @@ abstract mixin class _$TransactionRequestCopyWith<$Res> implements $TransactionR
   factory _$TransactionRequestCopyWith(_TransactionRequest value, $Res Function(_TransactionRequest) _then) = __$TransactionRequestCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int categoryId, String amount, DateTime transactionDate, String? comment
+ int accountId, int categoryId, String amount, DateTime transactionDate, String? comment
 });
 
 
@@ -143,9 +143,9 @@ class __$TransactionRequestCopyWithImpl<$Res>
 
 /// Create a copy of TransactionRequest
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? categoryId = null,Object? amount = null,Object? transactionDate = null,Object? comment = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? accountId = null,Object? categoryId = null,Object? amount = null,Object? transactionDate = null,Object? comment = freezed,}) {
   return _then(_TransactionRequest(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+accountId: null == accountId ? _self.accountId : accountId // ignore: cast_nullable_to_non_nullable
 as int,categoryId: null == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
 as int,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
 as String,transactionDate: null == transactionDate ? _self.transactionDate : transactionDate // ignore: cast_nullable_to_non_nullable

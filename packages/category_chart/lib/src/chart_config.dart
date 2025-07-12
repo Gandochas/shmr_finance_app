@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// Нужные настройки: макс. кол-во титулов, палитра и т.д.
 class ChartConfig {
   const ChartConfig({
-    this.maxTitles = 5,
+    this.maxTitles = 3,
     this.palette = const <Color>[
       Colors.green,
       Colors.blue,

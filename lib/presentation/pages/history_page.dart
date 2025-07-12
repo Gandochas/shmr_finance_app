@@ -116,9 +116,9 @@ class _HistoryPageState extends State<HistoryPage> {
                                   SortField.date => a.transactionDate.compareTo(
                                     b.transactionDate,
                                   ),
-                                  SortField.amount => int.parse(
+                                  SortField.amount => double.parse(
                                     a.amount,
-                                  ).compareTo(int.parse(b.amount)),
+                                  ).compareTo(double.parse(b.amount)),
                                 };
                                 return _sortOrder == SortOrder.asc
                                     ? compareBy

@@ -4,28 +4,17 @@ import 'package:shmr_finance_app/domain/models/account_history_response/account_
 import 'package:shmr_finance_app/domain/models/account_response/account_response.dart';
 import 'package:shmr_finance_app/domain/models/account_update_request/account_update_request.dart';
 
-abstract interface class BankAccountRepository {
-  Future<List<Account>> getAll();
-
+abstract interface class BankAccountDatasource {
   Future<Account> create(AccountCreateRequest createRequest);
 
+  Future<List<Account>> getAll();
+
   Future<AccountResponse> getById(int accountId);
+
+  Future<AccountHistoryResponse> getHistory(int accountId);
 
   Future<Account> update({
     required int accountId,
     required AccountUpdateRequest updateRequest,
   });
-
-  Future<AccountHistoryResponse> getHistory(int accountId);
-}
-
-final class BankAccountNotExistsException implements Exception {
-  const BankAccountNotExistsException(this.message);
-
-  final String message;
-
-  @override
-  String toString() {
-    return 'BankAccountNotExistsException: $message';
-  }
 }

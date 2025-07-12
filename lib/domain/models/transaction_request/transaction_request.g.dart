@@ -8,7 +8,7 @@ part of 'transaction_request.dart';
 
 _TransactionRequest _$TransactionRequestFromJson(Map<String, dynamic> json) =>
     _TransactionRequest(
-      id: (json['id'] as num).toInt(),
+      accountId: (json['accountId'] as num).toInt(),
       categoryId: (json['categoryId'] as num).toInt(),
       amount: json['amount'] as String,
       transactionDate: DateTime.parse(json['transactionDate'] as String),
@@ -17,7 +17,7 @@ _TransactionRequest _$TransactionRequestFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$TransactionRequestToJson(_TransactionRequest instance) =>
     <String, dynamic>{
-      'id': instance.id,
+      'accountId': instance.accountId,
       'categoryId': instance.categoryId,
       'amount': instance.amount,
       'transactionDate': instance.transactionDate.toIso8601String(),
