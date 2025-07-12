@@ -42,8 +42,6 @@ final class CategoryRepositoryImpl implements CategoryRepository {
       name: Value(category.name),
       emoji: Value(category.emoji),
       isIncome: Value(category.isIncome),
-      // createdAt and updatedAt are not available in Category model,
-      // so we use current time.
       createdAt: Value(DateTime.now()),
       updatedAt: Value(DateTime.now()),
     );

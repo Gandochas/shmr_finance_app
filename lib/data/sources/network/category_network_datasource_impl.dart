@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:shmr_finance_app/core/network/isolate_deserializer.dart';
 import 'package:shmr_finance_app/core/network/network_client.dart';
 import 'package:shmr_finance_app/domain/models/category/category.dart';
 import 'package:shmr_finance_app/domain/sources/category_datasource.dart';
@@ -13,14 +16,10 @@ final class CategoryNetworkDatasourceImpl implements CategoryDatasource {
     try {
       final response = await _networkClient.get<List<dynamic>>('/categories');
 
-      final data = response.data ?? [];
-
-      return data
-          .map(
-            (categoryData) =>
-                Category.fromJson(categoryData as Map<String, dynamic>),
-          )
-          .toList();
+      return IsolateDeserializer.deserializeList<Category>(
+        jsonEncode(response.data), // Десериализация с использованием Isolate
+        (json) => Category.fromJson(json),
+      );
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
         throw Exception('Unauthorized: ${e.response?.data}');
@@ -37,14 +36,10 @@ final class CategoryNetworkDatasourceImpl implements CategoryDatasource {
         '/categories/type/$isIncome',
       );
 
-      final data = response.data ?? [];
-
-      return data
-          .map(
-            (categoryData) =>
-                Category.fromJson(categoryData as Map<String, dynamic>),
-          )
-          .toList();
+      return IsolateDeserializer.deserializeList<Category>(
+        jsonEncode(response.data),
+        (json) => Category.fromJson(json),
+      );
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         throw Exception('Bad request, invalid data: ${e.response?.data}');

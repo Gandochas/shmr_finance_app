@@ -57,7 +57,7 @@ final class BankAccountRepositoryImpl implements BankAccountRepository {
       final accountResponse = await apiSource.getById(accountId);
       final account = Account(
         id: accountResponse.id,
-        userId: 1, // TODO: Figure out user ID
+        userId: accountResponse.id,
         name: accountResponse.name,
         balance: accountResponse.balance,
         currency: accountResponse.currency,

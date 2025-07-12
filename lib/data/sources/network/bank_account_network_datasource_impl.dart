@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:shmr_finance_app/core/network/isolate_deserializer.dart';
 import 'package:shmr_finance_app/core/network/network_client.dart';
 import 'package:shmr_finance_app/domain/models/account/account.dart';
 import 'package:shmr_finance_app/domain/models/account_create_request/account_create_request.dart';
@@ -24,7 +27,10 @@ final class BankAccountNetworkDatasourceImpl implements BankAccountDatasource {
         },
       );
 
-      return Account.fromJson(response.data ?? {});
+      return IsolateDeserializer.deserialize<Account>(
+        jsonEncode(response.data),
+        (json) => Account.fromJson(json),
+      );
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         throw Exception('Bad request, invalid data: ${e.response?.data}');
@@ -43,9 +49,10 @@ final class BankAccountNetworkDatasourceImpl implements BankAccountDatasource {
         '/accounts',
       );
 
-      final data = response.data ?? [];
-
-      return data.map((accountData) => Account.fromJson(accountData)).toList();
+      return IsolateDeserializer.deserializeList<Account>(
+        jsonEncode(response.data), // Десериализация с использованием Isolate
+        (json) => Account.fromJson(json),
+      );
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
         throw Exception('Unauthorized: ${e.response?.data}');
@@ -62,7 +69,10 @@ final class BankAccountNetworkDatasourceImpl implements BankAccountDatasource {
         '/accounts/$accountId',
       );
 
-      return AccountResponse.fromJson(response.data ?? {});
+      return IsolateDeserializer.deserialize<AccountResponse>(
+        jsonEncode(response.data),
+        (json) => AccountResponse.fromJson(json),
+      );
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         throw Exception('Bad request, invalid data: ${e.response?.data}');
@@ -83,7 +93,10 @@ final class BankAccountNetworkDatasourceImpl implements BankAccountDatasource {
         '/accounts/$accountId/history',
       );
 
-      return AccountHistoryResponse.fromJson(response.data ?? {});
+      return IsolateDeserializer.deserialize<AccountHistoryResponse>(
+        jsonEncode(response.data),
+        (json) => AccountHistoryResponse.fromJson(json),
+      );
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         throw Exception('Bad request, invalid data: ${e.response?.data}');
@@ -112,7 +125,10 @@ final class BankAccountNetworkDatasourceImpl implements BankAccountDatasource {
         },
       );
 
-      return Account.fromJson(response.data ?? {});
+      return IsolateDeserializer.deserialize<Account>(
+        jsonEncode(response.data),
+        (json) => Account.fromJson(json),
+      );
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         throw Exception('Bad request, invalid data: ${e.response?.data}');

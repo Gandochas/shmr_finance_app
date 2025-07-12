@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
+import 'package:shmr_finance_app/core/network/isolate_deserializer.dart';
 import 'package:shmr_finance_app/core/network/network_client.dart';
 import 'package:shmr_finance_app/domain/models/transaction/transaction.dart';
 import 'package:shmr_finance_app/domain/models/transaction_request/transaction_request.dart';
@@ -27,7 +30,10 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
         },
       );
 
-      return Transaction.fromJson(response.data ?? {});
+      return IsolateDeserializer.deserialize<Transaction>(
+        jsonEncode(response.data),
+        (json) => Transaction.fromJson(json),
+      );
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         throw Exception('Bad request, invalid data: ${e.response?.data}');
@@ -78,15 +84,10 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
         },
       );
 
-      final data = response.data ?? [];
-
-      return data
-          .map(
-            (transactionData) => TransactionResponse.fromJson(
-              transactionData as Map<String, dynamic>,
-            ),
-          )
-          .toList();
+      return IsolateDeserializer.deserializeList<TransactionResponse>(
+        jsonEncode(response.data),
+        (json) => TransactionResponse.fromJson(json),
+      );
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         throw Exception('Bad request, invalid data: ${e.response?.data}');
@@ -105,7 +106,10 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
         '/transactions/$transactionId',
       );
 
-      return TransactionResponse.fromJson(response.data ?? {});
+      return IsolateDeserializer.deserialize<TransactionResponse>(
+        jsonEncode(response.data),
+        (json) => TransactionResponse.fromJson(json),
+      );
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         throw Exception('Bad request, invalid data: ${e.response?.data}');
@@ -138,7 +142,10 @@ final class TransactionNetworkDatasourceImpl implements TransactionDatasource {
         },
       );
 
-      return TransactionResponse.fromJson(response.data ?? {});
+      return IsolateDeserializer.deserialize<TransactionResponse>(
+        jsonEncode(response.data),
+        (json) => TransactionResponse.fromJson(json),
+      );
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
         throw Exception('Bad request, invalid data: ${e.response?.data}');
