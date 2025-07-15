@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/show_transaction_form.dart';
-import 'package:shmr_finance_app/core/widgets/transaction_widgets/transaction_list_tile.dart';
+import 'package:shmr_finance_app/core/widgets/transaction_widgets/transactions_list_view.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transactions_sum_widget.dart';
 import 'package:shmr_finance_app/domain/bloc/expenses_incomes/expenses_incomes_cubit.dart';
 import 'package:shmr_finance_app/domain/bloc/history/history_cubit.dart';
@@ -33,14 +33,16 @@ class ExpensesIncomesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return BlocBuilder<ExpensesIncomesCubit, ExpensesIncomesState>(
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+            backgroundColor: theme.appBarTheme.backgroundColor,
             title: Text(
               isIncomePage ? 'Доходы сегодня' : 'Расходы сегодня',
-              style: Theme.of(context).appBarTheme.titleTextStyle,
+              style: theme.appBarTheme.titleTextStyle,
             ),
             centerTitle: true,
             actions: [
@@ -60,9 +62,7 @@ class ExpensesIncomesPage extends StatelessWidget {
                     .loadTodayTransactions(),
               );
             },
-            backgroundColor: Theme.of(
-              context,
-            ).floatingActionButtonTheme.backgroundColor,
+            backgroundColor: theme.floatingActionButtonTheme.backgroundColor,
             shape: const CircleBorder(),
             child: const Icon(Icons.add),
           ),
@@ -79,32 +79,12 @@ class ExpensesIncomesPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     TransactionsSumWidget(transactions: transactions),
+
                     Expanded(
-                      child: ListView.separated(
-                        itemBuilder: (context, index) {
-                          final transaction = transactions[index];
-                          return TransactionListTile(
-                            isIncomePage: isIncomePage,
-                            transaction: transaction,
-                            iconButton: IconButton(
-                              onPressed: () => showTransactionForm(
-                                context: context,
-                                transaction: transaction,
-                                isIncomePage: isIncomePage,
-                                onReload: () => context
-                                    .read<ExpensesIncomesCubit>()
-                                    .loadTodayTransactions(),
-                              ),
-                              icon: const Icon(Icons.navigate_next),
-                            ),
-                            isHeader: false,
-                          );
-                        },
-                        separatorBuilder: (context, index) => Divider(
-                          height: 1,
-                          color: Theme.of(context).dividerColor,
-                        ),
-                        itemCount: transactions.length,
+                      child: TransactionsListView(
+                        transactions: transactions,
+                        isIncomePage: isIncomePage,
+                        theme: theme,
                       ),
                     ),
                   ],

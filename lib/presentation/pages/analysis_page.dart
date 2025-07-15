@@ -40,8 +40,13 @@ class _AnalysisPageState extends State<AnalysisPage>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Анализ'), centerTitle: true),
+      appBar: AppBar(
+        title: Text('Анализ', style: theme.appBarTheme.titleTextStyle),
+        centerTitle: true,
+      ),
       body: BlocConsumer<HistoryCubit, HistoryState>(
         listener: (context, state) {
           if (state is HistoryLoadingState) {
@@ -120,7 +125,7 @@ class _AnalysisPageState extends State<AnalysisPage>
               child: ListView.separated(
                 itemCount: categoryNames.length,
                 separatorBuilder: (_, _) =>
-                    Divider(color: Theme.of(context).dividerColor, height: 1),
+                    Divider(color: theme.dividerColor, height: 1),
                 itemBuilder: (context, index) {
                   final categoryName = categoryNames[index];
                   final items = transactionsGroupsByCategoryName[categoryName]!
@@ -162,10 +167,9 @@ class _AnalysisPageState extends State<AnalysisPage>
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: items.length,
-                          separatorBuilder: (_, _) => Divider(
-                            color: Theme.of(context).dividerColor,
-                            height: 1,
-                          ),
+                          separatorBuilder: (_, _) =>
+                              Divider(color: theme.dividerColor, height: 1),
+
                           itemBuilder: (context, index) => TransactionListTile(
                             isIncomePage: widget.isIncomePage,
                             transaction: items[index],

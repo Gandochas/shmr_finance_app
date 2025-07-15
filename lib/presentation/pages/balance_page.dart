@@ -1,22 +1,18 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shmr_finance_app/core/widgets/balance_widgets/animated_balance_widget.dart';
+import 'package:shmr_finance_app/core/widgets/balance_widgets/balance_chart/balance_bar_chart_widget.dart';
+import 'package:shmr_finance_app/core/widgets/balance_widgets/balance_chart/balance_bar_data.dart';
+import 'package:shmr_finance_app/core/widgets/balance_widgets/balance_chart/balance_chart_config.dart';
+import 'package:shmr_finance_app/core/widgets/balance_widgets/balance_chart/chart_data.dart';
+import 'package:shmr_finance_app/core/widgets/balance_widgets/balance_chart/chart_mode.dart';
 import 'package:shmr_finance_app/core/widgets/balance_widgets/currency_changer_widget.dart';
 import 'package:shmr_finance_app/core/widgets/balance_widgets/update_balance_name_widget.dart';
 import 'package:shmr_finance_app/domain/bloc/balance/balance_cubit.dart';
-
-enum ChartMode { byDay, byMonth }
-
-class _ChartData {
-  _ChartData(this.bars, this.config);
-  final List<BalanceBarData> bars;
-  final BalanceChartConfig config;
-}
 
 class BalancePage extends StatefulWidget {
   const BalancePage({super.key});
@@ -72,15 +68,14 @@ class _BalancePageState extends State<BalancePage>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return BlocBuilder<BalanceCubit, BalanceState>(
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-            title: const Text(
-              'Мой счет',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w400),
-            ),
+            backgroundColor: theme.appBarTheme.backgroundColor,
+            title: Text('Мой счет', style: theme.appBarTheme.titleTextStyle),
             centerTitle: true,
             actions: [
               IconButton(onPressed: () {}, icon: const Icon(Icons.edit)),
@@ -88,9 +83,7 @@ class _BalancePageState extends State<BalancePage>
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {},
-            backgroundColor: Theme.of(
-              context,
-            ).floatingActionButtonTheme.backgroundColor,
+            backgroundColor: theme.floatingActionButtonTheme.backgroundColor,
             shape: const CircleBorder(),
             child: const Icon(Icons.add),
           ),
@@ -112,11 +105,9 @@ class _BalancePageState extends State<BalancePage>
                     children: [
                       DecoratedBox(
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.secondary,
+                          color: theme.colorScheme.secondary,
                           border: Border(
-                            bottom: BorderSide(
-                              color: Theme.of(context).dividerColor,
-                            ),
+                            bottom: BorderSide(color: theme.dividerColor),
                           ),
                         ),
                         child: ListTile(
@@ -124,7 +115,7 @@ class _BalancePageState extends State<BalancePage>
                             width: 24,
                             height: 24,
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.surface,
+                              color: theme.colorScheme.surface,
                               shape: BoxShape.circle,
                             ),
                             alignment: Alignment.center,
@@ -143,10 +134,7 @@ class _BalancePageState extends State<BalancePage>
                                 ),
                               );
                             },
-                            child: Text(
-                              name,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
+                            child: Text(name, style: theme.textTheme.bodyLarge),
                           ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -167,20 +155,17 @@ class _BalancePageState extends State<BalancePage>
                       ),
                       DecoratedBox(
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.secondary,
+                          color: theme.colorScheme.secondary,
                         ),
                         child: ListTile(
                           title: Text(
                             'Валюта',
-                            style: Theme.of(context).textTheme.bodyLarge,
+                            style: theme.textTheme.bodyLarge,
                           ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                currency,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
+                              Text(currency, style: theme.textTheme.bodyLarge),
                               IconButton(
                                 onPressed: _showCurrencyPicker,
                                 icon: const Icon(Icons.navigate_next),
@@ -193,14 +178,20 @@ class _BalancePageState extends State<BalancePage>
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         child: SegmentedButton<ChartMode>(
-                          segments: const [
+                          segments: [
                             ButtonSegment(
                               value: ChartMode.byDay,
-                              label: Text('За месяц'),
+                              label: Text(
+                                'За месяц',
+                                style: theme.textTheme.bodyLarge,
+                              ),
                             ),
                             ButtonSegment(
                               value: ChartMode.byMonth,
-                              label: Text('За год'),
+                              label: Text(
+                                'За год',
+                                style: theme.textTheme.bodyLarge,
+                              ),
                             ),
                           ],
                           selected: {_mode},
@@ -216,25 +207,19 @@ class _BalancePageState extends State<BalancePage>
                           bottom: true,
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 60),
-                            child: BalanceBarChartWidget(
-                              bars:
-                                  (_mode == ChartMode.byDay
-                                          ? _buildDayBars(
-                                              dailyTransactionAmounts,
-                                            )
-                                          : _buildMonthBars(
-                                              monthlyTransactionAmounts,
-                                            ))
-                                      .bars,
-                              config:
-                                  (_mode == ChartMode.byDay
-                                          ? _buildDayBars(
-                                              dailyTransactionAmounts,
-                                            )
-                                          : _buildMonthBars(
-                                              monthlyTransactionAmounts,
-                                            ))
-                                      .config,
+                            child: Builder(
+                              builder: (context) {
+                                final chartTimeline = _mode == ChartMode.byDay
+                                    ? _buildDayBars(dailyTransactionAmounts)
+                                    : _buildMonthBars(
+                                        monthlyTransactionAmounts,
+                                      );
+
+                                return BalanceBarChartWidget(
+                                  bars: chartTimeline.bars,
+                                  config: chartTimeline.config,
+                                );
+                              },
                             ),
                           ),
                         ),
@@ -249,7 +234,7 @@ class _BalancePageState extends State<BalancePage>
     );
   }
 
-  _ChartData _buildDayBars(Map<DateTime, double> daily) {
+  ChartData _buildDayBars(Map<DateTime, double> daily) {
     final now = DateTime.now();
     final start = DateTime(now.year, now.month - 1, now.day);
     final end = DateTime(now.year, now.month, now.day);
@@ -272,7 +257,7 @@ class _BalancePageState extends State<BalancePage>
 
     final labelX = [1, (total / 2).ceil(), total];
     final maxY = bars.map((b) => b.value.abs()).fold<double>(0, max) * 1.2;
-    final cfg = BalanceChartConfig(
+    final config = BalanceChartConfig(
       minY: 0,
       maxY: maxY,
       barsCount: total,
@@ -282,10 +267,10 @@ class _BalancePageState extends State<BalancePage>
         return '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}';
       },
     );
-    return _ChartData(bars, cfg);
+    return ChartData(bars, config);
   }
 
-  _ChartData _buildMonthBars(Map<DateTime, double> monthly) {
+  ChartData _buildMonthBars(Map<DateTime, double> monthly) {
     final now = DateTime.now();
 
     final start = DateTime(now.year - 1, now.month, 1);
@@ -309,7 +294,7 @@ class _BalancePageState extends State<BalancePage>
 
     final labelX = [1, (count / 2).ceil(), count];
     final maxY = bars.map((b) => b.value.abs()).fold<double>(0, max) * 1.2;
-    final cfg = BalanceChartConfig(
+    final config = BalanceChartConfig(
       minY: 0,
       maxY: maxY,
       barsCount: count,
@@ -319,112 +304,6 @@ class _BalancePageState extends State<BalancePage>
         return (idx >= 0 && idx < bars.length) ? (bars[idx].label ?? '') : '';
       },
     );
-    return _ChartData(bars, cfg);
-  }
-}
-
-class BalanceBarData {
-  BalanceBarData({
-    required this.x,
-    required this.value,
-    required this.color,
-    this.label,
-  });
-  final int x;
-  final double value;
-  final Color color;
-  final String? label;
-}
-
-class BalanceChartConfig {
-  BalanceChartConfig({
-    required this.minY,
-    required this.maxY,
-    required this.barsCount,
-    required this.labelX,
-    this.xLabelFormatter,
-  });
-  final double minY;
-  final double maxY;
-  final int barsCount;
-  final List<int> labelX;
-  final String Function(int x)? xLabelFormatter;
-}
-
-class BalanceBarChartWidget extends StatelessWidget {
-  const BalanceBarChartWidget({
-    required this.bars,
-    required this.config,
-    super.key,
-  });
-  final List<BalanceBarData> bars;
-  final BalanceChartConfig config;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: SizedBox(
-        height: 220,
-        child: BarChart(
-          BarChartData(
-            barGroups: bars
-                .map(
-                  (bar) => BarChartGroupData(
-                    x: bar.x,
-                    barRods: [
-                      BarChartRodData(
-                        toY: bar.value.abs(),
-                        color: bar.color,
-                        width: 6,
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(92),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-                .toList(),
-            titlesData: FlTitlesData(
-              leftTitles: const AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
-              rightTitles: const AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
-              topTitles: const AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  getTitlesWidget: (value, meta) {
-                    final x = value.toInt();
-                    if (config.labelX.contains(x)) {
-                      final label =
-                          config.xLabelFormatter?.call(x) ?? x.toString();
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(
-                          label,
-                          style: const TextStyle(fontSize: 10),
-                        ),
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                  reservedSize: 24,
-                ),
-              ),
-            ),
-            gridData: const FlGridData(show: false),
-            borderData: FlBorderData(show: false),
-            barTouchData: const BarTouchData(enabled: true),
-            maxY: config.maxY,
-            minY: config.minY,
-          ),
-        ),
-      ),
-    );
+    return ChartData(bars, config);
   }
 }

@@ -8,18 +8,20 @@ class ArticleListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return ListTile(
       leading: Container(
         width: 24,
         height: 24,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.secondary,
+          color: theme.colorScheme.secondary,
           shape: BoxShape.circle,
         ),
         alignment: Alignment.center,
         child: Text(article.emoji, style: const TextStyle(fontSize: 18)),
       ),
-      title: Text(article.name, style: Theme.of(context).textTheme.bodyLarge),
+      title: Text(article.name, style: theme.textTheme.bodyLarge),
     );
   }
 }

@@ -22,6 +22,8 @@ class TransactionListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return ListTile(
       minTileHeight: 72,
       leading: !isIncomePage
@@ -29,7 +31,7 @@ class TransactionListTile extends StatelessWidget {
               width: 24,
               height: 24,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary,
+                color: theme.colorScheme.secondary,
                 shape: BoxShape.circle,
               ),
               alignment: Alignment.center,
@@ -39,15 +41,9 @@ class TransactionListTile extends StatelessWidget {
               ),
             )
           : null,
-      title: Text(
-        transaction.category.name,
-        style: Theme.of(context).textTheme.bodyLarge,
-      ),
+      title: Text(transaction.category.name, style: theme.textTheme.bodyLarge),
       subtitle: transaction.comment != null
-          ? Text(
-              transaction.comment!,
-              style: Theme.of(context).textTheme.bodyMedium,
-            )
+          ? Text(transaction.comment!, style: theme.textTheme.bodyMedium)
           : null,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
@@ -56,7 +52,7 @@ class TransactionListTile extends StatelessWidget {
             isHeader
                 ? '${percentage.toStringAsFixed(2)}%\n$sumByCategory ${transaction.account.currency}'
                 : '${transaction.amount} ${transaction.account.currency}\n${formatDate(date: transaction.transactionDate)}',
-            style: Theme.of(context).textTheme.bodyLarge,
+            style: theme.textTheme.bodyLarge,
           ),
           iconButton,
         ],

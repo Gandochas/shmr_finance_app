@@ -15,6 +15,8 @@ class AnimatedBalanceWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return TweenAnimationBuilder(
       tween: Tween<double>(begin: hidden ? 0 : 5, end: hidden ? 5 : 0),
       duration: const Duration(milliseconds: 300),
@@ -25,10 +27,7 @@ class AnimatedBalanceWidget extends StatelessWidget {
           child: child!,
         );
       },
-      child: Text(
-        '$balance $currency',
-        style: Theme.of(context).textTheme.bodyLarge,
-      ),
+      child: Text('$balance $currency', style: theme.textTheme.bodyLarge),
     );
   }
 }

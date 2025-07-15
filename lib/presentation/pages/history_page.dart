@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shmr_finance_app/core/widgets/svg_icon.dart';
-import 'package:shmr_finance_app/core/widgets/transaction_widgets/show_transaction_form.dart';
+import 'package:shmr_finance_app/core/widgets/transaction_widgets/history_transactions_list_view.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transaction_date_choice_widget.dart';
-import 'package:shmr_finance_app/core/widgets/transaction_widgets/transaction_list_tile.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transaction_sorting_widget.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transactions_sum_widget.dart';
 import 'package:shmr_finance_app/domain/bloc/history/history_cubit.dart';
@@ -40,11 +39,13 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return BlocBuilder<HistoryCubit, HistoryState>(
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Моя история'),
+            title: Text('Моя история', style: theme.appBarTheme.titleTextStyle),
             centerTitle: true,
             actions: [
               IconButton(
@@ -107,45 +108,11 @@ class _HistoryPageState extends State<HistoryPage> {
                       TransactionsSumWidget(transactions: transactions),
 
                       Expanded(
-                        child: ListView.separated(
-                          itemCount: transactions.length,
-                          itemBuilder: (context, index) {
-                            final sortedTransactions = [...transactions]
-                              ..sort((a, b) {
-                                final compareBy = switch (_sortField) {
-                                  SortField.date => a.transactionDate.compareTo(
-                                    b.transactionDate,
-                                  ),
-                                  SortField.amount => double.parse(
-                                    a.amount,
-                                  ).compareTo(double.parse(b.amount)),
-                                };
-                                return _sortOrder == SortOrder.asc
-                                    ? compareBy
-                                    : -compareBy;
-                              });
-                            final transaction = sortedTransactions[index];
-                            return TransactionListTile(
-                              isIncomePage: widget.isIncomePage,
-                              transaction: transaction,
-                              iconButton: IconButton(
-                                onPressed: () => showTransactionForm(
-                                  context: context,
-                                  transaction: transaction,
-                                  isIncomePage: widget.isIncomePage,
-                                  onReload: () => context
-                                      .read<HistoryCubit>()
-                                      .loadHistory(),
-                                ),
-                                icon: const Icon(Icons.navigate_next),
-                              ),
-                              isHeader: false,
-                            );
-                          },
-                          separatorBuilder: (context, index) => Divider(
-                            height: 1,
-                            color: Theme.of(context).dividerColor,
-                          ),
+                        child: HistoryTransactionsListView(
+                          transactions: transactions,
+                          sortField: _sortField,
+                          sortOrder: _sortOrder,
+                          widget: widget,
                         ),
                       ),
                     ],

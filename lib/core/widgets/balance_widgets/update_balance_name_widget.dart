@@ -9,16 +9,18 @@ class UpdateBalanceNameWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final accountNameController = TextEditingController();
     final balanceCubit = context.read<BalanceCubit>();
+
     return AlertDialog(
-      title: const Text('Изменить имя счёта'),
+      title: Text('Изменить имя счёта', style: theme.textTheme.bodyLarge),
       content: TextField(
         controller: accountNameController,
         autofocus: true,
         decoration: InputDecoration(
           hintText: accountName,
-          hintStyle: Theme.of(context).textTheme.bodyLarge,
+          hintStyle: theme.textTheme.bodyLarge,
         ),
       ),
       actions: [
@@ -26,7 +28,7 @@ class UpdateBalanceNameWidget extends StatelessWidget {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text('Отмена'),
+          child: Text('Отмена', style: theme.textTheme.bodyLarge),
         ),
         TextButton(
           onPressed: () async {
@@ -38,7 +40,7 @@ class UpdateBalanceNameWidget extends StatelessWidget {
             await balanceCubit.updateAccountName(newName);
             if (context.mounted) Navigator.of(context).pop();
           },
-          child: const Text('Изменить'),
+          child: Text('Изменить', style: theme.textTheme.bodyLarge),
         ),
       ],
     );

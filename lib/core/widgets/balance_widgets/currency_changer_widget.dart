@@ -5,6 +5,8 @@ class CurrencyChangerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -14,38 +16,41 @@ class CurrencyChangerWidget extends StatelessWidget {
             width: 32,
             height: 4,
             decoration: BoxDecoration(
-              color: Theme.of(context).dividerColor,
+              color: theme.dividerColor,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
         ),
+
         ListTile(
-          leading: Text('₽', style: Theme.of(context).textTheme.bodyLarge),
-          title: Text(
-            'Российский рубль ₽',
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
+          leading: Text('₽', style: theme.textTheme.bodyLarge),
+          title: Text('Российский рубль ₽', style: theme.textTheme.bodyLarge),
           onTap: () => Navigator.of(context).pop('₽'),
         ),
-        Divider(height: 1, color: Theme.of(context).dividerColor),
+
+        Divider(height: 1, color: theme.dividerColor),
+
         ListTile(
-          leading: Text(r'$', style: Theme.of(context).textTheme.bodyLarge),
+          leading: Text(r'$', style: theme.textTheme.bodyLarge),
           title: Text(
             r'Американский доллар $',
-            style: Theme.of(context).textTheme.bodyLarge,
+            style: theme.textTheme.bodyLarge,
           ),
           onTap: () => Navigator.of(context).pop(r'$'),
         ),
+
         Divider(height: 1, color: Theme.of(context).dividerColor),
+
         ListTile(
-          leading: Text('€', style: Theme.of(context).textTheme.bodyLarge),
-          title: Text('Евро €', style: Theme.of(context).textTheme.bodyLarge),
+          leading: Text('€', style: theme.textTheme.bodyLarge),
+          title: Text('Евро €', style: theme.textTheme.bodyLarge),
           onTap: () => Navigator.of(context).pop('€'),
         ),
+
         ListTile(
-          tileColor: Theme.of(context).colorScheme.error,
+          tileColor: theme.colorScheme.error,
           leading: const Icon(Icons.close),
-          title: const Text('Отмена'),
+          title: Text('Отмена', style: theme.textTheme.bodyLarge),
           onTap: () => Navigator.of(context).pop(),
         ),
       ],

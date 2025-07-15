@@ -9,15 +9,14 @@ class ArticlesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return BlocBuilder<ArticlesCubit, ArticlesState>(
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-            title: Text(
-              'Мои статьи',
-              style: Theme.of(context).appBarTheme.titleTextStyle,
-            ),
+            backgroundColor: theme.appBarTheme.backgroundColor,
+            title: Text('Мои статьи', style: theme.appBarTheme.titleTextStyle),
             centerTitle: true,
           ),
           body: Builder(
@@ -40,10 +39,10 @@ class ArticlesPage extends StatelessWidget {
                               final article = articles[index];
                               return ArticleListTile(article: article);
                             },
-                            separatorBuilder: (context, index) => Divider(
-                              color: Theme.of(context).dividerColor,
-                              height: 1,
-                            ),
+
+                            separatorBuilder: (context, index) =>
+                                Divider(color: theme.dividerColor, height: 1),
+
                             itemCount: articles.length,
                           ),
                         ),

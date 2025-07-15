@@ -7,19 +7,16 @@ class SearchArticleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final articlesSearchController = TextEditingController();
+
     return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Theme.of(context).searchViewTheme.backgroundColor,
-      ),
+      decoration: BoxDecoration(color: theme.searchViewTheme.backgroundColor),
       child: ListTile(
         title: TextField(
           controller: articlesSearchController,
           decoration: InputDecoration(
-            hint: Text(
-              'Найти статью',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
+            hint: Text('Найти статью', style: theme.textTheme.bodyLarge),
           ),
           onChanged: (value) async {
             final articlesCubit = context.read<ArticlesCubit>();

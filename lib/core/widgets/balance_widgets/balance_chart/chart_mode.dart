@@ -1,0 +1,1 @@
+enum ChartMode { byDay, byMonth }

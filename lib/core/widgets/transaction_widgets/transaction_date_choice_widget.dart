@@ -21,12 +21,11 @@ class TransactionDateChoiceWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary,
-        border: Border(
-          bottom: BorderSide(color: Theme.of(context).dividerColor),
-        ),
+        color: theme.colorScheme.secondary,
+        border: Border(bottom: BorderSide(color: theme.dividerColor)),
       ),
       child: InkWell(
         onTap: () async {
@@ -51,10 +50,10 @@ class TransactionDateChoiceWidget extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title, style: Theme.of(context).textTheme.bodyLarge),
+              Text(title, style: theme.textTheme.bodyLarge),
               Text(
                 formatDate(date: initialDate),
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: theme.textTheme.bodyLarge,
               ),
             ],
           ),

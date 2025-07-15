@@ -95,12 +95,14 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context).toString();
     final separator = NumberFormat.decimalPattern(locale).symbols.DECIMAL_SEP;
+    final theme = Theme.of(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         leading: CloseButton(onPressed: () => Navigator.pop(context)),
         title: Text(
+          style: theme.appBarTheme.titleTextStyle,
           widget.transaction == null
               ? (widget.isIncomePage ? 'Добавить доход' : 'Добавить расход')
               : (widget.isIncomePage
@@ -141,7 +143,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                 ),
                 children: [
                   ListTile(
-                    title: const Text('Счет'),
+                    title: Text('Счет', style: theme.textTheme.bodyLarge),
                     trailing: DropdownButtonHideUnderline(
                       child: DropdownButton<int>(
                         value: _selectedAccountId ??= accounts.first.id,
@@ -151,7 +153,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                                 value: account.id,
                                 child: Text(
                                   '${account.name}, ${account.currency}',
-                                  style: Theme.of(context).textTheme.bodyLarge,
+                                  style: theme.textTheme.bodyLarge,
                                 ),
                               ),
                             )
@@ -164,21 +166,24 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                     ),
                   ),
 
-                  Divider(height: 1, color: Theme.of(context).dividerColor),
+                  Divider(height: 1, color: theme.dividerColor),
 
                   ListTile(
-                    title: const Text('Статья'),
+                    title: Text('Статья', style: theme.textTheme.bodyLarge),
                     trailing: DropdownButtonHideUnderline(
                       child: DropdownButton<int>(
                         value: _selectedCategoryId,
-                        hint: const Text('Выберите категорию'),
+                        hint: Text(
+                          'Выберите категорию',
+                          style: theme.textTheme.bodyLarge,
+                        ),
                         items: categories
                             .map(
                               (category) => DropdownMenuItem(
                                 value: category.id,
                                 child: Text(
                                   category.name,
-                                  style: Theme.of(context).textTheme.bodyLarge,
+                                  style: theme.textTheme.bodyLarge,
                                 ),
                               ),
                             )
@@ -192,10 +197,10 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                     ),
                   ),
 
-                  Divider(height: 1, color: Theme.of(context).dividerColor),
+                  Divider(height: 1, color: theme.dividerColor),
 
                   ListTile(
-                    title: const Text('Сумма'),
+                    title: Text('Сумма', style: theme.textTheme.bodyLarge),
                     trailing: SizedBox(
                       width: 120,
                       child: TextField(
@@ -212,33 +217,33 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                     ),
                   ),
 
-                  Divider(height: 1, color: Theme.of(context).dividerColor),
+                  Divider(height: 1, color: theme.dividerColor),
 
                   ListTile(
-                    title: const Text('Дата'),
+                    title: Text('Дата', style: theme.textTheme.bodyLarge),
                     trailing: TextButton(
                       onPressed: _pickDate,
                       child: Text(
                         formatDate(date: _selectedDate),
-                        style: Theme.of(context).textTheme.bodyLarge,
+                        style: theme.textTheme.bodyLarge,
                       ),
                     ),
                   ),
 
-                  Divider(height: 1, color: Theme.of(context).dividerColor),
+                  Divider(height: 1, color: theme.dividerColor),
 
                   ListTile(
-                    title: const Text('Время'),
+                    title: Text('Время', style: theme.textTheme.bodyLarge),
                     trailing: TextButton(
                       onPressed: _pickTime,
                       child: Text(
                         formatTimeOfDay(_selectedTime),
-                        style: Theme.of(context).textTheme.bodyLarge,
+                        style: theme.textTheme.bodyLarge,
                       ),
                     ),
                   ),
 
-                  Divider(height: 1, color: Theme.of(context).dividerColor),
+                  Divider(height: 1, color: theme.dividerColor),
 
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -256,7 +261,8 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                     ),
                   ),
 
-                  Divider(height: 1, color: Theme.of(context).dividerColor),
+                  Divider(height: 1, color: theme.dividerColor),
+
                   const SizedBox(height: 24),
 
                   if (widget.transaction != null)
@@ -264,7 +270,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.error,
+                          backgroundColor: theme.colorScheme.error,
                         ),
                         onPressed: () async {
                           await widget.onDelete();
@@ -275,7 +281,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                           widget.isIncomePage
                               ? 'Удалить доход'
                               : 'Удалить расход',
-                          style: const TextStyle(color: Colors.white),
+                          style: TextStyle(color: theme.colorScheme.onError),
                         ),
                       ),
                     )

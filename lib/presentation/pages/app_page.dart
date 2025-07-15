@@ -61,6 +61,8 @@ class _AppPageState extends State<AppPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       body: Stack(
         children: [
@@ -84,11 +86,11 @@ class _AppPageState extends State<AppPage> {
               left: 0,
               right: 0,
               child: Container(
-                color: Theme.of(context).colorScheme.error,
+                color: theme.colorScheme.error,
                 padding: const EdgeInsets.symmetric(vertical: 5),
                 child: Text(
                   'Offline mode',
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: theme.textTheme.bodyLarge,
                   textAlign: TextAlign.center,
                 ),
               ),

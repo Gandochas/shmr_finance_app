@@ -17,40 +17,46 @@ class TransactionSortingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary,
-        border: Border(
-          bottom: BorderSide(color: Theme.of(context).dividerColor),
-        ),
+        color: theme.colorScheme.secondary,
+        border: Border(bottom: BorderSide(color: theme.dividerColor)),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Сортировка', style: Theme.of(context).textTheme.bodyLarge),
+            Text('Сортировка', style: theme.textTheme.bodyLarge),
             DropdownButton<SortField>(
               value: currentField,
-              items: const [
-                DropdownMenuItem(value: SortField.date, child: Text('По дате')),
+              items: [
+                DropdownMenuItem(
+                  value: SortField.date,
+                  child: Text('По дате', style: theme.textTheme.bodyLarge),
+                ),
                 DropdownMenuItem(
                   value: SortField.amount,
-                  child: Text('По сумме'),
+                  child: Text('По сумме', style: theme.textTheme.bodyLarge),
                 ),
               ],
               onChanged: onFieldChanged,
             ),
             DropdownButton<SortOrder>(
               value: currentOrder,
-              items: const [
+              items: [
                 DropdownMenuItem(
                   value: SortOrder.asc,
-                  child: Text('По возрастанию'),
+                  child: Text(
+                    'По возрастанию',
+                    style: theme.textTheme.bodyLarge,
+                  ),
                 ),
                 DropdownMenuItem(
                   value: SortOrder.desc,
-                  child: Text('По убыванию'),
+                  child: Text('По убыванию', style: theme.textTheme.bodyLarge),
                 ),
               ],
               onChanged: onOrderChanged,
