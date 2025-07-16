@@ -24,12 +24,14 @@ dependencies:
   sensors_plus: ^6.1.1
   intl: ^0.20.2
   fl_chart: ^1.0.0
-
   uuid: ^4.5.1
   dio: ^5.8.0+1
   flutter_dotenv: ^5.2.1
   dio_smart_retry: ^7.0.1
   worker_manager: ^7.2.6
+
+  shared_preferences: ^2.5.3
+  flutter_colorpicker: ^1.1.0
 
   category_chart:
     path: packages/category_chart

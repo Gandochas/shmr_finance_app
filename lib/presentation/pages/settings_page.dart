@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:provider/provider.dart';
+import 'package:shmr_finance_app/domain/controllers/app_color_controller.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
   @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  @override
   Widget build(BuildContext context) {
+    // final appColorController = Provider.of<AppColorController>(context);
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -31,7 +40,33 @@ class SettingsPage extends StatelessWidget {
             child: ListTile(
               title: Text('Основной цвет', style: theme.textTheme.bodyLarge),
               trailing: IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  showDialog<void>(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('Выберите основной цвет приложения'),
+                        content: BlockPicker(
+                          // pickerColor: appColorController.primaryColor,
+                          pickerColor: Colors.green,
+                          onColorChanged: (color) {
+                            // appColorController.setPrimaryColor(color);
+                          },
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Отмена'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Применить'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
                 icon: const Icon(Icons.navigate_next),
               ),
             ),
