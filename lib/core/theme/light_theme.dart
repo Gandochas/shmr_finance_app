@@ -6,12 +6,10 @@ import 'package:shmr_finance_app/domain/controllers/app_color_controller.dart';
 ThemeData getLightTheme(BuildContext context) {
   final appColorController = context.watch<AppColorController>();
   final kPrimaryColor = appColorController.primaryColor;
-  // const kPrimaryColor = Color(0xFF2AE881);
   const kSurfaceColor = Color(0xFFFEF7FF);
   const kTextPrimaryColor = Color(0xFF1D1B20);
   const kTextSecondaryColor = Color(0xFF49454F);
   const kNavigationBarColor = Color(0xFFF3EDF7);
-  // const kHighlightColor = Color(0xFFD4FAE6);
   final kHighlightColor = kPrimaryColor.withValues(alpha: 0.2);
   const kErrorColor = Color(0xFFE46962);
   const kSearchColor = Color(0xFFECE6F0);
