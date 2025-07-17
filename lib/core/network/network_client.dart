@@ -12,6 +12,8 @@ final class NetworkClient {
       'Content-Type': 'application/json',
     };
 
+    _dio.options.receiveTimeout = const Duration(seconds: 10);
+
     _dio.interceptors.add(
       RetryInterceptor(
         dio: _dio,

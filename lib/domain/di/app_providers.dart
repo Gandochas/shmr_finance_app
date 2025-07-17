@@ -23,35 +23,32 @@ import 'package:shmr_finance_app/domain/sources/category_datasource.dart';
 import 'package:shmr_finance_app/domain/sources/transaction_datasource.dart';
 
 class AppProviders extends StatelessWidget {
-  const AppProviders({required this.child, super.key});
+  const AppProviders({
+    required this.child,
+    required this.sharedPreferences,
+    super.key,
+  });
 
   final Widget child;
+  final SharedPreferences sharedPreferences;
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // FutureProvider<SharedPreferences?>(
-        //   create: (context) async {
-        //     final prefs = await SharedPreferences.getInstance();
-        //     return prefs;
-        //   },
-        //   initialData: null,
-        // ),
-        // ProxyProvider<SharedPreferences?, AppColorDatasource>(
-        //   update: (_, preferences, _) {
-        //     if (preferences != null) {
-        //       return AppColorDatasource(preferences: preferences);
-        //     }
-        //     //* TODO: Добавить обработку preferences == null
-        //     return AppColorDatasource(preferences: preferences!);
-        //   },
-        // ),
-        // ChangeNotifierProvider<AppColorController>(
-        //   create: (context) => AppColorController(
-        //     appColorDatasource: context.read<AppColorDatasource>(),
-        //   ),
-        // ),
+        Provider<AppColorDatasource>(
+          create: (context) =>
+              AppColorDatasource(preferences: sharedPreferences),
+        ),
+        ChangeNotifierProvider<AppColorController>(
+          create: (context) {
+            final controller = AppColorController(
+              appColorDatasource: context.read<AppColorDatasource>(),
+            );
+            controller.load();
+            return controller;
+          },
+        ),
         Provider<AppDatabase>(
           create: (context) => AppDatabase(),
           dispose: (context, db) => db.close(),

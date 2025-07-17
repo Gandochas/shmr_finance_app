@@ -8,7 +8,7 @@ final class AppColorDatasource {
 
   final SharedPreferences _preferences;
 
-  Color getPrimaryColor() {
+  Future<Color> loadPrimaryColor() async {
     final colorHex = _preferences.getString('app_primary_color') ?? '2AE881';
     return Color(int.parse('0xFF$colorHex'));
   }
