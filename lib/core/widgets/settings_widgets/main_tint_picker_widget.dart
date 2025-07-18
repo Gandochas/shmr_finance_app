@@ -19,7 +19,10 @@ class MainTintPickerWidget extends StatelessWidget {
             context: context,
             builder: (context) {
               return AlertDialog(
-                title: const Text('Выберите основной цвет приложения'),
+                title: Text(
+                  'Выберите основной цвет приложения',
+                  style: theme.appBarTheme.titleTextStyle,
+                ),
                 content: BlockPicker(
                   pickerColor: appColorController.primaryColor,
                   onColorChanged: (color) {
@@ -29,14 +32,14 @@ class MainTintPickerWidget extends StatelessWidget {
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Отмена'),
+                    child: Text('Отмена', style: theme.textTheme.bodyLarge),
                   ),
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                       appColorController.load();
                     },
-                    child: const Text('Применить'),
+                    child: Text('Применить', style: theme.textTheme.bodyLarge),
                   ),
                 ],
               );
