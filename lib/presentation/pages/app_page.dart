@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:shmr_finance_app/core/network/connection_checker.dart';
 import 'package:shmr_finance_app/core/widgets/svg_icon.dart';
+import 'package:shmr_finance_app/domain/controllers/haptic_touch/haptic_touch_controller.dart';
 import 'package:shmr_finance_app/presentation/pages/articles_tab.dart';
 import 'package:shmr_finance_app/presentation/pages/balance_tab.dart';
 import 'package:shmr_finance_app/presentation/pages/expenses_incomes_navigator_tab.dart';
@@ -61,6 +64,7 @@ class _AppPageState extends State<AppPage> {
 
   @override
   Widget build(BuildContext context) {
+    final hapticTouchController = context.watch<HapticTouchController>();
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -100,6 +104,9 @@ class _AppPageState extends State<AppPage> {
 
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (pageIndex) {
+          if (hapticTouchController.isHapticFeedbackEnabled) {
+            HapticFeedback.mediumImpact();
+          }
           setState(() {
             _currentPageIndex = pageIndex;
           });

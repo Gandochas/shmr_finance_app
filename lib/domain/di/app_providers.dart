@@ -12,11 +12,13 @@ import 'package:shmr_finance_app/data/sources/drift/daos/category_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/pending_operations_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/transaction_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/database/database.dart';
+import 'package:shmr_finance_app/data/sources/haptic_touch/haptic_touch_datasource.dart';
 import 'package:shmr_finance_app/data/sources/network/bank_account_network_datasource_impl.dart';
 import 'package:shmr_finance_app/data/sources/network/category_network_datasource_impl.dart';
 import 'package:shmr_finance_app/data/sources/network/transaction_network_datasource_impl.dart';
 import 'package:shmr_finance_app/domain/controllers/app_color/app_color_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/app_theme/app_theme_controller.dart';
+import 'package:shmr_finance_app/domain/controllers/haptic_touch/haptic_touch_controller.dart';
 import 'package:shmr_finance_app/domain/repositories/bank_account_repository.dart';
 import 'package:shmr_finance_app/domain/repositories/category_repository.dart';
 import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart';
@@ -62,6 +64,19 @@ class AppProviders extends StatelessWidget {
             );
             appThemeController.load();
             return appThemeController;
+          },
+        ),
+        Provider<HapticTouchDatasource>(
+          create: (context) =>
+              HapticTouchDatasource(preferences: sharedPreferences),
+        ),
+        ChangeNotifierProvider<HapticTouchController>(
+          create: (context) {
+            final hapticTouchController = HapticTouchController(
+              hapticFeedbackDatasource: context.read<HapticTouchDatasource>(),
+            );
+            hapticTouchController.load();
+            return hapticTouchController;
           },
         ),
         Provider<AppDatabase>(

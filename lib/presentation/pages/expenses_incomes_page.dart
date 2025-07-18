@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/show_transaction_form.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transactions_list_view.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transactions_sum_widget.dart';
 import 'package:shmr_finance_app/domain/bloc/expenses_incomes/expenses_incomes_cubit.dart';
 import 'package:shmr_finance_app/domain/bloc/history/history_cubit.dart';
+import 'package:shmr_finance_app/domain/controllers/haptic_touch/haptic_touch_controller.dart';
 import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart';
 import 'package:shmr_finance_app/presentation/pages/history_page.dart';
 
@@ -33,6 +35,7 @@ class ExpensesIncomesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hapticTouchController = context.watch<HapticTouchController>();
     final theme = Theme.of(context);
 
     return BlocBuilder<ExpensesIncomesCubit, ExpensesIncomesState>(
@@ -54,6 +57,9 @@ class ExpensesIncomesPage extends StatelessWidget {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
+              if (hapticTouchController.isHapticFeedbackEnabled) {
+                HapticFeedback.mediumImpact();
+              }
               showTransactionForm(
                 context: context,
                 isIncomePage: isIncomePage,
