@@ -6,6 +6,7 @@ import 'package:shmr_finance_app/core/theme/light_theme.dart';
 import 'package:shmr_finance_app/domain/controllers/app_theme/app_theme_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/pin_code/pin_code_controller.dart';
 import 'package:shmr_finance_app/domain/di/app_providers.dart';
+import 'package:shmr_finance_app/presentation/main_app_blur_wrapper.dart';
 import 'package:shmr_finance_app/presentation/pages/pin_code_page.dart';
 
 class MainApp extends StatelessWidget {
@@ -29,6 +30,7 @@ class MainApp extends StatelessWidget {
                 : ThemeMode.light,
             theme: getLightTheme(context),
             darkTheme: getDarkTheme(context),
+            builder: (context, child) => MainAppBlurWrapper(child: child!),
             home: pinCodeController.pinCode == null
                 ? const PinCodePage(state: PinCodeState.setup)
                 : const PinCodePage(state: PinCodeState.verify),
