@@ -56,6 +56,7 @@ class ExpensesIncomesPage extends StatelessWidget {
             ],
           ),
           floatingActionButton: FloatingActionButton(
+            heroTag: isIncomePage ? 'income_add_tag' : 'expense_add_tag',
             onPressed: () {
               if (hapticTouchController.isHapticFeedbackEnabled) {
                 HapticFeedback.mediumImpact();

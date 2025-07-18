@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shmr_finance_app/data/repositories/bank_account_repository_impl.dart';
@@ -16,9 +17,11 @@ import 'package:shmr_finance_app/data/sources/haptic_touch/haptic_touch_datasour
 import 'package:shmr_finance_app/data/sources/network/bank_account_network_datasource_impl.dart';
 import 'package:shmr_finance_app/data/sources/network/category_network_datasource_impl.dart';
 import 'package:shmr_finance_app/data/sources/network/transaction_network_datasource_impl.dart';
+import 'package:shmr_finance_app/data/sources/pin_code/pin_code_datasource.dart';
 import 'package:shmr_finance_app/domain/controllers/app_color/app_color_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/app_theme/app_theme_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/haptic_touch/haptic_touch_controller.dart';
+import 'package:shmr_finance_app/domain/controllers/pin_code/pin_code_controller.dart';
 import 'package:shmr_finance_app/domain/repositories/bank_account_repository.dart';
 import 'package:shmr_finance_app/domain/repositories/category_repository.dart';
 import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart';
@@ -77,6 +80,23 @@ class AppProviders extends StatelessWidget {
             );
             hapticTouchController.load();
             return hapticTouchController;
+          },
+        ),
+        Provider<FlutterSecureStorage>(
+          create: (context) => const FlutterSecureStorage(),
+        ),
+        Provider<PinCodeDatasource>(
+          create: (context) => PinCodeDatasource(
+            secureStorage: context.read<FlutterSecureStorage>(),
+          ),
+        ),
+        ChangeNotifierProvider<PinCodeController>(
+          create: (context) {
+            final pinCodeController = PinCodeController(
+              pinCodeDatasource: context.read<PinCodeDatasource>(),
+            );
+            pinCodeController.loadPinCode();
+            return pinCodeController;
           },
         ),
         Provider<AppDatabase>(

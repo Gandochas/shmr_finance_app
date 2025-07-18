@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shmr_finance_app/core/widgets/settings_widgets/haptic_touch_switch.dart';
 import 'package:shmr_finance_app/core/widgets/settings_widgets/main_tint_picker_widget.dart';
+import 'package:shmr_finance_app/core/widgets/settings_widgets/pin_code_changer.dart';
 import 'package:shmr_finance_app/core/widgets/settings_widgets/system_theme_switch.dart';
 import 'package:shmr_finance_app/domain/controllers/app_color/app_color_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/app_theme/app_theme_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/haptic_touch/haptic_touch_controller.dart';
+import 'package:shmr_finance_app/domain/controllers/pin_code/pin_code_controller.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -16,10 +19,11 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
-    return Consumer3<
+    return Consumer4<
       AppColorController,
       AppThemeController,
-      HapticTouchController
+      HapticTouchController,
+      PinCodeController
     >(
       builder:
           (
@@ -27,6 +31,7 @@ class _SettingsPageState extends State<SettingsPage> {
             appColorController,
             appThemeController,
             hapticTouchController,
+            pinCodeController,
             child,
           ) {
             final theme = Theme.of(context);
@@ -45,25 +50,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   Divider(height: 1, color: theme.dividerColor),
                   MainTintPickerWidget(appColorController: appColorController),
                   Divider(height: 1, color: theme.dividerColor),
-                  ListTile(
-                    title: Text('Хаптики', style: theme.textTheme.bodyLarge),
-                    trailing: Switch.adaptive(
-                      value: hapticTouchController.isHapticFeedbackEnabled,
-                      onChanged: (value) async {
-                        await hapticTouchController.toggleHapticFeedback(
-                          value: value,
-                        );
-                      },
-                    ),
+                  HapticTouchSwitch(
+                    hapticTouchController: hapticTouchController,
                   ),
                   Divider(height: 1, color: theme.dividerColor),
-                  ListTile(
-                    title: Text('Код пароль', style: theme.textTheme.bodyLarge),
-                    trailing: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.navigate_next),
-                    ),
-                  ),
+                  const PinCodeChanger(),
                   Divider(height: 1, color: theme.dividerColor),
                   ListTile(
                     title: Text('Язык', style: theme.textTheme.bodyLarge),

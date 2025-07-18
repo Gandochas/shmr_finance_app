@@ -7,8 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shmr_finance_app/core/theme/dark_theme.dart';
 import 'package:shmr_finance_app/core/theme/light_theme.dart';
 import 'package:shmr_finance_app/domain/controllers/app_theme/app_theme_controller.dart';
+import 'package:shmr_finance_app/domain/controllers/pin_code/pin_code_controller.dart';
 import 'package:shmr_finance_app/domain/di/app_providers.dart';
-import 'package:shmr_finance_app/presentation/pages/app_page.dart';
+import 'package:shmr_finance_app/presentation/pages/pin_code_page.dart';
 import 'package:worker_manager/worker_manager.dart';
 
 void main() {
@@ -38,6 +39,8 @@ class MainApp extends StatelessWidget {
       child: Builder(
         builder: (context) {
           final appThemeController = context.watch<AppThemeController>();
+          final pinCodeController = context.watch<PinCodeController>();
+
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             themeMode: appThemeController.isSystemTheme
@@ -45,7 +48,9 @@ class MainApp extends StatelessWidget {
                 : ThemeMode.light,
             theme: getLightTheme(context),
             darkTheme: getDarkTheme(context),
-            home: const AppPage(),
+            home: pinCodeController.pinCode == null
+                ? const PinCodePage(state: PinCodeState.setup)
+                : const PinCodePage(state: PinCodeState.verify),
           );
         },
       ),
