@@ -6,9 +6,9 @@ import 'package:provider/provider.dart';
 import 'package:shmr_finance_app/core/network/connection_checker.dart';
 import 'package:shmr_finance_app/core/widgets/svg_icon.dart';
 import 'package:shmr_finance_app/domain/controllers/haptic_touch/haptic_touch_controller.dart';
-import 'package:shmr_finance_app/presentation/pages/articles_tab.dart';
-import 'package:shmr_finance_app/presentation/pages/balance_tab.dart';
-import 'package:shmr_finance_app/presentation/pages/expenses_incomes_navigator_tab.dart';
+import 'package:shmr_finance_app/presentation/articles_tab.dart';
+import 'package:shmr_finance_app/presentation/balance_tab.dart';
+import 'package:shmr_finance_app/presentation/expenses_incomes_tab.dart';
 import 'package:shmr_finance_app/presentation/pages/settings_page.dart';
 
 class AppPage extends StatefulWidget {
@@ -29,12 +29,12 @@ class _AppPageState extends State<AppPage> {
   );
 
   Widget _buildTab(int index) => switch (index) {
-    0 => const ExpensesIncomesNavigatorTab(isIncomePage: false),
-    1 => const ExpensesIncomesNavigatorTab(isIncomePage: true),
+    0 => const ExpensesIncomesTab(isIncomePage: false),
+    1 => const ExpensesIncomesTab(isIncomePage: true),
     2 => const BalanceTab(),
     3 => const ArticlesTab(),
     4 => const SettingsPage(),
-    _ => const ExpensesIncomesNavigatorTab(isIncomePage: false),
+    _ => const ExpensesIncomesTab(isIncomePage: false),
   };
 
   final _connectionChecker = ConnectionChecker();

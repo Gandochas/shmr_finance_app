@@ -4,8 +4,8 @@ import 'package:shmr_finance_app/domain/bloc/expenses_incomes/expenses_incomes_c
 import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart';
 import 'package:shmr_finance_app/presentation/pages/expenses_incomes_page.dart';
 
-class ExpensesIncomesNavigatorTab extends StatelessWidget {
-  const ExpensesIncomesNavigatorTab({required this.isIncomePage, super.key});
+class ExpensesIncomesTab extends StatelessWidget {
+  const ExpensesIncomesTab({required this.isIncomePage, super.key});
 
   final bool isIncomePage;
 
