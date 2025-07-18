@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:shmr_finance_app/domain/controllers/biometric/biometric_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/pin_code/pin_code_controller.dart';
 import 'package:shmr_finance_app/presentation/pages/app_page.dart';
 
@@ -18,6 +20,29 @@ class _PinCodePageState extends State<PinCodePage> {
   final _inputPinCodeController = TextEditingController();
   final _confirmPinCodeController = TextEditingController();
   String _errorMessage = '';
+
+  Future<void> _authenticateWithBiometrics(BuildContext context) async {
+    final biometricController = context.read<BiometricController>();
+    if (biometricController.isBiometricEnabled) {
+      final localAuth = LocalAuthentication();
+      try {
+        final authenticated = await localAuth.authenticate(
+          localizedReason: 'Приложите палец для аутентификации.',
+          options: const AuthenticationOptions(biometricOnly: true),
+        );
+        if (!context.mounted) return;
+        if (authenticated) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute<void>(builder: (context) => const AppPage()),
+          );
+        }
+      } on Object catch (e) {
+        setState(() {
+          _errorMessage = 'Ошибка биометрической аутентификации: $e';
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,6 +172,16 @@ class _PinCodePageState extends State<PinCodePage> {
                 style: theme.textTheme.bodyLarge,
               ),
             ),
+            const SizedBox(height: 16),
+            if (context.watch<BiometricController>().isBiometricEnabled)
+              ElevatedButton(
+                onPressed: () => _authenticateWithBiometrics(context),
+                child: Text(
+                  'Авторизоваться, используя отпечаток пальца',
+                  style: theme.textTheme.bodyLarge,
+                  textAlign: TextAlign.center,
+                ),
+              ),
           ],
         ),
       ),

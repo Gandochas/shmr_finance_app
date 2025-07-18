@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shmr_finance_app/core/widgets/settings_widgets/biometric_auth_switch.dart';
 import 'package:shmr_finance_app/core/widgets/settings_widgets/haptic_touch_switch.dart';
 import 'package:shmr_finance_app/core/widgets/settings_widgets/main_tint_picker_widget.dart';
 import 'package:shmr_finance_app/core/widgets/settings_widgets/pin_code_changer.dart';
 import 'package:shmr_finance_app/core/widgets/settings_widgets/system_theme_switch.dart';
 import 'package:shmr_finance_app/domain/controllers/app_color/app_color_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/app_theme/app_theme_controller.dart';
+import 'package:shmr_finance_app/domain/controllers/biometric/biometric_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/haptic_touch/haptic_touch_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/pin_code/pin_code_controller.dart';
 
@@ -19,11 +21,12 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
-    return Consumer4<
+    return Consumer5<
       AppColorController,
       AppThemeController,
       HapticTouchController,
-      PinCodeController
+      PinCodeController,
+      BiometricController
     >(
       builder:
           (
@@ -32,6 +35,7 @@ class _SettingsPageState extends State<SettingsPage> {
             appThemeController,
             hapticTouchController,
             pinCodeController,
+            biometricController,
             child,
           ) {
             final theme = Theme.of(context);
@@ -55,6 +59,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   Divider(height: 1, color: theme.dividerColor),
                   const PinCodeChanger(),
+                  Divider(height: 1, color: theme.dividerColor),
+                  BiometricAuthSwitch(biometricController: biometricController),
                   Divider(height: 1, color: theme.dividerColor),
                   ListTile(
                     title: Text('Язык', style: theme.textTheme.bodyLarge),

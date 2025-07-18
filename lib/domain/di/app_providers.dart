@@ -8,6 +8,7 @@ import 'package:shmr_finance_app/data/repositories/transaction_repository_impl.d
 import 'package:shmr_finance_app/data/services/sync_service.dart';
 import 'package:shmr_finance_app/data/sources/app_color/app_color_datasource.dart';
 import 'package:shmr_finance_app/data/sources/app_theme/app_theme_datasource.dart';
+import 'package:shmr_finance_app/data/sources/biometric/biometric_datasource.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/account_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/category_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/pending_operations_dao.dart';
@@ -20,6 +21,7 @@ import 'package:shmr_finance_app/data/sources/network/transaction_network_dataso
 import 'package:shmr_finance_app/data/sources/pin_code/pin_code_datasource.dart';
 import 'package:shmr_finance_app/domain/controllers/app_color/app_color_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/app_theme/app_theme_controller.dart';
+import 'package:shmr_finance_app/domain/controllers/biometric/biometric_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/haptic_touch/haptic_touch_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/pin_code/pin_code_controller.dart';
 import 'package:shmr_finance_app/domain/repositories/bank_account_repository.dart';
@@ -97,6 +99,19 @@ class AppProviders extends StatelessWidget {
             );
             pinCodeController.loadPinCode();
             return pinCodeController;
+          },
+        ),
+        Provider<BiometricDatasource>(
+          create: (context) =>
+              BiometricDatasource(preferences: sharedPreferences),
+        ),
+        ChangeNotifierProvider<BiometricController>(
+          create: (context) {
+            final biometricController = BiometricController(
+              biometricDatasource: context.read<BiometricDatasource>(),
+            );
+            biometricController.loadBiometricSetting();
+            return biometricController;
           },
         ),
         Provider<AppDatabase>(
