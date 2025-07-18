@@ -6,6 +6,7 @@ import 'package:shmr_finance_app/data/repositories/category_repository_impl.dart
 import 'package:shmr_finance_app/data/repositories/transaction_repository_impl.dart';
 import 'package:shmr_finance_app/data/services/sync_service.dart';
 import 'package:shmr_finance_app/data/sources/app_color/app_color_datasource.dart';
+import 'package:shmr_finance_app/data/sources/app_theme/app_theme_datasource.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/account_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/category_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/daos/pending_operations_dao.dart';
@@ -14,7 +15,8 @@ import 'package:shmr_finance_app/data/sources/drift/database/database.dart';
 import 'package:shmr_finance_app/data/sources/network/bank_account_network_datasource_impl.dart';
 import 'package:shmr_finance_app/data/sources/network/category_network_datasource_impl.dart';
 import 'package:shmr_finance_app/data/sources/network/transaction_network_datasource_impl.dart';
-import 'package:shmr_finance_app/domain/controllers/app_color_controller.dart';
+import 'package:shmr_finance_app/domain/controllers/app_color/app_color_controller.dart';
+import 'package:shmr_finance_app/domain/controllers/app_theme/app_theme_controller.dart';
 import 'package:shmr_finance_app/domain/repositories/bank_account_repository.dart';
 import 'package:shmr_finance_app/domain/repositories/category_repository.dart';
 import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart';
@@ -42,11 +44,24 @@ class AppProviders extends StatelessWidget {
         ),
         ChangeNotifierProvider<AppColorController>(
           create: (context) {
-            final controller = AppColorController(
+            final appColorController = AppColorController(
               appColorDatasource: context.read<AppColorDatasource>(),
             );
-            controller.load();
-            return controller;
+            appColorController.load();
+            return appColorController;
+          },
+        ),
+        Provider<AppThemeDatasource>(
+          create: (context) =>
+              AppThemeDatasource(preferences: sharedPreferences),
+        ),
+        ChangeNotifierProvider<AppThemeController>(
+          create: (context) {
+            final appThemeController = AppThemeController(
+              appThemeDatasource: context.read<AppThemeDatasource>(),
+            );
+            appThemeController.load();
+            return appThemeController;
           },
         ),
         Provider<AppDatabase>(

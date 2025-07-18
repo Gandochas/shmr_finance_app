@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shmr_finance_app/core/widgets/settings_widgets/main_tint_picker_widget.dart';
-import 'package:shmr_finance_app/domain/controllers/app_color_controller.dart';
+import 'package:shmr_finance_app/core/widgets/settings_widgets/system_theme_switch.dart';
+import 'package:shmr_finance_app/domain/controllers/app_color/app_color_controller.dart';
+import 'package:shmr_finance_app/domain/controllers/app_theme/app_theme_controller.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -13,8 +15,8 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<AppColorController>(
-      builder: (context, appColorController, child) {
+    return Consumer2<AppColorController, AppThemeController>(
+      builder: (context, appColorController, appThemeController, child) {
         final theme = Theme.of(context);
         return Scaffold(
           appBar: AppBar(
@@ -24,10 +26,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           body: Column(
             children: [
-              ListTile(
-                title: Text('Системная тема', style: theme.textTheme.bodyLarge),
-                trailing: Switch.adaptive(value: false, onChanged: (value) {}),
-              ),
+              SystemThemeSwitch(appThemeController: appThemeController),
               Divider(height: 1, color: theme.dividerColor),
               MainTintPickerWidget(appColorController: appColorController),
               Divider(height: 1, color: theme.dividerColor),

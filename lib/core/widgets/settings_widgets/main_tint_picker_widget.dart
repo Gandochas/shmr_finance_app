@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:shmr_finance_app/domain/controllers/app_color_controller.dart';
+import 'package:shmr_finance_app/domain/controllers/app_color/app_color_controller.dart';
 
 class MainTintPickerWidget extends StatelessWidget {
   const MainTintPickerWidget({required this.appColorController, super.key});
