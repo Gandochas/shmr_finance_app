@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shmr_finance_app/data/sources/biometric/biometric_datasource.dart';
 
-class BiometricController extends ChangeNotifier {
+final class BiometricController extends ChangeNotifier {
   BiometricController({required BiometricDatasource biometricDatasource})
     : _biometricDatasource = biometricDatasource,
       _isBiometricEnabled = false;

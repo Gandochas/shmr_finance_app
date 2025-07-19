@@ -1,17 +1,19 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class HapticTouchDatasource {
+final class HapticTouchDatasource {
   HapticTouchDatasource({required SharedPreferences preferences})
     : _preferences = preferences;
 
   final SharedPreferences _preferences;
 
+  static const sharedPrefsKey = 'haptic_feedback_enabled';
+
   Future<bool> loadHapticFeedback() async {
-    final isHapticEnabled = _preferences.getBool('haptic_feedback_enabled');
+    final isHapticEnabled = _preferences.getBool(sharedPrefsKey);
     return isHapticEnabled ?? false;
   }
 
   Future<void> saveHapticFeedback({required bool value}) async {
-    await _preferences.setBool('haptic_feedback_enabled', value);
+    await _preferences.setBool(sharedPrefsKey, value);
   }
 }

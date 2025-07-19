@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shmr_finance_app/data/sources/haptic_touch/haptic_touch_datasource.dart';
 
-class HapticTouchController extends ChangeNotifier {
+final class HapticTouchController extends ChangeNotifier {
   HapticTouchController({
     required HapticTouchDatasource hapticFeedbackDatasource,
   }) : _hapticFeedbackDatasource = hapticFeedbackDatasource,

@@ -6,12 +6,14 @@ final class BiometricDatasource {
 
   final SharedPreferences _preferences;
 
+  static const sharedPrefsKey = 'biometric_enabled';
+
   Future<void> saveBiometricEnabled({required bool isEnabled}) async {
-    await _preferences.setBool('biometric_enabled', isEnabled);
+    await _preferences.setBool(sharedPrefsKey, isEnabled);
   }
 
   Future<bool> isBiometricEnabled() async {
-    final isBiometricEnabled = _preferences.getBool('biometric_enabled');
+    final isBiometricEnabled = _preferences.getBool(sharedPrefsKey);
     return isBiometricEnabled ?? false;
   }
 }

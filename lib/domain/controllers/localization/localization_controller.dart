@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shmr_finance_app/data/sources/localization/localization_datasource.dart';
 
-class LocalizationController extends ChangeNotifier {
+final class LocalizationController extends ChangeNotifier {
   LocalizationController({
     required LocalizationDatasource localizationDatasource,
   }) : _localizationDatasource = localizationDatasource,

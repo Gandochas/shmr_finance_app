@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shmr_finance_app/data/sources/pin_code/pin_code_datasource.dart';
 
-class PinCodeController extends ChangeNotifier {
+final class PinCodeController extends ChangeNotifier {
   PinCodeController({required PinCodeDatasource pinCodeDatasource})
     : _pinCodeDatasource = pinCodeDatasource;
 

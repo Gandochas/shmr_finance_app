@@ -6,12 +6,14 @@ final class LocalizationDatasource {
 
   final SharedPreferences _preferences;
 
+  static const sharedPrefsKey = 'language';
+
   Future<String> loadLocalization() async {
-    final localization = _preferences.getString('language');
+    final localization = _preferences.getString(sharedPrefsKey);
     return localization ?? 'en';
   }
 
   Future<void> saveLocalization(String languageCode) async {
-    await _preferences.setString('language', languageCode);
+    await _preferences.setString(sharedPrefsKey, languageCode);
   }
 }

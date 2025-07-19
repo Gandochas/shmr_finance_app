@@ -10,7 +10,7 @@ import 'package:shmr_finance_app/domain/models/transaction_request/transaction_r
 import 'package:shmr_finance_app/domain/sources/bank_account_datasource.dart';
 import 'package:shmr_finance_app/domain/sources/transaction_datasource.dart';
 
-class SyncService {
+final class SyncService {
   SyncService({
     required this.transactionApiSource,
     required this.bankAccountApiSource,
