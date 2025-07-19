@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shmr_finance_app/core/theme/app_theme.dart';
+import 'package:shmr_finance_app/domain/controllers/app_color/app_color_controller.dart';
 
-ThemeData getLightTheme() {
-  const kPrimaryColor = Color(0xFF2AE881);
+ThemeData getLightTheme(BuildContext context) {
+  final appColorController = context.watch<AppColorController>();
+  final kPrimaryColor = appColorController.primaryColor;
   const kSurfaceColor = Color(0xFFFEF7FF);
   const kTextPrimaryColor = Color(0xFF1D1B20);
   const kTextSecondaryColor = Color(0xFF49454F);
   const kNavigationBarColor = Color(0xFFF3EDF7);
-  const kHighlightColor = Color(0xFFD4FAE6);
+  final kHighlightColor = kPrimaryColor.withValues(alpha: 0.2);
   const kErrorColor = Color(0xFFE46962);
   const kSearchColor = Color(0xFFECE6F0);
 
   final themeData = ThemeData(
-    colorScheme: const ColorScheme.light(
+    colorScheme: ColorScheme.light(
       primary: kPrimaryColor,
       secondary: kHighlightColor,
       surface: kSurfaceColor,
@@ -23,10 +26,10 @@ ThemeData getLightTheme() {
       onError: Colors.white,
     ),
     searchViewTheme: const SearchViewThemeData(backgroundColor: kSearchColor),
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
       color: kPrimaryColor,
       elevation: 0,
-      titleTextStyle: TextStyle(
+      titleTextStyle: const TextStyle(
         fontFamily: 'Roboto',
         fontWeight: FontWeight.w400,
         fontSize: 22,
@@ -34,7 +37,7 @@ ThemeData getLightTheme() {
         letterSpacing: 0,
         color: kTextPrimaryColor,
       ),
-      iconTheme: IconThemeData(color: kTextPrimaryColor),
+      iconTheme: const IconThemeData(color: kTextPrimaryColor),
     ),
     scaffoldBackgroundColor: kSurfaceColor,
     dividerColor: kTextSecondaryColor,
@@ -99,7 +102,7 @@ ThemeData getLightTheme() {
 
   return themeData.copyWith(
     extensions: <ThemeExtension>[
-      const AppThemeColors(
+      AppThemeColors(
         primary: kPrimaryColor,
         background: kSurfaceColor,
         surface: kSurfaceColor,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shmr_finance_app/l10n/app_localizations.dart';
 
 class CurrencyChangerWidget extends StatelessWidget {
   const CurrencyChangerWidget({super.key});
@@ -6,6 +7,7 @@ class CurrencyChangerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final localization = AppLocalizations.of(context);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -23,34 +25,51 @@ class CurrencyChangerWidget extends StatelessWidget {
         ),
 
         ListTile(
-          leading: Text('₽', style: theme.textTheme.bodyLarge),
-          title: Text('Российский рубль ₽', style: theme.textTheme.bodyLarge),
-          onTap: () => Navigator.of(context).pop('₽'),
+          leading: Text(
+            localization.russian_ruble_sign,
+            style: theme.textTheme.bodyLarge,
+          ),
+          title: Text(
+            '${localization.russian_ruble} ${localization.russian_ruble_sign}',
+            style: theme.textTheme.bodyLarge,
+          ),
+          onTap: () =>
+              Navigator.of(context).pop(localization.russian_ruble_sign),
         ),
 
         Divider(height: 1, color: theme.dividerColor),
 
         ListTile(
-          leading: Text(r'$', style: theme.textTheme.bodyLarge),
-          title: Text(
-            r'Американский доллар $',
+          leading: Text(
+            localization.american_dollar_sign,
             style: theme.textTheme.bodyLarge,
           ),
-          onTap: () => Navigator.of(context).pop(r'$'),
+          title: Text(
+            '${localization.american_dollar} ${localization.american_dollar_sign}',
+            style: theme.textTheme.bodyLarge,
+          ),
+          onTap: () =>
+              Navigator.of(context).pop(localization.american_dollar_sign),
         ),
 
         Divider(height: 1, color: Theme.of(context).dividerColor),
 
         ListTile(
-          leading: Text('€', style: theme.textTheme.bodyLarge),
-          title: Text('Евро €', style: theme.textTheme.bodyLarge),
-          onTap: () => Navigator.of(context).pop('€'),
+          leading: Text(
+            localization.euro_sign,
+            style: theme.textTheme.bodyLarge,
+          ),
+          title: Text(
+            '${localization.euro} ${localization.euro_sign}',
+            style: theme.textTheme.bodyLarge,
+          ),
+          onTap: () => Navigator.of(context).pop(localization.euro_sign),
         ),
 
         ListTile(
           tileColor: theme.colorScheme.error,
           leading: const Icon(Icons.close),
-          title: Text('Отмена', style: theme.textTheme.bodyLarge),
+          title: Text(localization.cancel, style: theme.textTheme.bodyLarge),
           onTap: () => Navigator.of(context).pop(),
         ),
       ],

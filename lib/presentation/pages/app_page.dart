@@ -1,11 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:shmr_finance_app/core/network/connection_checker.dart';
 import 'package:shmr_finance_app/core/widgets/svg_icon.dart';
-import 'package:shmr_finance_app/presentation/pages/articles_tab.dart';
-import 'package:shmr_finance_app/presentation/pages/balance_tab.dart';
-import 'package:shmr_finance_app/presentation/pages/expenses_incomes_navigator_tab.dart';
+import 'package:shmr_finance_app/domain/controllers/haptic_touch/haptic_touch_controller.dart';
+import 'package:shmr_finance_app/l10n/app_localizations.dart';
+import 'package:shmr_finance_app/presentation/articles_tab.dart';
+import 'package:shmr_finance_app/presentation/balance_tab.dart';
+import 'package:shmr_finance_app/presentation/expenses_incomes_tab.dart';
 import 'package:shmr_finance_app/presentation/pages/settings_page.dart';
 
 class AppPage extends StatefulWidget {
@@ -26,12 +30,12 @@ class _AppPageState extends State<AppPage> {
   );
 
   Widget _buildTab(int index) => switch (index) {
-    0 => const ExpensesIncomesNavigatorTab(isIncomePage: false),
-    1 => const ExpensesIncomesNavigatorTab(isIncomePage: true),
+    0 => const ExpensesIncomesTab(isIncomePage: false),
+    1 => const ExpensesIncomesTab(isIncomePage: true),
     2 => const BalanceTab(),
     3 => const ArticlesTab(),
     4 => const SettingsPage(),
-    _ => const ExpensesIncomesNavigatorTab(isIncomePage: false),
+    _ => const ExpensesIncomesTab(isIncomePage: false),
   };
 
   final _connectionChecker = ConnectionChecker();
@@ -61,7 +65,9 @@ class _AppPageState extends State<AppPage> {
 
   @override
   Widget build(BuildContext context) {
+    final hapticTouchController = context.watch<HapticTouchController>();
     final theme = Theme.of(context);
+    final localization = AppLocalizations.of(context);
 
     return Scaffold(
       body: Stack(
@@ -89,7 +95,7 @@ class _AppPageState extends State<AppPage> {
                 color: theme.colorScheme.error,
                 padding: const EdgeInsets.symmetric(vertical: 5),
                 child: Text(
-                  'Offline mode',
+                  localization.offline_mode,
                   style: theme.textTheme.bodyLarge,
                   textAlign: TextAlign.center,
                 ),
@@ -100,31 +106,34 @@ class _AppPageState extends State<AppPage> {
 
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (pageIndex) {
+          if (hapticTouchController.isHapticFeedbackEnabled) {
+            HapticFeedback.mediumImpact();
+          }
           setState(() {
             _currentPageIndex = pageIndex;
           });
         },
         selectedIndex: _currentPageIndex,
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: SvgIcon(asset: 'assets/icons/expenses_icon.svg'),
-            label: 'Расходы',
+            icon: const SvgIcon(asset: 'assets/icons/expenses_icon.svg'),
+            label: localization.expenses,
           ),
           NavigationDestination(
-            icon: SvgIcon(asset: 'assets/icons/incomes_icon.svg'),
-            label: 'Доходы',
+            icon: const SvgIcon(asset: 'assets/icons/incomes_icon.svg'),
+            label: localization.incomes,
           ),
           NavigationDestination(
-            icon: SvgIcon(asset: 'assets/icons/account_icon.svg'),
-            label: 'Счет',
+            icon: const SvgIcon(asset: 'assets/icons/account_icon.svg'),
+            label: localization.balance,
           ),
           NavigationDestination(
-            icon: SvgIcon(asset: 'assets/icons/articles_icon.svg'),
-            label: 'Статьи',
+            icon: const SvgIcon(asset: 'assets/icons/articles_icon.svg'),
+            label: localization.articles,
           ),
           NavigationDestination(
-            icon: SvgIcon(asset: 'assets/icons/settings_icon.svg'),
-            label: 'Настройки',
+            icon: const SvgIcon(asset: 'assets/icons/settings_icon.svg'),
+            label: localization.settings,
           ),
         ],
       ),

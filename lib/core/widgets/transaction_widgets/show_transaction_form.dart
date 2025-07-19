@@ -5,6 +5,7 @@ import 'package:shmr_finance_app/domain/models/transaction_response/transaction_
 import 'package:shmr_finance_app/domain/repositories/bank_account_repository.dart';
 import 'package:shmr_finance_app/domain/repositories/category_repository.dart';
 import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart';
+import 'package:shmr_finance_app/l10n/app_localizations.dart';
 import 'package:shmr_finance_app/presentation/pages/transaction_form_page.dart';
 
 void showTransactionForm({
@@ -16,13 +17,14 @@ void showTransactionForm({
   final bankAccountRepository = context.read<BankAccountRepository>();
   final categoryRepository = context.read<CategoryRepository>();
   final transactionRepository = context.read<TransactionRepository>();
+  final localization = AppLocalizations.of(context);
 
   showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
     barrierLabel: transaction == null
-        ? 'Добавить транзакцию'
-        : 'Редактировать транзакцию',
+        ? localization.add_transaction
+        : localization.edit_transaction,
     pageBuilder: (context, animation, secondaryAnimation) {
       return SafeArea(
         child: BlocProvider<TransactionFormCubit>(
