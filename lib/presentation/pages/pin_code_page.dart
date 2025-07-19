@@ -177,7 +177,8 @@ class _PinCodePageState extends State<PinCodePage> {
               ),
             ),
             const SizedBox(height: 16),
-            if (context.watch<BiometricController>().isBiometricEnabled)
+            if (context.watch<BiometricController>().isBiometricEnabled &&
+                widget.state == PinCodeState.verify)
               ElevatedButton(
                 onPressed: () => _authenticateWithBiometrics(context),
                 child: Text(
