@@ -6,6 +6,7 @@ import 'package:shmr_finance_app/core/widgets/transaction_widgets/transaction_da
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transaction_sorting_widget.dart';
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transactions_sum_widget.dart';
 import 'package:shmr_finance_app/domain/bloc/history/history_cubit.dart';
+import 'package:shmr_finance_app/l10n/app_localizations.dart';
 import 'package:shmr_finance_app/presentation/pages/analysis_page.dart';
 
 enum SortField { date, amount }
@@ -40,12 +41,16 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final localization = AppLocalizations.of(context);
 
     return BlocBuilder<HistoryCubit, HistoryState>(
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            title: Text('Моя история', style: theme.appBarTheme.titleTextStyle),
+            title: Text(
+              localization.my_history,
+              style: theme.appBarTheme.titleTextStyle,
+            ),
             centerTitle: true,
             actions: [
               IconButton(
@@ -72,7 +77,7 @@ class _HistoryPageState extends State<HistoryPage> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       TransactionDateChoiceWidget(
-                        title: 'Начало',
+                        title: localization.beginning,
                         initialDate: startDate,
                         firstDate: DateTime(2000),
                         lastDate: endDate,
@@ -80,7 +85,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       ),
 
                       TransactionDateChoiceWidget(
-                        title: 'Конец',
+                        title: localization.end,
                         initialDate: endDate,
                         firstDate: startDate,
                         lastDate: DateTime.now(),

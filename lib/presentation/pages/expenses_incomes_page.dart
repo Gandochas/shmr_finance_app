@@ -8,6 +8,7 @@ import 'package:shmr_finance_app/domain/bloc/expenses_incomes/expenses_incomes_c
 import 'package:shmr_finance_app/domain/bloc/history/history_cubit.dart';
 import 'package:shmr_finance_app/domain/controllers/haptic_touch/haptic_touch_controller.dart';
 import 'package:shmr_finance_app/domain/repositories/transaction_repository.dart';
+import 'package:shmr_finance_app/l10n/app_localizations.dart';
 import 'package:shmr_finance_app/presentation/pages/history_page.dart';
 
 class ExpensesIncomesPage extends StatelessWidget {
@@ -37,6 +38,7 @@ class ExpensesIncomesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final hapticTouchController = context.watch<HapticTouchController>();
     final theme = Theme.of(context);
+    final localization = AppLocalizations.of(context);
 
     return BlocBuilder<ExpensesIncomesCubit, ExpensesIncomesState>(
       builder: (context, state) {
@@ -44,7 +46,9 @@ class ExpensesIncomesPage extends StatelessWidget {
           appBar: AppBar(
             backgroundColor: theme.appBarTheme.backgroundColor,
             title: Text(
-              isIncomePage ? 'Доходы сегодня' : 'Расходы сегодня',
+              isIncomePage
+                  ? localization.today_incomes
+                  : localization.today_expenses,
               style: theme.appBarTheme.titleTextStyle,
             ),
             centerTitle: true,

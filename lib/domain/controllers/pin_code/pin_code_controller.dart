@@ -18,8 +18,6 @@ class PinCodeController extends ChangeNotifier {
       _pinCode = pinCode;
       await _pinCodeDatasource.savePinCode(pinCode);
       notifyListeners();
-    } else {
-      throw Exception('Pincode must be 4 digits long!');
     }
   }
 

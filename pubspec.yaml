@@ -34,6 +34,8 @@ dependencies:
   flutter_colorpicker: ^1.1.0
   flutter_secure_storage: ^9.2.4
   local_auth: ^2.3.0
+  flutter_localizations:
+    sdk: flutter
 
   category_chart:
     path: packages/category_chart
@@ -53,7 +55,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true
   assets:
+    - lib/l10n/
     - assets/icons/
     - assets/icon/
     - assets/splash/

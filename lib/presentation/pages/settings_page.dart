@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shmr_finance_app/core/widgets/settings_widgets/biometric_auth_switch.dart';
 import 'package:shmr_finance_app/core/widgets/settings_widgets/haptic_touch_switch.dart';
+import 'package:shmr_finance_app/core/widgets/settings_widgets/localization_changer.dart';
 import 'package:shmr_finance_app/core/widgets/settings_widgets/main_tint_picker_widget.dart';
 import 'package:shmr_finance_app/core/widgets/settings_widgets/pin_code_changer.dart';
 import 'package:shmr_finance_app/core/widgets/settings_widgets/system_theme_switch.dart';
@@ -10,6 +11,7 @@ import 'package:shmr_finance_app/domain/controllers/app_theme/app_theme_controll
 import 'package:shmr_finance_app/domain/controllers/biometric/biometric_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/haptic_touch/haptic_touch_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/pin_code/pin_code_controller.dart';
+import 'package:shmr_finance_app/l10n/app_localizations.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -39,11 +41,13 @@ class _SettingsPageState extends State<SettingsPage> {
             child,
           ) {
             final theme = Theme.of(context);
+            final localization = AppLocalizations.of(context);
+
             return Scaffold(
               appBar: AppBar(
                 backgroundColor: theme.appBarTheme.backgroundColor,
                 title: Text(
-                  'Настройки',
+                  localization.settings,
                   style: theme.appBarTheme.titleTextStyle,
                 ),
                 centerTitle: true,
@@ -62,13 +66,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   Divider(height: 1, color: theme.dividerColor),
                   BiometricAuthSwitch(biometricController: biometricController),
                   Divider(height: 1, color: theme.dividerColor),
-                  ListTile(
-                    title: Text('Язык', style: theme.textTheme.bodyLarge),
-                    trailing: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.navigate_next),
-                    ),
-                  ),
+                  const LocalizationChanger(),
                   Divider(height: 1, color: theme.dividerColor),
                 ],
               ),

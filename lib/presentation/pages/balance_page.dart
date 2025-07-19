@@ -13,6 +13,7 @@ import 'package:shmr_finance_app/core/widgets/balance_widgets/balance_chart/char
 import 'package:shmr_finance_app/core/widgets/balance_widgets/currency_changer_widget.dart';
 import 'package:shmr_finance_app/core/widgets/balance_widgets/update_balance_name_widget.dart';
 import 'package:shmr_finance_app/domain/bloc/balance/balance_cubit.dart';
+import 'package:shmr_finance_app/l10n/app_localizations.dart';
 
 class BalancePage extends StatefulWidget {
   const BalancePage({super.key});
@@ -69,13 +70,17 @@ class _BalancePageState extends State<BalancePage>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final localization = AppLocalizations.of(context);
 
     return BlocBuilder<BalanceCubit, BalanceState>(
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
             backgroundColor: theme.appBarTheme.backgroundColor,
-            title: Text('Мой счет', style: theme.appBarTheme.titleTextStyle),
+            title: Text(
+              localization.my_balance,
+              style: theme.appBarTheme.titleTextStyle,
+            ),
             centerTitle: true,
             actions: [
               IconButton(onPressed: () {}, icon: const Icon(Icons.edit)),
@@ -159,7 +164,7 @@ class _BalancePageState extends State<BalancePage>
                         ),
                         child: ListTile(
                           title: Text(
-                            'Валюта',
+                            localization.currency,
                             style: theme.textTheme.bodyLarge,
                           ),
                           trailing: Row(
@@ -182,14 +187,14 @@ class _BalancePageState extends State<BalancePage>
                             ButtonSegment(
                               value: ChartMode.byDay,
                               label: Text(
-                                'За месяц',
+                                localization.for_the_month,
                                 style: theme.textTheme.bodyLarge,
                               ),
                             ),
                             ButtonSegment(
                               value: ChartMode.byMonth,
                               label: Text(
-                                'За год',
+                                localization.for_the_year,
                                 style: theme.textTheme.bodyLarge,
                               ),
                             ),

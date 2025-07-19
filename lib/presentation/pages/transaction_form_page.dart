@@ -7,6 +7,7 @@ import 'package:shmr_finance_app/core/widgets/format_time.dart';
 import 'package:shmr_finance_app/domain/bloc/transaction_form/transaction_form_cubit.dart';
 import 'package:shmr_finance_app/domain/models/transaction_request/transaction_request.dart';
 import 'package:shmr_finance_app/domain/models/transaction_response/transaction_response.dart';
+import 'package:shmr_finance_app/l10n/app_localizations.dart';
 
 class TransactionFormPage extends StatefulWidget {
   const TransactionFormPage({
@@ -72,15 +73,21 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
       context: context,
       barrierDismissible: false,
       builder: (context) {
+        final theme = Theme.of(context);
+        final localization = AppLocalizations.of(context);
+
         return AlertDialog(
-          title: const Text('Ошибка'),
+          title: Text(
+            localization.error,
+            style: theme.appBarTheme.titleTextStyle,
+          ),
           content: Text(
-            'Пожалуйста, заполните все обязательные поля.',
-            style: Theme.of(context).textTheme.bodyLarge,
+            localization.please_fill_in_all_required_fields,
+            style: theme.textTheme.bodyLarge,
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('OK'),
+              child: Text(localization.ok, style: theme.textTheme.bodyLarge),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -96,6 +103,7 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
     final locale = Localizations.localeOf(context).toString();
     final separator = NumberFormat.decimalPattern(locale).symbols.DECIMAL_SEP;
     final theme = Theme.of(context);
+    final localization = AppLocalizations.of(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -104,10 +112,12 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
         title: Text(
           style: theme.appBarTheme.titleTextStyle,
           widget.transaction == null
-              ? (widget.isIncomePage ? 'Добавить доход' : 'Добавить расход')
+              ? (widget.isIncomePage
+                    ? localization.add_income
+                    : localization.add_expense)
               : (widget.isIncomePage
-                    ? 'Редактировать доход'
-                    : 'Редактировать расход'),
+                    ? localization.edit_income
+                    : localization.edit_expense),
         ),
         centerTitle: true,
         actions: [
@@ -143,7 +153,10 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                 ),
                 children: [
                   ListTile(
-                    title: Text('Счет', style: theme.textTheme.bodyLarge),
+                    title: Text(
+                      localization.balance,
+                      style: theme.textTheme.bodyLarge,
+                    ),
                     trailing: DropdownButtonHideUnderline(
                       child: DropdownButton<int>(
                         value: _selectedAccountId ??= accounts.first.id,
@@ -169,12 +182,15 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                   Divider(height: 1, color: theme.dividerColor),
 
                   ListTile(
-                    title: Text('Статья', style: theme.textTheme.bodyLarge),
+                    title: Text(
+                      localization.article,
+                      style: theme.textTheme.bodyLarge,
+                    ),
                     trailing: DropdownButtonHideUnderline(
                       child: DropdownButton<int>(
                         value: _selectedCategoryId,
                         hint: Text(
-                          'Выберите категорию',
+                          localization.choose_category,
                           style: theme.textTheme.bodyLarge,
                         ),
                         items: categories
@@ -200,7 +216,10 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                   Divider(height: 1, color: theme.dividerColor),
 
                   ListTile(
-                    title: Text('Сумма', style: theme.textTheme.bodyLarge),
+                    title: Text(
+                      localization.total_sum,
+                      style: theme.textTheme.bodyLarge,
+                    ),
                     trailing: SizedBox(
                       width: 120,
                       child: TextField(
@@ -220,7 +239,10 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                   Divider(height: 1, color: theme.dividerColor),
 
                   ListTile(
-                    title: Text('Дата', style: theme.textTheme.bodyLarge),
+                    title: Text(
+                      localization.date,
+                      style: theme.textTheme.bodyLarge,
+                    ),
                     trailing: TextButton(
                       onPressed: _pickDate,
                       child: Text(
@@ -233,7 +255,10 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                   Divider(height: 1, color: theme.dividerColor),
 
                   ListTile(
-                    title: Text('Время', style: theme.textTheme.bodyLarge),
+                    title: Text(
+                      localization.time,
+                      style: theme.textTheme.bodyLarge,
+                    ),
                     trailing: TextButton(
                       onPressed: _pickTime,
                       child: Text(
@@ -252,9 +277,9 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                     ),
                     child: TextField(
                       controller: _commentController,
-                      decoration: const InputDecoration(
-                        hintText: 'Комментарий',
-                        border: UnderlineInputBorder(
+                      decoration: InputDecoration(
+                        hintText: localization.comment,
+                        border: const UnderlineInputBorder(
                           borderSide: BorderSide.none,
                         ),
                       ),
@@ -279,8 +304,8 @@ class _TransactionFormPageState extends State<TransactionFormPage> {
                         },
                         child: Text(
                           widget.isIncomePage
-                              ? 'Удалить доход'
-                              : 'Удалить расход',
+                              ? localization.delete_income
+                              : localization.delete_expense,
                           style: TextStyle(color: theme.colorScheme.onError),
                         ),
                       ),

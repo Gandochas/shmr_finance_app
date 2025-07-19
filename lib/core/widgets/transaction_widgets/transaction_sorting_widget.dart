@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shmr_finance_app/l10n/app_localizations.dart';
 import 'package:shmr_finance_app/presentation/pages/history_page.dart';
 
 class TransactionSortingWidget extends StatelessWidget {
@@ -18,6 +19,7 @@ class TransactionSortingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final localization = AppLocalizations.of(context);
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -29,17 +31,23 @@ class TransactionSortingWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Сортировка', style: theme.textTheme.bodyLarge),
+            Text(localization.sorting, style: theme.textTheme.bodyLarge),
             DropdownButton<SortField>(
               value: currentField,
               items: [
                 DropdownMenuItem(
                   value: SortField.date,
-                  child: Text('По дате', style: theme.textTheme.bodyLarge),
+                  child: Text(
+                    localization.by_date,
+                    style: theme.textTheme.bodyLarge,
+                  ),
                 ),
                 DropdownMenuItem(
                   value: SortField.amount,
-                  child: Text('По сумме', style: theme.textTheme.bodyLarge),
+                  child: Text(
+                    localization.by_amount,
+                    style: theme.textTheme.bodyLarge,
+                  ),
                 ),
               ],
               onChanged: onFieldChanged,
@@ -50,13 +58,16 @@ class TransactionSortingWidget extends StatelessWidget {
                 DropdownMenuItem(
                   value: SortOrder.asc,
                   child: Text(
-                    'По возрастанию',
+                    localization.ascending,
                     style: theme.textTheme.bodyLarge,
                   ),
                 ),
                 DropdownMenuItem(
                   value: SortOrder.desc,
-                  child: Text('По убыванию', style: theme.textTheme.bodyLarge),
+                  child: Text(
+                    localization.descending,
+                    style: theme.textTheme.bodyLarge,
+                  ),
                 ),
               ],
               onChanged: onOrderChanged,

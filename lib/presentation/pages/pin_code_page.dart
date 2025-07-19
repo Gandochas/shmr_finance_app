@@ -3,6 +3,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:shmr_finance_app/domain/controllers/biometric/biometric_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/pin_code/pin_code_controller.dart';
+import 'package:shmr_finance_app/l10n/app_localizations.dart';
 import 'package:shmr_finance_app/presentation/pages/app_page.dart';
 
 enum PinCodeState { setup, update, verify }
@@ -23,11 +24,12 @@ class _PinCodePageState extends State<PinCodePage> {
 
   Future<void> _authenticateWithBiometrics(BuildContext context) async {
     final biometricController = context.read<BiometricController>();
+    final localization = AppLocalizations.of(context);
     if (biometricController.isBiometricEnabled) {
       final localAuth = LocalAuthentication();
       try {
         final authenticated = await localAuth.authenticate(
-          localizedReason: 'Приложите палец для аутентификации.',
+          localizedReason: localization.put_finger_for_auth,
           options: const AuthenticationOptions(biometricOnly: true),
         );
         if (!context.mounted) return;
@@ -38,7 +40,7 @@ class _PinCodePageState extends State<PinCodePage> {
         }
       } on Object catch (e) {
         setState(() {
-          _errorMessage = 'Ошибка биометрической аутентификации: $e';
+          _errorMessage = '${localization.biometric_authentication_error}: $e';
         });
       }
     }
@@ -48,15 +50,16 @@ class _PinCodePageState extends State<PinCodePage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final pinCodeController = context.read<PinCodeController>();
+    final localization = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
           widget.state == PinCodeState.setup
-              ? 'Установите пин-код'
+              ? localization.set_pincode
               : widget.state == PinCodeState.update
-              ? 'Измените пин-код'
-              : 'Введите пин-код',
+              ? localization.change_pincode
+              : localization.insert_pincode,
           style: theme.appBarTheme.titleTextStyle,
         ),
         centerTitle: true,
@@ -72,8 +75,8 @@ class _PinCodePageState extends State<PinCodePage> {
                 labelText:
                     widget.state == PinCodeState.setup ||
                         widget.state == PinCodeState.update
-                    ? 'Введите новый пин-код'
-                    : 'Пин-код',
+                    ? localization.insert_new_pincode
+                    : localization.pincode,
                 labelStyle: theme.textTheme.bodyLarge,
                 errorText: _errorMessage.isNotEmpty ? _errorMessage : null,
               ),
@@ -87,7 +90,7 @@ class _PinCodePageState extends State<PinCodePage> {
                 child: TextField(
                   controller: _confirmPinCodeController,
                   decoration: InputDecoration(
-                    labelText: 'Подтвердите пин-код',
+                    labelText: localization.confirm_pincode,
                     labelStyle: theme.textTheme.bodyLarge,
                   ),
                   keyboardType: TextInputType.number,
@@ -101,7 +104,8 @@ class _PinCodePageState extends State<PinCodePage> {
                 final pinCode = _inputPinCodeController.text;
                 if (pinCode.length != 4) {
                   setState(() {
-                    _errorMessage = 'Пин-код должен содержать 4 цифры';
+                    _errorMessage =
+                        localization.pincode_should_contain_4_digits;
                   });
                   return;
                 }
@@ -125,7 +129,7 @@ class _PinCodePageState extends State<PinCodePage> {
 
                   if (pinCode != confirmPinCode) {
                     setState(() {
-                      _errorMessage = 'Пин-коды не совпадают';
+                      _errorMessage = localization.pincodes_do_not_match;
                     });
                     return;
                   }
@@ -152,12 +156,12 @@ class _PinCodePageState extends State<PinCodePage> {
                     if (pinCodeController.attemptsLeft > 0) {
                       setState(() {
                         _errorMessage =
-                            'Неверный пин-код. Осталось попыток: ${pinCodeController.attemptsLeft}';
+                            '${localization.incorrect_pincode_attempts_left}: ${pinCodeController.attemptsLeft}';
                       });
                     } else {
                       setState(() {
                         _errorMessage =
-                            'Попытки закончились. Попробуйте позже.';
+                            localization.attempts_are_over_try_again_later;
                       });
                     }
                   }
@@ -165,10 +169,10 @@ class _PinCodePageState extends State<PinCodePage> {
               },
               child: Text(
                 widget.state == PinCodeState.setup
-                    ? 'Установить пин-код'
+                    ? localization.set_pincode
                     : widget.state == PinCodeState.update
-                    ? 'Изменить пин-код'
-                    : 'Подтвердить пин-код',
+                    ? localization.change_pincode
+                    : localization.confirm_pincode,
                 style: theme.textTheme.bodyLarge,
               ),
             ),
@@ -177,7 +181,7 @@ class _PinCodePageState extends State<PinCodePage> {
               ElevatedButton(
                 onPressed: () => _authenticateWithBiometrics(context),
                 child: Text(
-                  'Авторизоваться, используя отпечаток пальца',
+                  localization.authorize_with_fingerprint,
                   style: theme.textTheme.bodyLarge,
                   textAlign: TextAlign.center,
                 ),

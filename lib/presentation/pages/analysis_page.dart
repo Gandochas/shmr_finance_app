@@ -7,6 +7,7 @@ import 'package:shmr_finance_app/core/widgets/transaction_widgets/transaction_li
 import 'package:shmr_finance_app/core/widgets/transaction_widgets/transactions_sum_widget.dart';
 import 'package:shmr_finance_app/domain/bloc/history/history_cubit.dart';
 import 'package:shmr_finance_app/domain/models/transaction_response/transaction_response.dart';
+import 'package:shmr_finance_app/l10n/app_localizations.dart';
 
 class AnalysisPage extends StatefulWidget {
   const AnalysisPage({required this.isIncomePage, super.key});
@@ -41,10 +42,14 @@ class _AnalysisPageState extends State<AnalysisPage>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final localization = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Анализ', style: theme.appBarTheme.titleTextStyle),
+        title: Text(
+          localization.analysis,
+          style: theme.appBarTheme.titleTextStyle,
+        ),
         centerTitle: true,
       ),
       body: BlocConsumer<HistoryCubit, HistoryState>(
@@ -197,7 +202,7 @@ class _AnalysisPageState extends State<AnalysisPage>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TransactionDateChoiceWidget(
-                title: 'Начало',
+                title: localization.beginning,
                 initialDate: state is HistoryIdleState
                     ? state.startDate
                     : DateTime.now(),
@@ -209,7 +214,7 @@ class _AnalysisPageState extends State<AnalysisPage>
               ),
 
               TransactionDateChoiceWidget(
-                title: 'Конец',
+                title: localization.end,
                 initialDate: state is HistoryIdleState
                     ? state.endDate
                     : DateTime.now(),

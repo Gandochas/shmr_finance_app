@@ -15,6 +15,7 @@ import 'package:shmr_finance_app/data/sources/drift/daos/pending_operations_dao.
 import 'package:shmr_finance_app/data/sources/drift/daos/transaction_dao.dart';
 import 'package:shmr_finance_app/data/sources/drift/database/database.dart';
 import 'package:shmr_finance_app/data/sources/haptic_touch/haptic_touch_datasource.dart';
+import 'package:shmr_finance_app/data/sources/localization/localization_datasource.dart';
 import 'package:shmr_finance_app/data/sources/network/bank_account_network_datasource_impl.dart';
 import 'package:shmr_finance_app/data/sources/network/category_network_datasource_impl.dart';
 import 'package:shmr_finance_app/data/sources/network/transaction_network_datasource_impl.dart';
@@ -23,6 +24,7 @@ import 'package:shmr_finance_app/domain/controllers/app_color/app_color_controll
 import 'package:shmr_finance_app/domain/controllers/app_theme/app_theme_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/biometric/biometric_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/haptic_touch/haptic_touch_controller.dart';
+import 'package:shmr_finance_app/domain/controllers/localization/localization_controller.dart';
 import 'package:shmr_finance_app/domain/controllers/pin_code/pin_code_controller.dart';
 import 'package:shmr_finance_app/domain/repositories/bank_account_repository.dart';
 import 'package:shmr_finance_app/domain/repositories/category_repository.dart';
@@ -112,6 +114,19 @@ class AppProviders extends StatelessWidget {
             );
             biometricController.loadBiometricSetting();
             return biometricController;
+          },
+        ),
+        Provider<LocalizationDatasource>(
+          create: (context) =>
+              LocalizationDatasource(preferences: sharedPreferences),
+        ),
+        ChangeNotifierProvider<LocalizationController>(
+          create: (context) {
+            final localizationController = LocalizationController(
+              localizationDatasource: context.read<LocalizationDatasource>(),
+            );
+            localizationController.loadLocalization();
+            return localizationController;
           },
         ),
         Provider<AppDatabase>(

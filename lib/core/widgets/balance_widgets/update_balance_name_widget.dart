@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shmr_finance_app/domain/bloc/balance/balance_cubit.dart';
+import 'package:shmr_finance_app/l10n/app_localizations.dart';
 
 class UpdateBalanceNameWidget extends StatelessWidget {
   const UpdateBalanceNameWidget({required this.accountName, super.key});
@@ -9,12 +10,16 @@ class UpdateBalanceNameWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final accountNameController = TextEditingController();
     final balanceCubit = context.read<BalanceCubit>();
+    final theme = Theme.of(context);
+    final localization = AppLocalizations.of(context);
 
     return AlertDialog(
-      title: Text('Изменить имя счёта', style: theme.textTheme.bodyLarge),
+      title: Text(
+        localization.change_balance_name,
+        style: theme.textTheme.bodyLarge,
+      ),
       content: TextField(
         controller: accountNameController,
         autofocus: true,
@@ -28,7 +33,7 @@ class UpdateBalanceNameWidget extends StatelessWidget {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text('Отмена', style: theme.textTheme.bodyLarge),
+          child: Text(localization.cancel, style: theme.textTheme.bodyLarge),
         ),
         TextButton(
           onPressed: () async {
@@ -40,7 +45,7 @@ class UpdateBalanceNameWidget extends StatelessWidget {
             await balanceCubit.updateAccountName(newName);
             if (context.mounted) Navigator.of(context).pop();
           },
-          child: Text('Изменить', style: theme.textTheme.bodyLarge),
+          child: Text(localization.change, style: theme.textTheme.bodyLarge),
         ),
       ],
     );

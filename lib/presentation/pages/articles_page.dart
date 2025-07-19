@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shmr_finance_app/core/widgets/articles_widgets/article_list_tile.dart';
 import 'package:shmr_finance_app/core/widgets/articles_widgets/search_article_widget.dart';
 import 'package:shmr_finance_app/domain/bloc/articles/articles_cubit.dart';
+import 'package:shmr_finance_app/l10n/app_localizations.dart';
 
 class ArticlesPage extends StatelessWidget {
   const ArticlesPage({super.key});
@@ -10,13 +11,17 @@ class ArticlesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final localization = AppLocalizations.of(context);
 
     return BlocBuilder<ArticlesCubit, ArticlesState>(
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
             backgroundColor: theme.appBarTheme.backgroundColor,
-            title: Text('Мои статьи', style: theme.appBarTheme.titleTextStyle),
+            title: Text(
+              localization.my_articles,
+              style: theme.appBarTheme.titleTextStyle,
+            ),
             centerTitle: true,
           ),
           body: Builder(
