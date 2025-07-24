@@ -46,3 +46,9 @@ app.*.map.json
 /android/app/release
 
 *.env
+
+# Golden test images
+test/**/goldens/
+test/**/*.png
+test/**/*.jpg
+test/**/*.jpeg
