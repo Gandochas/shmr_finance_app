@@ -30,12 +30,14 @@ class UpdateBalanceNameWidget extends StatelessWidget {
       ),
       actions: [
         TextButton(
+          key: const Key('cancel_name_change'),
           onPressed: () {
             Navigator.of(context).pop();
           },
           child: Text(localization.cancel, style: theme.textTheme.bodyLarge),
         ),
         TextButton(
+          key: const Key('confirm_name_change'),
           onPressed: () async {
             final newName = accountNameController.text.trim();
             if (newName.isEmpty || newName == accountName) {
