@@ -4,3 +4,6 @@ analyzer:
     discarded_futures: ignore
     unnecessary_library_directive: ignore
     unnecessary_library_name: ignore
+
+formatter:
+  trailing_commas: preserve
