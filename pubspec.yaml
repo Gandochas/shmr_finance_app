@@ -53,6 +53,18 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.4
   flutter_native_splash: ^2.2.16
 
+  mocktail: ^1.0.4
+  patrol: ^3.18.0
+  alchemist: ^0.12.1
+  bloc_test: ^10.0.0
+
+patrol:
+  app_name: shmr_finance_app
+  android:
+    package_name: com.example.shmr_finance_app
+  ios:
+    bundle_id: com.example.shmrFinanceApp
+
 flutter:
   uses-material-design: true
   generate: true
