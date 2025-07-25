@@ -21,6 +21,7 @@ class UpdateBalanceNameWidget extends StatelessWidget {
         style: theme.textTheme.bodyLarge,
       ),
       content: TextField(
+        key: const Key('update_balance_name'),
         controller: accountNameController,
         autofocus: true,
         decoration: InputDecoration(

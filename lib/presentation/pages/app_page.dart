@@ -124,6 +124,7 @@ class _AppPageState extends State<AppPage> {
             label: localization.incomes,
           ),
           NavigationDestination(
+            key: const Key('balance_page'),
             icon: const SvgIcon(asset: 'assets/icons/account_icon.svg'),
             label: localization.balance,
           ),

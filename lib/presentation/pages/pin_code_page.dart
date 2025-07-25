@@ -70,6 +70,7 @@ class _PinCodePageState extends State<PinCodePage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             TextField(
+              key: const Key('insert_pin_field'),
               controller: _inputPinCodeController,
               decoration: InputDecoration(
                 labelText:
@@ -100,6 +101,7 @@ class _PinCodePageState extends State<PinCodePage> {
               ),
             const SizedBox(height: 16),
             ElevatedButton(
+              key: const Key('check_pin_button'),
               onPressed: () async {
                 final pinCode = _inputPinCodeController.text;
                 if (pinCode.length != 4) {

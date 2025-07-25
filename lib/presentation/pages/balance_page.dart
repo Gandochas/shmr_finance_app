@@ -130,7 +130,7 @@ class _BalancePageState extends State<BalancePage>
                             ),
                           ),
                           title: InkWell(
-                            key: const Key('update_balance_name'),
+                            key: const Key('dialog_balance_name'),
                             onTap: () {
                               showDialog<void>(
                                 context: context,
